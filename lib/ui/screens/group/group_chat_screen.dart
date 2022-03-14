@@ -220,6 +220,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         break;
       default:
     }
+    //! this Dialog is for when the user clicks on the ElevatedButton for SnakeLadder etc..
     showDialog(
       context: context,
       builder: (context) {
@@ -232,6 +233,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             child: Column(
               children: [
                 const Text('Select Players'),
+                //! Where users is selected. Only 2 users for TikTakToe
                 playersList(users: _groupData.users),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -352,6 +354,7 @@ class _playersListState extends State<playersList> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
+                              //! ProfilePic (HardCoded)
                               SizedBox(
                                 width: 50,
                                 height: 50,
@@ -370,23 +373,24 @@ class _playersListState extends State<playersList> {
                               const SizedBox(
                                 width: 10,
                               ),
+                              //! Player name, to be send to next screen
                               Expanded(
                                   child: Text(
                                 users.username.toString(),
                                 maxLines: 1,
                               )),
+                              //! CheckBox
                               SizedBox(
                                 width: 20,
                                 child: Checkbox(
                                   value: selectedUsersList.contains(users.id),
                                   onChanged: (bool? value) {
                                     if (value == true) {
-                                      print('aaded');
                                       setState(() {
+                                        //! The list where the users who will play are added.
                                         selectedUsersList.add(users.id);
                                       });
                                     } else {
-                                      print('aadedr');
                                       setState(() {
                                         selectedUsersList.remove(users.id);
                                       });

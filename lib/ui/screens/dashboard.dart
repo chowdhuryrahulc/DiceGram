@@ -1,3 +1,4 @@
+import 'package:contacts_service/contacts_service.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -11,7 +12,7 @@ import 'package:dicegram/utils/app_constants.dart';
 import 'package:dicegram/utils/dimensions.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
-
+// import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
 
 class Dashboard extends StatefulWidget {
@@ -23,6 +24,8 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   bool isChatSelected = true;
+  List<Contact> contacts = [];
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -39,9 +42,17 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
         .update({KeyConstants.ONLINE: isOnline});
   }
 
+  getAllContacts() async {
+    // contacts = await ContactsService.getContacts();
+    //   // contacts = contacts1;
+    //   // print('object');
+    //   print(contacts);
+  }
+
   @override
   void initState() {
     super.initState();
+    getAllContacts();
     WidgetsBinding.instance?.addObserver(this);
     setOnline(true);
   }
@@ -72,9 +83,9 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                       child: profileImage != null
                           ? Image.network(
                               profileImage!,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset('assets/images/person.png');
-                              },
+                              // errorBuilder: (context, error, stackTrace) {
+                              //   return Image.asset('assets/images/person.png');
+                              // },
                             )
                           : Image.asset('assets/images/person.png')),
                 ),
@@ -178,8 +189,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                       context,
                       MaterialPageRoute(
                           builder: (context) => isChatSelected
-                              ? ContactsScreen()
-                              : ContactsScreen2()));
+                              ? ContactsScreen() // Create one to one chat.
+                              : ContactsScreen2())); // Create group
                 },
                 child: isChatSelected
                     ? const Icon(Icons.chat)

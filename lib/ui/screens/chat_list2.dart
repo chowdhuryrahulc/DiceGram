@@ -22,7 +22,7 @@ class _ChatList2State extends State<ChatList2> {
         stream: UserServices().getChatList(),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data?.docs.length == 0) {
-            return const SizedBox();
+            return const SizedBox(); //no chat found
           }
 
           return ListView.builder(
@@ -43,12 +43,12 @@ class _ChatList2State extends State<ChatList2> {
         });
   }
 
-  String getTime(var time) {
-    if (time != null) {
-      DateTime dateTime = time.toDate();
-      String formatDate = DateFormat("hh:mm").format(dateTime);
-      return formatDate;
-    }
-    return '';
-  }
+  // String getTime(var time) {
+  //   if (time != null) {
+  //     DateTime dateTime = time.toDate();
+  //     String formatDate = DateFormat("hh:mm").format(dateTime);
+  //     return formatDate;
+  //   }
+  //   return '';
+  // }
 }

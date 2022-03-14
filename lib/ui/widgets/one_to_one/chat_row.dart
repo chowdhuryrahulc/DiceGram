@@ -42,8 +42,12 @@ class ChatRow extends StatelessWidget {
           lastMessageTime = '';
         } else {
           lastMessage = lastMsgData[KeyConstants.MESSAGE];
-          lastMessageTime = Utils.getDateFromTimestamp(
-              lastMsgData[KeyConstants.CREATED_AT], 'MMM dd');
+          if (lastMsgData[KeyConstants.CREATED_AT] != null) {
+            lastMessageTime = Utils.getDateFromTimestamp(
+                lastMsgData[KeyConstants.CREATED_AT], 'MMM dd');
+          } else {
+            lastMessageTime = '';
+          }
         }
 
         return Padding(

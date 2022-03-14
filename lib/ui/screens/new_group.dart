@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:developer';
 
 import 'package:dicegram/models/user_model.dart';
@@ -135,12 +137,11 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text('Add valid Group name')));
-                            } else {
-                            }
+                            } else {}
                           },
                           controller: controller,
                           decoration: InputDecoration(
-                              label: Text(watchprovider.groupName),
+                              label: Text('Group Name'),
                               contentPadding: const EdgeInsets.only(left: 20),
                               border: InputBorder.none)),
                     ),
@@ -165,7 +166,6 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                       itemCount: widget.users.length,
                       itemBuilder: (context, index) {
                         final data = widget.users[index];
-                        print(data.id);
                         // usersList.add(users);
                         // if (users.id != userId)
                         {

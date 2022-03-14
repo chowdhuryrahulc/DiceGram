@@ -19,6 +19,11 @@ class _ContactsScreenState extends State<ContactsScreen2> {
   List<UserModel> usersList = [];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     GroupProvider().dispose1();
     super.dispose();
@@ -37,6 +42,7 @@ class _ContactsScreenState extends State<ContactsScreen2> {
         onPressed: () {
           if (watchprovider.models.isNotEmpty) {
             List<UserModel> users = [];
+            // Tushar sir
             watchprovider.models.forEach((element) {
               usersList.forEach((user) {
                 if (user.id == element) {
@@ -135,6 +141,7 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                                             if (value == true) {
                                               readprovider.addList(users.id);
                                             } else {
+                                              //! Need removeAll
                                               readprovider.remove(users.id);
                                             }
                                           },
@@ -157,22 +164,22 @@ class _ContactsScreenState extends State<ContactsScreen2> {
     );
   }
 
-  Future<void> handleOnClick(doc) async {
-    String result = await UserServices().getChatroomId(doc);
-    if (result == 'notFound') {
-      DocumentReference ref =
-          await UserServices().createChatRoom([userId, doc]);
-      if (ref != null) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ChatRooms(
-                  roomId: ref.id,
-                )));
-      }
-    } else {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ChatRooms(
-                roomId: result,
-              )));
-    }
-  }
+  // Future<void> handleOnClick(doc) async {
+  //   String result = await UserServices().getChatroomId(doc);
+  //   if (result == 'notFound') {
+  //     DocumentReference ref =
+  //         await UserServices().createChatRoom([userId, doc]);
+  //     if (ref != null) {
+  //       Navigator.of(context).push(MaterialPageRoute(
+  //           builder: (context) => ChatRooms(
+  //                 roomId: ref.id,
+  //               )));
+  //     }
+  //   } else {
+  //     Navigator.of(context).push(MaterialPageRoute(
+  //         builder: (context) => ChatRooms(
+  //               roomId: result,
+  //             )));
+  //   }
+  // }
 }

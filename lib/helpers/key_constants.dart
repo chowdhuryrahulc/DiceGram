@@ -26,4 +26,5 @@ class KeyConstants {
   static const USERS_ARRAY_IN_CHAT = 'users';
   static const TikTakToe = 'tikTackToe';
   static const CHESS = "chess";
+  static const GROUPCREATED = "Group Created";
 }
