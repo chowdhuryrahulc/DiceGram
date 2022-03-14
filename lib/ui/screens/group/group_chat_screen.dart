@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_is_empty
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/TikTakToe/tiktakHome.dart';
 // import 'package:dicegram/chess/chessmain.dart';

@@ -179,7 +179,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                       context,
                       MaterialPageRoute(
                           builder: (context) => isChatSelected
-                              ? ContactsScreen() // Create one to one chat.
+                              ? ContactListScreen() // Create one to one chat.
                               : ContactsScreen2())); // Create group
                 },
                 child: isChatSelected

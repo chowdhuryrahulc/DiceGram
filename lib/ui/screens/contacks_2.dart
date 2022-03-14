@@ -81,6 +81,7 @@ class _ContactsScreenState extends State<ContactsScreen2> {
       ),
       body: SafeArea(
         child: StreamBuilder<QuerySnapshot>(
+            //! Group Changing stuff.
             stream: UserServices().getFirebaseUsers(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
