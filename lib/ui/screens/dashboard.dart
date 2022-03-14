@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -24,7 +23,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   bool isChatSelected = true;
-  List<Contact> contacts = [];
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -42,17 +40,9 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
         .update({KeyConstants.ONLINE: isOnline});
   }
 
-  getAllContacts() async {
-    // contacts = await ContactsService.getContacts();
-    //   // contacts = contacts1;
-    //   // print('object');
-    //   print(contacts);
-  }
-
   @override
   void initState() {
     super.initState();
-    getAllContacts();
     WidgetsBinding.instance?.addObserver(this);
     setOnline(true);
   }

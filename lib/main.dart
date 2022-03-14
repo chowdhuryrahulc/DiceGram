@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:dicegram/providers/profile_provider.dart';
 import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
