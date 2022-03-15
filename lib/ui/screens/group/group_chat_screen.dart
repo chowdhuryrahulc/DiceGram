@@ -1,7 +1,7 @@
-// ignore_for_file: prefer_is_empty
+// ignore_for_file: prefer_is_empty, prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dicegram/TikTakToe/tiktakHome.dart';
+// import 'package:dicegram/TikTakToe/tiktakHome.dart';
 // import 'package:dicegram/chess/chessmain.dart';
 import 'package:dicegram/helpers/game_service.dart';
 import 'package:dicegram/helpers/group_service.dart';
@@ -10,6 +10,7 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/group_data.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/snake_ladder/view/snake_ladder.dart';
+import 'package:dicegram/ui/screens/dashboard.dart';
 import 'package:dicegram/ui/widgets/group/group_chat_bubble.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:dicegram/utils/app_constants.dart';
@@ -38,6 +39,7 @@ class GroupChatScreen extends StatefulWidget {
 }
 
 class _GroupChatScreenState extends State<GroupChatScreen> {
+  //! Here we get the uid.
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   bool isShowBox = false;
   bool isGameInitiated = false;
@@ -58,154 +60,175 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     TextEditingController textEditingController = TextEditingController();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return Scaffold(
-        appBar: AppBar(
-          iconTheme: const IconThemeData(
-            color: Colors.white, //change your color here
+    return WillPopScope(
+      onWillPop: () {
+        return Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return Dashboard();
+        })).then((value) {
+          return true;
+        });
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            iconTheme: const IconThemeData(
+              color: Colors.white, //change your color here
+            ),
+            title: Text(widget.groupName),
           ),
-          title: Text(widget.groupName),
-        ),
-        body: SingleChildScrollView(
-          child: SizedBox(
-            height:
-                height - (MediaQuery.of(context).padding.top + kToolbarHeight),
-            child: Column(
-              children: [
-                Expanded(
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: GroupService().getGroupChat(widget.chatId),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasData &&
-                              snapshot.data!.docs.isNotEmpty) {
-                            if (snapshot.data?.docs.length == 0) {
-                              return const Center(
-                                  child: Text('No Messages Here'));
-                            } else {
-                              return ListView.builder(
-                                  reverse: true,
-                                  itemCount: snapshot.data?.docs.length,
-                                  itemBuilder: (context, index) {
-                                    var messageData =
-                                        snapshot.data?.docs[index];
-                                    var messageId = messageData?.id;
-                                    var messageSenderId =
-                                        messageData?[KeyConstants.SENDER_ID];
-                                    String? messageSenderName =
-                                        messageData?[KeyConstants.SENDER_NAME];
-                                    var isSeen =
-                                        messageData?[KeyConstants.SEEN];
-                                    if (isSeen != null &&
-                                        isSeen == false &&
-                                        (UserServices.userId !=
-                                            messageSenderId)) {
-                                      UserServices().markMsgRead(
-                                          chatId: widget.chatId,
-                                          messageId: messageId);
-                                    }
-                                    return GroupChatBubble(
-                                      message:
-                                          messageData?[KeyConstants.MESSAGE],
-                                      time: getTime(messageData?[
-                                          KeyConstants.CREATED_AT]),
-                                      isMe: messageData?[
-                                              KeyConstants.SENDER_ID] ==
-                                          userId,
-                                      messageSenderName: messageSenderName,
-                                    );
+          body: SingleChildScrollView(
+            child: SizedBox(
+              height: height -
+                  (MediaQuery.of(context).padding.top + kToolbarHeight),
+              child: Column(
+                children: [
+                  Expanded(
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: GroupService().getGroupChat(widget.chatId),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasData &&
+                                snapshot.data!.docs.isNotEmpty) {
+                              if (snapshot.data?.docs.length == 0) {
+                                return const Center(
+                                    child: Text('No Messages Here'));
+                              } else {
+                                return ListView.builder(
+                                    reverse: true,
+                                    itemCount: snapshot.data?.docs.length,
+                                    itemBuilder: (context, index) {
+                                      var messageData =
+                                          snapshot.data?.docs[index];
+                                      var messageId = messageData?.id;
+                                      var messageSenderId =
+                                          messageData?[KeyConstants.SENDER_ID];
+                                      String? messageSenderName = messageData?[
+                                          KeyConstants.SENDER_NAME];
+                                      var isSeen =
+                                          messageData?[KeyConstants.SEEN];
+                                      if (isSeen != null &&
+                                          isSeen == false &&
+                                          (UserServices.userId !=
+                                              messageSenderId)) {
+                                        UserServices().markMsgRead(
+                                            chatId: widget.chatId,
+                                            messageId: messageId);
+                                      }
+                                      return GroupChatBubble(
+                                        message:
+                                            messageData?[KeyConstants.MESSAGE],
+                                        time: getTime(messageData?[
+                                            KeyConstants.CREATED_AT]),
+                                        isMe: messageData?[
+                                                KeyConstants.SENDER_ID] ==
+                                            userId,
+                                        messageSenderName: messageSenderName,
+                                      );
+                                    });
+                              }
+                            } else
+                              return SizedBox();
+                          })),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors1.textInputBocColor,
+                      ),
+                      child: TextFormField(
+                        obscureText: false,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
+                        maxLines: 5,
+                        minLines: 1,
+                        decoration: InputDecoration(
+                            prefixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isShowBox = !isShowBox;
                                   });
-                            }
-                          } else
-                            return SizedBox();
-                        })),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors1.textInputBocColor,
-                    ),
-                    child: TextFormField(
-                      obscureText: false,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
-                      maxLines: 5,
-                      minLines: 1,
-                      decoration: InputDecoration(
-                          prefixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  isShowBox = !isShowBox;
-                                });
-                                if (isShowBox == true) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                } else {
-                                  FocusManager.instance.primaryFocus
-                                      ?.nextFocus();
-                                }
-                              },
-                              icon: Image.asset("assets/images/game.png")),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                if (textEditingController.text
-                                    .trim()
-                                    .isNotEmpty) {
-                                  GroupService().sendGroupMessage(
-                                      message:
-                                          textEditingController.text.trim(),
-                                      groupId: widget.chatId);
-                                  textEditingController.clear();
-                                }
-                              },
-                              icon: Image.asset("assets/images/send.png")),
-                          border: InputBorder.none,
-                          hintText: 'Type a message...',
-                          hintStyle: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w200,
-                              color: Colors.grey[400])),
-                      controller: textEditingController,
+                                  if (isShowBox == true) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  } else {
+                                    FocusManager.instance.primaryFocus
+                                        ?.nextFocus();
+                                  }
+                                },
+                                icon: Image.asset("assets/images/game.png")),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  if (textEditingController.text
+                                      .trim()
+                                      .isNotEmpty) {
+                                    GroupService().sendGroupMessage(
+                                        message:
+                                            textEditingController.text.trim(),
+                                        groupId: widget.chatId);
+                                    textEditingController.clear();
+                                  }
+                                },
+                                icon: Image.asset("assets/images/send.png")),
+                            border: InputBorder.none,
+                            hintText: 'Type a message...',
+                            hintStyle: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w200,
+                                color: Colors.grey[400])),
+                        controller: textEditingController,
+                      ),
                     ),
                   ),
-                ),
-                isShowBox
-                    ? Container(
-                        height: 50.h,
-                        width: double.infinity,
-                        child: isGameInitiated
-                            ? getSelectedGame(selectedGame)
-                            : Center(
-                                child: Column(children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      selectedGame = AppConstants.snakeLadder;
-                                      onGameSelected(AppConstants.snakeLadder);
-                                    },
-                                    child: Text('Snake Ladder'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      selectedGame = AppConstants.chess;
-                                      onGameSelected(AppConstants.chess);
-                                    },
-                                    child: Text('Chess'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      selectedGame = AppConstants.tikTackToe;
-                                      onGameSelected(AppConstants.tikTackToe);
-                                    },
-                                    child: Text('Tik-Tack Toe'),
-                                  ),
-                                ]),
-                              ))
-                    : const SizedBox()
-              ],
+                  isShowBox
+                      ? Container(
+                          height: 50.h,
+                          width: double.infinity,
+                          child: isGameInitiated
+                              // Where is this comming from?
+                              // it is comming from group_list.dart.
+                              //     GroupData groupData =
+                              // GroupData.fromSnapshot(snapshot.data?.docs[index]);
+                              // isGameInnitiated depends on groupData.gameId!=''
+
+                              //! Source of problem
+                              ? getSelectedGame(
+                                  // selectedGame
+                                  0)
+                              : Center(
+                                  child: Column(children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        selectedGame = AppConstants.snakeLadder;
+                                        onGameSelected(
+                                            AppConstants.snakeLadder);
+                                      },
+                                      child: Text('Snake Ladder'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        selectedGame = AppConstants.chess;
+                                        onGameSelected(AppConstants.chess);
+                                      },
+                                      child: Text('Chess'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        selectedGame = AppConstants.tikTackToe;
+                                        onGameSelected(AppConstants.tikTackToe);
+                                      },
+                                      child: Text('Tik-Tack Toe'),
+                                    ),
+                                  ]),
+                                ))
+                      : const SizedBox()
+                ],
+              ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   void onGameSelected(int selectedGame) {
@@ -248,11 +271,13 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(context);
+                          //! Changes gameId, players, and users in Firebase.
                           String gameId = await GameService().createGameRoom(
                               groupId: widget.chatId,
                               userIds: selectedUsersList,
                               // Key constraints.tiktaktoe.
                               game: keyConstraints!);
+                          // GameId: aV538hHnsz830uFVkczV
                           print('Game ID ${gameId}'); // Working im TikTakToe
                           _groupData.gameId = gameId; // goes in SnakeLadder
                           _groupData.players =
@@ -275,6 +300,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   }
 
   Widget getSelectedGame(int selectedGame) {
+    print(selectedGame);
     Widget game = SizedBox();
 
     switch (selectedGame) {
@@ -291,17 +317,17 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         );
         break;
       case AppConstants.tikTackToe:
-        game = HomePage();
-        // SnakeLadder(
-        //   onEnd: () {
-        //     setState(() {
-        //       isGameInitiated = false;
-        //     });
-        //   },
-        //   gameId: _groupData.gameId,
-        //   players: _groupData.players,
-        //   chatId: widget.chatId,
-        // );
+        // game = HomePage();
+        SnakeLadder(
+          onEnd: () {
+            setState(() {
+              isGameInitiated = false;
+            });
+          },
+          gameId: _groupData.gameId,
+          players: _groupData.players,
+          chatId: widget.chatId,
+        );
         break;
       case AppConstants.chess:
         game = GameBoardStateLess({"name": 'Chess'}, widget.chatId, this.userId,

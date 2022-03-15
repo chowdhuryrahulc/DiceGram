@@ -1,25 +1,25 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables, deprecated_member_use
+// ignore_for_file: deprecated_member_use, prefer_typing_uninitialized_variables
 
 import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
-  final title;
+  final title; // title and content of dialog
   final content;
-  final VoidCallback callback;
+  final VoidCallback callback; // Reset function and reset text
   final actionText;
 
   CustomDialog(this.title, this.content, this.callback,
       [this.actionText = "Reset"]);
   @override
   Widget build(BuildContext context) {
-    return new AlertDialog(
-      title: new Text(title),
-      content: new Text(content),
+    return AlertDialog(
+      title: Text(title),
+      content: Text(content),
       actions: <Widget>[
-        new FlatButton(
+         FlatButton(
           onPressed: callback,
           color: Colors.white,
-          child: new Text(actionText),
+          child: Text(actionText),
         )
       ],
     );

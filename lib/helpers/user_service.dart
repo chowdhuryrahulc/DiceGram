@@ -159,8 +159,9 @@ class UserServices {
 
     contactList.map((e) {
       if (e.phones != null) {
-        String? phoneNumber =
-            ((e.phones!.length) != 0) ? (e.phones![0].value.toString()) : null;
+        String? phoneNumber = ((e.phones!.length) != 0)
+            ? (e.phones![0].value.toString().replaceAll(' ', ''))
+            : null;
         // print(phoneNumber);
         if (phoneNumber != null) {
           phoneNumberList.add(phoneNumber);
@@ -188,7 +189,7 @@ class UserServices {
           .get()
           .then((value) async {
         print('value');
-        print(value.docs.length);
+        print(value.docs.length); // value null
         for (var snapshot in value.docs) {
           UserModel user = UserModel.fromSnapshot(snapshot);
           print('user');

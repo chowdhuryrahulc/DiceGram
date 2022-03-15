@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_is_empty
+
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/group_service.dart';

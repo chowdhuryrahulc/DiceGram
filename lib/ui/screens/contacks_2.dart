@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_is_empty, curly_braces_in_flow_control_structures
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';

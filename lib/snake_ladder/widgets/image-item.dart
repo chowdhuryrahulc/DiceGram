@@ -62,7 +62,7 @@ class ImageItem extends StatelessWidget {
           child: RotationTransition(
             turns: AlwaysStoppedAnimation(270 / 360),
             child: Image.asset(
-             SnakesLaddersConst.ladders,
+              SnakesLaddersConst.ladders,
               height: 160,
               width: 70,
             ),

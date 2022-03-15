@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:dicegram/snake_ladder/consts/snakes_ladders.dart';
@@ -9,7 +11,6 @@ part 'snakes-ladders.g.dart';
 class SnakesLadders = _SnakesLaddersBase with _$SnakesLadders;
 
 abstract class _SnakesLaddersBase with Store {
-
   Utils utils = Utils();
 
   @observable

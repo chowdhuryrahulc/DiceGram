@@ -41,14 +41,18 @@ class _SnakeLadderState extends State<SnakeLadder> {
     _snakesLaddersStore = GetIt.instance<SnakesLadders>();
     _snakesLaddersStore.init(widget.gameId, widget.players);
     utils = Utils();
-    // FirebaseUtils.getGameColRef().doc(widget.gameId).collection('game').snapshots().listen((event) {
-    //   if(event.docs.isNotEmpty){
-    //     setState(() {
-    //       dice = event.docs[0]["dice"];
-    //     });
-    //     dice =0;
-    //   }
-    // });
+    FirebaseUtils.getGameColRef()
+        .doc(widget.gameId)
+        .collection('game')
+        .snapshots()
+        .listen((event) {
+      if (event.docs.isNotEmpty) {
+        setState(() {
+          dice = event.docs[0]["dice"];
+        });
+        dice = 0;
+      }
+    });
   }
 
   @override

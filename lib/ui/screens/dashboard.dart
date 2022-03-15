@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -11,6 +13,8 @@ import 'package:dicegram/utils/app_constants.dart';
 import 'package:dicegram/utils/dimensions.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
 
@@ -40,9 +44,21 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
         .update({KeyConstants.ONLINE: isOnline});
   }
 
+  var status;
+  permissionContacts() async {
+    status = await Permission.contacts.request();
+    print(status);
+    // if (status?.isDenied) {
+    //   print('Status Denied');
+    // } else if (status!.isGranted) {
+    //   print('Status Granted');
+    // }
+  }
+
   @override
   void initState() {
     super.initState();
+    permissionContacts();
     WidgetsBinding.instance?.addObserver(this);
     setOnline(true);
   }
@@ -52,144 +68,160 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     String userName = 'User Name';
     String? profileImage;
 
-    return FutureBuilder<UserModel>(
-      future: UserServices().getUserById(UserServices.userId),
-      builder: (context, snapshot) {
-        if (snapshot.data?.username != null) {
-          userName = snapshot.data!.username;
-        }
-        profileImage = snapshot.data?.image;
-        return Scaffold(
-          drawer: NavDrawer(),
-          appBar: AppBar(
-            shadowColor: Colors.transparent,
-            leading: Builder(builder: (context) {
-              return InkWell(
-                onTap: () => Scaffold.of(context).openDrawer(),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: profileImage != null
-                          ? Image.network(
-                              profileImage!,
-                              // errorBuilder: (context, error, stackTrace) {
-                              //   return Image.asset('assets/images/person.png');
-                              // },
-                            )
-                          : Image.asset('assets/images/person.png')),
-                ),
-              );
-            }),
-            title: Text(
-              userName,
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            actions: [
-              const Icon(Icons.search),
-              PopupMenuButton(
-                icon: const Icon(Icons.more_vert),
-                onSelected: (value) {
-                  if (value == 3) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            const ChatRooms(roomId: 'result')));
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CreateGroupScreen()));
-                      },
-                      child: const Text('Contacts'),
-                    ),
+    return WillPopScope(
+      onWillPop: () async {
+        SystemNavigator.pop();
+        // put something that closes the app. or
+        return true;
+      },
+      child: FutureBuilder<UserModel>(
+        future: UserServices().getUserById(UserServices.userId),
+        builder: (context, snapshot) {
+          if (snapshot.data?.username != null) {
+            userName = snapshot.data!.username;
+          }
+          profileImage = snapshot.data?.image;
+          return Scaffold(
+            drawer: NavDrawer(),
+            appBar: AppBar(
+              shadowColor: Colors.transparent,
+              leading: Builder(builder: (context) {
+                return InkWell(
+                  onTap: () => Scaffold.of(context).openDrawer(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: profileImage != null
+                            ? Image.network(
+                                profileImage!,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                      'assets/images/person.png');
+                                },
+                              )
+                            : Image.asset('assets/images/person.png')),
                   ),
-                  const PopupMenuItem(
-                    value: 2,
-                    child: Text("What"),
-                  ),
-                  const PopupMenuItem(
-                    value: 3,
-                    child: Text("You Want?"),
-                  ),
-                ],
+                );
+              }),
+              title: Text(
+                userName,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
-              const SizedBox(
-                width: 8,
-              )
-            ],
-          ),
-          body: DefaultTabController(
-            length: 2,
-            child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                title: TabBar(
-                  indicatorColor: Colors.white,
-                  indicatorPadding: EdgeInsets.zero,
-                  indicatorWeight: 10,
-                  padding: EdgeInsets.zero,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  onTap: (index) {
-                    setState(() {
-                      isChatSelected = (index == 0);
-                    });
+              actions: [
+                const Icon(Icons.search),
+                PopupMenuButton(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 3) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              const ChatRooms(roomId: 'result')));
+                    }
                   },
-                  tabs: const [
-                    Tab(
-                      child: Text(
-                        AppConstants.chats,
-                        style: TextStyle(
-                            fontSize: Dimen.fontXL,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CreateGroupScreen()));
+                        },
+                        child: const Text('Contacts'),
                       ),
                     ),
-                    Tab(
-                      child: Text(
-                        AppConstants.groups,
-                        style: TextStyle(
-                            fontSize: Dimen.fontXL,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
+                    const PopupMenuItem(
+                      value: 2,
+                      child: Text("What"),
+                    ),
+                    const PopupMenuItem(
+                      value: 3,
+                      child: Text("You Want?"),
                     ),
                   ],
                 ),
-              ),
-              body: const TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  ChatList2(),
-                  GroupList(),
-                ],
-              ),
-              floatingActionButton: FloatingActionButton(
-                shape: ContinuousRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => isChatSelected
-                              ? ContactListScreen() // Create one to one chat.
-                              : ContactsScreen2())); // Create group
-                },
-                child: isChatSelected
-                    ? const Icon(Icons.chat)
-                    : const Icon(Icons.add),
+                const SizedBox(
+                  width: 8,
+                )
+              ],
+            ),
+            body: DefaultTabController(
+              length: 2,
+              child: Scaffold(
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  title: TabBar(
+                    indicatorColor: Colors.white,
+                    indicatorPadding: EdgeInsets.zero,
+                    indicatorWeight: 10,
+                    padding: EdgeInsets.zero,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    onTap: (index) {
+                      setState(() {
+                        isChatSelected = (index == 0);
+                      });
+                    },
+                    tabs: const [
+                      Tab(
+                        child: Text(
+                          AppConstants.chats,
+                          style: TextStyle(
+                              fontSize: Dimen.fontXL,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                      Tab(
+                        child: Text(
+                          AppConstants.groups,
+                          style: TextStyle(
+                              fontSize: Dimen.fontXL,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                body: const TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    ChatList2(),
+                    GroupList(),
+                  ],
+                ),
+                floatingActionButton: FloatingActionButton(
+                  shape: ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  onPressed: () {
+                    if (status == PermissionStatus.granted
+                        // status.isGranted
+                        ) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => isChatSelected
+                                  ? ContactListScreen() // Create one to one chat.
+                                  : ContactsScreen2())); // Create group
+                    } else {
+                      var snackBar = SnackBar(
+                          content: Text('Contacts Permission Required'));
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  },
+                  child: isChatSelected
+                      ? const Icon(Icons.chat)
+                      : const Icon(Icons.add),
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
