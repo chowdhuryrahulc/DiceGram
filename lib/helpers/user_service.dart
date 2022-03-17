@@ -28,10 +28,14 @@ class UserServices {
     return status;
   }
 
- Future<bool> updateUserData(Map<String, dynamic> values) async {
+  Future<bool> updateUserData(Map<String, dynamic> values) async {
     bool status = false;
-   await FirebaseUtils.getUsersColRef().doc(values['id']).update(values).then((value){
-       status = true;
+    await FirebaseUtils.getUsersColRef()
+        .doc(UserServices.userId)
+        .update(values)
+        .then((value) {
+      print('status');
+      status = true;
     }).catchError((onError) {
       status = false;
     });
@@ -161,24 +165,27 @@ class UserServices {
     return v;
   }
 
+// int countNumberOfFirebaseUsers(){
+
+// }
   Future<List<UserModel>> getFirebaseUsersFromContacts(
       List<Contact> contactList) async {
     List<UserModel> userList = [];
     List<String> phoneNumberList = [];
 
+// Adding all the phoneNumbers to a phoneNumberList.
     contactList.map((e) {
       if (e.phones != null) {
         String? phoneNumber = ((e.phones!.length) != 0)
             ? (e.phones![0].value.toString().replaceAll(' ', ''))
             : null;
-        // print(phoneNumber);
         if (phoneNumber != null) {
           phoneNumberList.add(phoneNumber);
         }
       }
     }).toList();
 
-    // log(TAG + ' phoneNumberList ${phoneNumberList.length}');
+    //// log(TAG + ' phoneNumberList ${phoneNumberList.length}');
 
     List<List<String>> subList = [];
 
@@ -188,7 +195,7 @@ class UserServices {
           i + 10 > phoneNumberList.length ? phoneNumberList.length : i + 10));
     }
 
-    // log(TAG + ' phoneNumberList splited in ${subList.length}');
+    //// log(TAG + ' phoneNumberList splited in ${subList.length}');
 
     for (var numberList in subList) {
       // print('NUMBER List');
@@ -202,7 +209,7 @@ class UserServices {
         for (var snapshot in value.docs) {
           UserModel user = UserModel.fromSnapshot(snapshot);
           print('user');
-          print(user);
+          print(user.username);
           userList.add(user);
         }
       });

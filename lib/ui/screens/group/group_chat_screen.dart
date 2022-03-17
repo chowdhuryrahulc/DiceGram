@@ -184,7 +184,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   ),
                   isShowBox
                       ? Container(
-                          height: 50.h,
+                          height: 55.h,
                           width: double.infinity,
                           child: isGameInitiated
                               // Where is this comming from?
@@ -253,7 +253,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           elevation: 16,
-          child: Container(
+          child: SizedBox(
             height: 500,
             child: Column(
               children: [
@@ -272,6 +272,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                         onPressed: () async {
                           Navigator.pop(context);
                           //! Changes gameId, players, and users in Firebase.
+                          // Why are we usingplayers?
                           String gameId = await GameService().createGameRoom(
                               groupId: widget.chatId,
                               userIds: selectedUsersList,

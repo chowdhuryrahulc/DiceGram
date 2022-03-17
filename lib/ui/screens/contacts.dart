@@ -81,12 +81,15 @@ class _ContactsScreenState extends State<ContactListScreen> {
               left: 0,
               right: 0,
               child: FutureBuilder<List<Contact>>(
+                // Doesnt fetch phoneContacts. Only simContacts
                   future: ContactsService.getContacts(withThumbnails: false),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.data == null) {
                       return const Text('No Contact Found');
                     }
                     List<Contact> contactList = snapshot.data!;
+                    print('snapshot.data');
+                    print(snapshot.data);
 
                     return FutureBuilder<List<UserModel>>(
                         future: UserServices()
@@ -95,8 +98,7 @@ class _ContactsScreenState extends State<ContactListScreen> {
                             AsyncSnapshot<List<UserModel>> snapshot) {
                           if (snapshot.hasError) {
                             return Text(snapshot.error.toString());
-                          } 
-                          else if (snapshot.hasData &&
+                          } else if (snapshot.hasData &&
                               snapshot.data != null) {
                             if (snapshot.data!.isEmpty) {
                               return const Center(
@@ -112,9 +114,10 @@ class _ContactsScreenState extends State<ContactListScreen> {
                                           user = snapshot.data![index];
                                           if (user.id != userId) {
                                             return InkWell(
-                                                  onTap: () async {
-                                                    await handleOnClick(snapshot.data![index]);
-                                                  },
+                                              onTap: () async {
+                                                await handleOnClick(
+                                                    snapshot.data![index]);
+                                              },
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.all(8.0),
@@ -157,7 +160,8 @@ class _ContactsScreenState extends State<ContactListScreen> {
                                               ),
                                             );
                                           } else
-                                            return CircularProgressIndicator();
+                                            return Center(
+                                                child: Text('No User Found'));
                                         }),
                                   ),
                                 ),

@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, prefer_typing_uninitialized_variables
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
@@ -19,8 +21,11 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
 
+deleteAllDublicateUsers() {}
+
 checkPhoneNumberinFirebaseCollectionandReturnBool(
-    String phoneNumber, values, BuildContext context) async {
+    {required String phoneNumber,required Map<String, dynamic> values, required BuildContext context}) async {
+  log('i am in checkPhoneNumberinFirebaseCollectionandReturnBool');
   bool isPresent = false;
   var x = await FirebaseFirestore.instance
       .collection(KeyConstants.USERS)
@@ -31,24 +36,26 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
   if (x.size > 0) {
     isPresent = true;
 
-    UserServices().updateUserData(values).then((val){
+    UserServices().updateUserData(values).then((val) {
+      log('Updated');
       Navigator.pushAndRemoveUntil<dynamic>(
-            context,
-            MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const Dashboard(),
-            ),
-            (route) => false, //if you want to disable back feature set to false
-          );
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => const Dashboard(),
+        ),
+        (route) => false, //if you want to disable back feature set to false
+      );
     });
   } else {
-    UserServices().createChatRoom(values).then((val){
+    UserServices().createUser(values).then((val) {
+      log('Created, Not Updated');
       Navigator.pushAndRemoveUntil<dynamic>(
-            context,
-            MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const Dashboard(),
-            ),
-            (route) => false, //if you want to disable back feature set to false
-          );
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => const Dashboard(),
+        ),
+        (route) => false, //if you want to disable back feature set to false
+      );
     });
   }
   // return isPresent;
@@ -75,9 +82,13 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   }
 
   void setOnline(bool isOnline) async {
-    await FirebaseUtils.getUsersColRef()
-        .doc(UserServices.userId)
-        .update({KeyConstants.ONLINE: isOnline});
+    try {
+      await FirebaseUtils.getUsersColRef()
+          .doc(UserServices.userId)
+          .update({KeyConstants.ONLINE: isOnline});
+    } catch (e) {
+      print(e);
+    }
   }
 
   var status;
@@ -97,6 +108,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    deleteAllDublicateUsers();
     permissionContacts();
     WidgetsBinding.instance?.addObserver(this);
     setOnline(true);
