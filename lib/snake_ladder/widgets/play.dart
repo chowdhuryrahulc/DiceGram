@@ -9,9 +9,12 @@ class Play extends StatelessWidget {
       required this.index,
       required this.totalPlayerOne,
       required this.totalPlayerTwo,
-      required this.currentPlayer})
+      // required this.currentPlayer
+      })
       : super(key: key);
-  final int index, totalPlayerOne, totalPlayerTwo, currentPlayer;
+  final int index, totalPlayerOne, totalPlayerTwo
+  // currentPlayer
+  ;
 
   @override
   Widget build(BuildContext context) {

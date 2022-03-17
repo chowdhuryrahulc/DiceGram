@@ -1,7 +1,7 @@
 import 'package:demoji/demoji.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
+import 'package:dicegram/snake_ladder/stores/DatabaseSnake.dart';
 import 'package:get_it/get_it.dart';
 
 class Utils {

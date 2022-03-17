@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'snakes-ladders.dart';
+part of 'DatabaseSnake.dart';
 
 // **************************************************************************
 // StoreGenerator

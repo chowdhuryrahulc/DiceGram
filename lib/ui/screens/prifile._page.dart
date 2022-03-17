@@ -20,8 +20,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
-    final ProfileProvider watchprovider = context.watch<ProfileProvider>();
-    final ProfileProvider readprovider = context.read<ProfileProvider>();
+     ProfileProvider watchprovider = context.watch<ProfileProvider>();
+     ProfileProvider readprovider = context.read<ProfileProvider>();
 
     func() {
       setState(() {});

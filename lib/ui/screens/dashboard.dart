@@ -148,6 +148,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: profileImage != null
+                        // Image not picking up.
                             ? Image.network(
                                 profileImage!,
                                 errorBuilder: (context, error, stackTrace) {

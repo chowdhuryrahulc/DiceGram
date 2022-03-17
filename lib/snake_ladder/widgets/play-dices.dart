@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:dicegram/snake_ladder/consts/dices.dart';
-import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
+import 'package:dicegram/snake_ladder/stores/DatabaseSnake.dart';
 import 'package:dicegram/snake_ladder/widgets/dice-item.dart';
 import 'package:dicegram/snake_ladder/widgets/utils.dart';
 import 'package:spring/spring.dart';

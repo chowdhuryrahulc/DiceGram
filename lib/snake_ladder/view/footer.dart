@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
+import 'package:dicegram/snake_ladder/stores/DatabaseSnake.dart';
 import 'package:dicegram/snake_ladder/widgets/play-dices.dart';
 
 class Footer extends StatelessWidget {

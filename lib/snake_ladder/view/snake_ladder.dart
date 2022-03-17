@@ -5,18 +5,23 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demoji/demoji.dart';
 import 'package:dicegram/helpers/game_service.dart';
+import 'package:dicegram/snake_ladder/snakeLadderDatabase.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
+import 'package:dicegram/snake_ladder/stores/DatabaseSnake.dart';
 import 'package:dicegram/snake_ladder/view/footer.dart';
 import 'package:dicegram/snake_ladder/widgets/image-item.dart';
 import 'package:dicegram/snake_ladder/widgets/play.dart';
 import 'package:dicegram/snake_ladder/widgets/utils.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
+
+import '../snakeLadderProvider.dart';
 
 class SnakeLadder extends StatefulWidget {
   const SnakeLadder({
@@ -39,47 +44,52 @@ class _SnakeLadderState extends State<SnakeLadder> {
   int dice = 0;
   late Utils utils;
 
-  late SnakesLadders _snakesLaddersStore;
+  // late SnakesLadders _snakesLaddersStore;
 
   @override
   void initState() {
     super.initState();
-    _snakesLaddersStore = GetIt.instance<SnakesLadders>();
-    _snakesLaddersStore.init(widget.gameId, widget.players);
-    utils = Utils();
-    FirebaseUtils.getGameColRef()
-        .doc(widget.gameId)
-        .collection('game')
-        .snapshots()
-        .listen((event) {
-      if (event.docs.isNotEmpty) {
-        setState(() {
-          dice = event.docs[0]["dice"];
-        });
-        dice = 0;
-      }
-    });
+    // _snakesLaddersStore = GetIt.instance<SnakesLadders>();
+    // _snakesLaddersStore.init(widget.gameId, widget.players);
+    // utils = Utils();
+  }
+
+  streamToGetData() {
+    return FirebaseUtils.getGameColRef()
+            .doc(widget.gameId)
+            .collection('game')
+            .snapshots()
+        //     .listen((event) {
+        //   if (event.docs.isNotEmpty) {
+        //     setState(() {
+        //       dice = event.docs[0]["dice"];
+        //     });
+        //     dice = 0;
+        //   }
+        // })
+        ;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          height: 300,
-          width: 300,
-          child: AnimationLimiter(
-            child: Stack(children: [
-              Observer(
-                builder: (BuildContext context) {
-                  // print('MediaQuery.of(context).size.height');
-                  // print(MediaQuery.of(context).size.height);
-                  ScreenUtil.setContext(context);
-                  return MediaQuery(
-                    data: MediaQuery.of(context).copyWith(size: Size(360, 690)),
-                    child: Container(
+    return StreamBuilder<Object>(
+        stream: streamToGetData(),
+        builder: (context, snapshot) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                height: 300,
+                width: 300,
+                child: AnimationLimiter(
+                  child: Stack(children: [
+                    // Observer(
+                    //   builder: (BuildContext context) {
+                    // print('MediaQuery.of(context).size.height');
+                    // print(MediaQuery.of(context).size.height);
+                    // ScreenUtil.setContext(context);
+                    Container(
                       // color: Colors.orange,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.orange.shade300),
@@ -124,12 +134,17 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                       ),
                                     ),
                                     Play(
-                                      totalPlayerOne:
-                                          _snakesLaddersStore.totalPlayerOne,
-                                      totalPlayerTwo:
-                                          _snakesLaddersStore.totalPlayerTwo,
-                                      currentPlayer: _snakesLaddersStore
-                                          .currentPlayer, // Still not implemented in Play
+                                      // Real position of the player
+                                      totalPlayerOne: context
+                                          .watch<diceProvider>()
+                                          .position1,
+                                      // _snakesLaddersStore.totalPlayerOne,
+                                      totalPlayerTwo: context
+                                          .watch<diceProvider>()
+                                          .position2,
+                                      // _snakesLaddersStore.totalPlayerTwo,
+                                      // currentPlayer: _snakesLaddersStore
+                                      // .currentPlayer, // Still not implemented in Play
                                       index: index,
                                     )
                                   ],
@@ -138,91 +153,80 @@ class _SnakeLadderState extends State<SnakeLadder> {
                             );
                           }),
                     ),
-                  );
-                },
-              ),
-              ImageItem(context), //! All the laders and Snakes
-            ]),
-          ),
-        ),
-        Observer(
-          builder: (context) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        utils.dialogRestart(context);
-                      },
-                      child: Text('Reset'),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.orange)),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // End updates gameId, gameName, player.uid,
-                        //! uid just keeps adding, adding. Makes 3-5 players.
-                        //? Why use players, users. different different??
-                        //? Where the SnakeLadder inPlaying data is stored??
-                        GameService().deleteGame(widget.gameId, widget.chatId);
-                        widget.onEnd();
-                      },
-                      child: Text('End'),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.orange)),
-                    ),
-                    Dice()
-                    // Footer(snakeLaddersStore: _snakesLaddersStore, diceTwo: dice),
-                  ],
+
+                    // },
+                    // ),
+                    ImageItem(context), //! All the laders and Snakes
+                  ]),
                 ),
-              ],
-            );
-          },
-        ),
-      ],
-    );
+              ),
+              // Observer(
+              //   builder: (context) {
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          utils.dialogRestart(context);
+                        },
+                        child: Text('Reset'),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.orange)),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // End updates gameId, gameName, player.uid,
+                          //! uid just keeps adding, adding. Makes 3-5 players.
+                          //? Why use players, users. different different??
+                          //? Where the SnakeLadder inPlaying data is stored??
+                          GameService()
+                              .deleteGame(widget.gameId, widget.chatId);
+                          widget.onEnd();
+                        },
+                        child: Text('End'),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.orange)),
+                      ),
+                      Dice()
+                      // Footer(snakeLaddersStore: _snakesLaddersStore, diceTwo: dice),
+                    ],
+                  ),
+                ],
+                // );
+                // },
+              ),
+            ],
+          );
+        });
   }
 
-// getPositionOfPlayersfromFirebase()async{
-// // await FirebaseFirestore.instance.collection('SnakeLadderPosition').doc('active').
-// // sendTikTakToeData(String chatRoomId, messageMap) {
-//     //TODO COPY OF addCONVERSATIONMESSAGE
-//     FirebaseFirestore.instance
-//         .collection("GameRoom")
-//         .doc(chatRoomId)
-//         .collection("tikTakToe")
-//         //todo add or update
-//         .add(messageMap)
-//         .catchError((e) {});
-//   // }
-// }
-
-// updateActivePlayerInFirestore(String activePlayer, String chatRoomId) {
-//     Map<String, dynamic> activePlayerMap = {'activePlayer': activePlayer};
-//     FirebaseFirestore.instance
-//         .collection("GameRoom")
-//         .doc(chatRoomId)
-//         .collection("ActivePlayer")
-//         .doc('active')
-//         .update(activePlayerMap);
-//     // .add(activePlayer);
-//   }
-
-
-
   Widget Dice() {
-    int number = 0;
-    return InkWell(
-        onTap: () {
-          number = Random().nextInt(6);
-          setState(() {
-            
-          });
-        },
-        child: Text(number.toString()));
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+          onTap: () {
+            context
+                .read<diceProvider>()
+                .updateDice(widget.gameId, widget.players);
+            print('widget.gameId');
+            print(widget.gameId);
+            print('widget.players');
+            print(widget.players);
+Map<String, int> updatePositionData={
+  'data': 67
+};
+            storeDataInFirebase(widget.gameId, updatePositionData);
+            // print(number);
+            // setState(() {});
+          },
+          child: Text(
+            context.watch<diceProvider>().number.toString(),
+            style: TextStyle(fontSize: 30),
+          )),
+    );
   }
 }
