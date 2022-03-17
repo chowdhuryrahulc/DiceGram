@@ -1,4 +1,4 @@
-// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, curly_braces_in_flow_control_structures, unnecessary_null_comparison
+// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, curly_braces_in_flow_control_structures, unnecessary_null_comparison, avoid_print
 
 import 'dart:developer';
 
@@ -8,6 +8,7 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/ui/screens/chat_screen.dart';
 import 'package:dicegram/utils/Color.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -44,9 +45,12 @@ class _ContactsScreenState extends State<ContactListScreen> {
             left: 0,
             right: 0,
             child: InkWell(
-              onTap: () {
+              onTap: () async {
+                // final result = await FilePicker.platform.pickFiles();
+                // print('result?.paths');
+                // print(result?.paths);
                 Share.share(
-                    'hey! check out this new app https://play.google.com/store/apps/details?id=com.dicegram.user.dicegram',
+                    'hey! check out this new app https://drive.google.com/file/d/18jeA8AoZ_iupNjdc_A4cc7R2FZMJC2MA/view?usp=sharing',
                     subject: 'Dicegram');
               },
               child: Container(
@@ -91,7 +95,8 @@ class _ContactsScreenState extends State<ContactListScreen> {
                             AsyncSnapshot<List<UserModel>> snapshot) {
                           if (snapshot.hasError) {
                             return Text(snapshot.error.toString());
-                          } else if (snapshot.hasData &&
+                          } 
+                          else if (snapshot.hasData &&
                               snapshot.data != null) {
                             if (snapshot.data!.isEmpty) {
                               return const Center(
@@ -106,13 +111,13 @@ class _ContactsScreenState extends State<ContactListScreen> {
                                         itemBuilder: (context, index) {
                                           user = snapshot.data![index];
                                           if (user.id != userId) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: InkWell(
-                                                onTap: () async {
-                                                  await handleOnClick(user);
-                                                },
+                                            return InkWell(
+                                                  onTap: () async {
+                                                    await handleOnClick(snapshot.data![index]);
+                                                  },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Row(
                                                   children: [
                                                     SizedBox(

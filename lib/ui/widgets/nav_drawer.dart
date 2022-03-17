@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_const
+
 import 'dart:developer';
 
 import 'package:dicegram/helpers/user_service.dart';

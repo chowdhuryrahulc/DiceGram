@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, prefer_typing_uninitialized_variables
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/ui/screens/chatroom.dart';
-import 'package:dicegram/ui/screens/contacks_2.dart';
+import 'package:dicegram/ui/screens/newGroupAddParticipants.dart';
 import 'package:dicegram/ui/screens/contacts.dart';
 import 'package:dicegram/ui/screens/group/create_group_screen.dart';
 import 'package:dicegram/ui/screens/group/group_list.dart';
@@ -17,6 +18,41 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
+
+checkPhoneNumberinFirebaseCollectionandReturnBool(
+    String phoneNumber, values, BuildContext context) async {
+  bool isPresent = false;
+  var x = await FirebaseFirestore.instance
+      .collection(KeyConstants.USERS)
+      .where('number', isEqualTo: phoneNumber)
+      .get();
+  print('xxxxxxxxxxxxxxxxxxxxxxx');
+  print(x.size);
+  if (x.size > 0) {
+    isPresent = true;
+
+    UserServices().updateUserData(values).then((val){
+      Navigator.pushAndRemoveUntil<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const Dashboard(),
+            ),
+            (route) => false, //if you want to disable back feature set to false
+          );
+    });
+  } else {
+    UserServices().createChatRoom(values).then((val){
+      Navigator.pushAndRemoveUntil<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const Dashboard(),
+            ),
+            (route) => false, //if you want to disable back feature set to false
+          );
+    });
+  }
+  // return isPresent;
+}
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -48,6 +84,9 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   permissionContacts() async {
     status = await Permission.contacts.request();
     print(status);
+    // UserServices()
+    // checkPhoneNumberinFirebaseCollectionandReturnBool('+917020687305');
+
     // if (status?.isDenied) {
     //   print('Status Denied');
     // } else if (status!.isGranted) {
@@ -75,11 +114,15 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
         return true;
       },
       child: FutureBuilder<UserModel>(
+        // userID is uid from Firebase.
         future: UserServices().getUserById(UserServices.userId),
         builder: (context, snapshot) {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
+          // we are getting this data from:
+          // users=> imageURL
+          // Setting this data in NavDrawer=> ProfilePage
           profileImage = snapshot.data?.image;
           return Scaffold(
             drawer: NavDrawer(),
@@ -113,37 +156,38 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
               ),
               actions: [
                 const Icon(Icons.search),
-                PopupMenuButton(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) {
-                    if (value == 3) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              const ChatRooms(roomId: 'result')));
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CreateGroupScreen()));
-                        },
-                        child: const Text('Contacts'),
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 2,
-                      child: Text("What"),
-                    ),
-                    const PopupMenuItem(
-                      value: 3,
-                      child: Text("You Want?"),
-                    ),
-                  ],
-                ),
+                // PopupMenuButton(
+                //   icon: const Icon(Icons.more_vert),
+                //   onSelected: (value) {
+                //     if (value == 3) {
+                //       Navigator.of(context).push(MaterialPageRoute(
+                //           builder: (context) =>
+                //               const ChatRooms(roomId: 'result')));
+                //     }
+                //   },
+                //   itemBuilder: (context) => [
+                //     PopupMenuItem(
+                //       child: TextButton(
+                //         onPressed: () {
+                //           Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                   builder: (context) => CreateGroupScreen()));
+                //         },
+                //         child: const Text('Contacts'),
+                //       ),
+                //     ),
+                //     // const PopupMenuItem(
+                //     //   value: 2,
+                //     //   child: Text("What"),
+                //     // ),
+                //     // const PopupMenuItem(
+                //     //   value: 3,
+                //     //   child: Text("You Want?"),
+                //     // ),
+                //   ],
+                // ),
+
                 const SizedBox(
                   width: 8,
                 )

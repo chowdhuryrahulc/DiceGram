@@ -207,20 +207,20 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                       },
                                       child: Text('Snake Ladder'),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        selectedGame = AppConstants.chess;
-                                        onGameSelected(AppConstants.chess);
-                                      },
-                                      child: Text('Chess'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        selectedGame = AppConstants.tikTackToe;
-                                        onGameSelected(AppConstants.tikTackToe);
-                                      },
-                                      child: Text('Tik-Tack Toe'),
-                                    ),
+                                    // ElevatedButton(
+                                    //   onPressed: () {
+                                    //     selectedGame = AppConstants.chess;
+                                    //     onGameSelected(AppConstants.chess);
+                                    //   },
+                                    //   child: Text('Chess'),
+                                    // ),
+                                    // ElevatedButton(
+                                    //   onPressed: () {
+                                    //     selectedGame = AppConstants.tikTackToe;
+                                    //     onGameSelected(AppConstants.tikTackToe);
+                                    //   },
+                                    //   child: Text('Tik-Tack Toe'),
+                                    // ),
                                   ]),
                                 ))
                       : const SizedBox()

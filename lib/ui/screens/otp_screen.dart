@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/key_constants.dart';
@@ -112,6 +114,11 @@ class _OTPScreenState extends State<OtpScreen> {
                         userData[KeyConstants.ONLINE] = false;
                         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
                         userData[KeyConstants.USER_NAME] = widget._username;
+
+                        // Saves the Users in users profile.
+                        // Logic: if the phoneNumber is present in the database, then update credentials.
+                        // otherwise create in users.
+
                         bool status = await UserServices().createUser(userData);
                         if (status) {
                           Navigator.push(
@@ -211,25 +218,27 @@ class _OTPScreenState extends State<OtpScreen> {
         userData[KeyConstants.ONLINE] = false;
         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
         userData[KeyConstants.USER_NAME] = widget._username;
-        bool status = await UserServices().createUser(userData);
-        if (status) {
-          Navigator.pushAndRemoveUntil<dynamic>(
-            context,
-            MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const Dashboard(),
-            ),
-            (route) => false, //if you want to disable back feature set to false
-          );
-        } else {
-          log('Cant save user data');
-          const snackBar = SnackBar(
-            content: Text('Yay! A SnackBar!'),
-          );
 
-          // Find the ScaffoldMessenger in the widget tree
-          // and use it to show a SnackBar.
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
+        checkPhoneNumberinFirebaseCollectionandReturnBool(value.user!.phoneNumber!, userData, context);
+        // bool status = await UserServices().createUser(userData);
+        // if (status) {
+        //   Navigator.pushAndRemoveUntil<dynamic>(
+        //     context,
+        //     MaterialPageRoute<dynamic>(
+        //       builder: (BuildContext context) => const Dashboard(),
+        //     ),
+        //     (route) => false, //if you want to disable back feature set to false
+        //   );
+        // } else {
+        //   log('Cant save user data');
+        //   const snackBar = SnackBar(
+        //     content: Text('Yay! A SnackBar!'),
+        //   );
+
+        //   // Find the ScaffoldMessenger in the widget tree
+        //   // and use it to show a SnackBar.
+        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // }
       } else {
         log('Verification Incomplete...');
       }

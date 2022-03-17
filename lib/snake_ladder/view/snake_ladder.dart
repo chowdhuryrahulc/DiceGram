@@ -1,9 +1,12 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:demoji/demoji.dart';
 import 'package:dicegram/helpers/game_service.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
 import 'package:dicegram/snake_ladder/view/footer.dart';
@@ -68,67 +71,76 @@ class _SnakeLadderState extends State<SnakeLadder> {
               child: Stack(children: [
                 Observer(
                   builder: (BuildContext context) {
-                    return Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.orange.shade300),
-                          borderRadius: BorderRadius.circular(3),
-                          boxShadow: [
-                            BoxShadow(color: Colors.orange.shade100)
-                          ]),
-                      child: GridView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.all(3),
-                          addAutomaticKeepAlives: true,
-                          gridDelegate:
-                              new SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 10),
-                          itemCount: 100,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            var color = index % 2 == 0
-                                ? Colors.black38
-                                : Colors.orange[300];
-                            return Observer(
-                              builder: (BuildContext context) {
-                                return Stack(
-                                  children: [
-                                    Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(color: color),
-                                      child: Center(
-                                        // For 100 only
-                                        child: (100 - index) == 100
-                                            ? Text(
-                                                Demoji.house,
-                                                style: TextStyle(fontSize: 18),
-                                              )
-                                            : Text(
-                                                (100 - index).toString(),
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12),
-                                              ),
+                    // print('MediaQuery.of(context).size.height');
+                    // print(MediaQuery.of(context).size.height);
+                    ScreenUtil.setContext(context);
+                    return MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(size: Size(360, 690)),
+                      child: Container(
+                        // color: Colors.orange,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.orange.shade300),
+                            borderRadius: BorderRadius.circular(3),
+                            boxShadow: [
+                              BoxShadow(color: Colors.orange.shade100)
+                            ]),
+                        child: GridView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.all(3),
+                            addAutomaticKeepAlives: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 10),
+                            itemCount: 100,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              var color = index % 2 == 0
+                                  ? Colors.black38
+                                  : Colors.orange[300];
+                              return Observer(
+                                builder: (BuildContext context) {
+                                  return Stack(
+                                    children: [
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(color: color),
+                                        child: Center(
+                                          // For 100 only
+                                          child: (100 - index) == 100
+                                              ? Text(
+                                                  Demoji.house,
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                )
+                                              : Text(
+                                                  (100 - index).toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12),
+                                                ),
+                                        ),
                                       ),
-                                    ),
-                                    Play(
-                                      totalPlayerOne:
-                                          _snakesLaddersStore.totalPlayerOne,
-                                      totalPlayerTwo:
-                                          _snakesLaddersStore.totalPlayerTwo,
-                                      currentPlayer: _snakesLaddersStore
-                                          .currentPlayer, // Still not implemented in Play
-                                      index: index,
-                                    )
-                                  ],
-                                );
-                              },
-                            );
-                          }),
+                                      Play(
+                                        totalPlayerOne:
+                                            _snakesLaddersStore.totalPlayerOne,
+                                        totalPlayerTwo:
+                                            _snakesLaddersStore.totalPlayerTwo,
+                                        currentPlayer: _snakesLaddersStore
+                                            .currentPlayer, // Still not implemented in Play
+                                        index: index,
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            }),
+                      ),
                     );
                   },
                 ),
-                ImageItem(), // All the laders and Snakes
+                ImageItem(context), //! All the laders and Snakes
               ]),
             ),
           ),

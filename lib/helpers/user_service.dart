@@ -14,9 +14,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UserServices {
   static String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  // Future<bool>
+
   Future<bool> createUser(Map<String, dynamic> values) async {
     String id = values[KeyConstants.ID];
     bool status = false;
+    // await FirebaseUtils.getUsersColRef().doc(id).update(values);
     await FirebaseUtils.getUsersColRef().doc(id).set(values).then((value) {
       status = true;
     }).catchError((onError) {
@@ -25,8 +28,14 @@ class UserServices {
     return status;
   }
 
-  void updateUserData(Map<String, dynamic> values) {
-    FirebaseUtils.getUsersColRef().doc(values['id']).update(values);
+ Future<bool> updateUserData(Map<String, dynamic> values) async {
+    bool status = false;
+   await FirebaseUtils.getUsersColRef().doc(values['id']).update(values).then((value){
+       status = true;
+    }).catchError((onError) {
+      status = false;
+    });
+    return status;
   }
 
   void updateCurrentUserData(Map<String, dynamic> values) {
@@ -182,8 +191,8 @@ class UserServices {
     // log(TAG + ' phoneNumberList splited in ${subList.length}');
 
     for (var numberList in subList) {
-      print('NUMBER List');
-      print(numberList);
+      // print('NUMBER List');
+      // print(numberList);
       await FirebaseUtils.getUsersColRef()
           .where(KeyConstants.NUMBER, whereIn: numberList)
           .get()
@@ -198,8 +207,8 @@ class UserServices {
         }
       });
     }
-    print('userList');
-    print(userList);
+    // print('userList');
+    // print(userList);
     // log(TAG + 'Contacts Found ${userList.length}');
     return userList;
   }
