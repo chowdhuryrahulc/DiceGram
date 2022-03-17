@@ -24,6 +24,15 @@ class GameService {
     return docRef.id;
   }
 
+  void updateGame(String gameName, String groupId) {
+    FirebaseUtils.getGroupListColRef().doc(groupId).update({
+      // 'players': userIds,
+      // CHANGED
+      'gameName': gameName,
+      // 'gameId': docRef.id
+    });
+  }
+
   void deleteGame(String gameId, String chatId) {
     FirebaseUtils.getGroupListColRef()
         .doc(chatId)

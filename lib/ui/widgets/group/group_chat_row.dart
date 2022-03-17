@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/group_service.dart';
 import 'package:dicegram/helpers/key_constants.dart';
@@ -32,11 +35,13 @@ class GroupChatRow extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data?.docs.length == 0) {
           return const SizedBox();
         }
-        // var totalMessage = snapshot.data?.docs.length;
-        // if (totalMessage == null) {
-        //   return const Text('No msg found');
-        // }
-        var totalMessage = 5;
+        var totalMessage = snapshot.data?.docs.length;
+        if (totalMessage == null) {
+          return const Text('No msg found');
+        }
+
+        print('Hello ${snapshot.data!.docs[0].data().toString()}');
+        // var totalMessage = 5;
 
         var lastMsgData = (totalMessage > 0) ? snapshot.data?.docs[0] : null;
         if (lastMsgData != null) {
@@ -57,9 +62,7 @@ class GroupChatRow extends StatelessWidget {
               SizedBox(
                 width: width * 0.16,
                 height: width * 0.16,
-                child: Stack(
-                    fit: StackFit.expand,
-                    children: [
+                child: Stack(fit: StackFit.expand, children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(

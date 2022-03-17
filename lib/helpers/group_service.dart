@@ -9,11 +9,9 @@ import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class GroupService {
-  Future<DocumentReference> createGroup(
-      {required GroupData groupData}) async {
-    DocumentReference docRef = await FirebaseUtils.getGroupListColRef().add(
-        groupData
-            .toMap());
+  Future<DocumentReference> createGroup({required GroupData groupData}) async {
+    DocumentReference docRef =
+        await FirebaseUtils.getGroupListColRef().add(groupData.toMap());
     return docRef;
   }
 
@@ -45,7 +43,9 @@ class GroupService {
           .snapshots();
 
   void sendGroupMessage(
-      {required String message, required String groupId}) async {
+      {required String message,
+      required String groupId,
+      String msgType = 'text'}) async {
     Map<String, dynamic> data = {};
 
     if (UserServices.userId.isNotEmpty) {
@@ -54,7 +54,7 @@ class GroupService {
 
       data[KeyConstants.SENDER_ID] = UserServices.userId;
       data[KeyConstants.CREATED_AT] = FieldValue.serverTimestamp();
-      data[KeyConstants.MESSAGE_TYPE] = 'text';
+      data[KeyConstants.MESSAGE_TYPE] = msgType;
       data[KeyConstants.MESSAGE] = message;
       data[KeyConstants.SEEN] = false;
       data[KeyConstants.SENDER_NAME] = user.username;

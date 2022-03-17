@@ -19,11 +19,12 @@ class KeyConstants {
   static const GROUP_NAME = 'groupName';
   static const MESSAGE = 'message';
   static const LAST_MESSAGE = "lastMessage";
-  static const CHAT_LIST = "room";
-  static const GROUP_LIST = "groups";
+  static const CHAT_LIST = "Chat List";
+  static const GROUP_LIST = "Group List";
   static const GAME = "Games";
   static const SNAKE_LADDER = "snakeLadder";
   static const USERS_ARRAY_IN_CHAT = 'users';
   static const TikTakToe = 'tikTackToe';
   static const CHESS = "chess";
+  static const GROUPCREATED = "Group Created";
 }

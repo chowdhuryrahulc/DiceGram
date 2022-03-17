@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/key_constants.dart';
@@ -5,7 +7,6 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import 'dashboard.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -19,6 +20,29 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OtpScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _verifyPhone(); // log code send is reciecieved from here
+    // Without this, code wont be send.
+  }
+
+  void _verifyPhone() async {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: widget._phoneNumber,
+        verificationCompleted: _verificationCompleted,
+        verificationFailed: _verificationFailed,
+        codeSent: _codeSent,
+        codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout,
+        timeout: const Duration(seconds: 120));
+  }
+
+  void _codeAutoRetrievalTimeout(String verificationID) {
+    setState(() {
+      _verificationCode = verificationID;
+    });
+  }
+
   String? _verificationCode;
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
 
@@ -112,19 +136,32 @@ class _OTPScreenState extends State<OtpScreen> {
                         userData[KeyConstants.ONLINE] = false;
                         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
                         userData[KeyConstants.USER_NAME] = widget._username;
-                        bool status = await UserServices().createUser(userData);
-                        if (status) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
-                        } else {
-                          log('Cant save user data');
-                          const snackBar = SnackBar(
-                            content: Text('Cant save user data!'),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
+
+                        // Saves the Users in users profile.
+                        // Logic: if the phoneNumber is present in the database, then update credentials.
+                        // otherwise create in users.
+                        log('Gooooo');
+                        checkPhoneNumberinFirebaseCollectionandReturnBool(
+                            phoneNumber: value.user!.phoneNumber!,
+                            values: userData,
+                            context: context);
+                        // checkPhoneNumberinFirebaseCollectionandReturnBool(
+                        //     value.user!.phoneNumber!, userData, context);
+
+// await checkPhoneNumberinFirebaseCollectionandReturnBool(phoneNumber, values, context)
+                        // bool status = await UserServices().createUser(userData);
+                        // if (status) {
+                        //   Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //           builder: (context) => const Dashboard()));
+                        // } else {
+                        //   log('Cant save user data');
+                        //   const snackBar = SnackBar(
+                        //     content: Text('Cant save user data!'),
+                        //   );
+                        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        // }
                       } else {
                         FocusScope.of(context).unfocus();
                         _scaffoldkey.currentState?.showSnackBar(
@@ -170,70 +207,61 @@ class _OTPScreenState extends State<OtpScreen> {
     ));
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _verifyPhone();
-  }
-
-  void _verifyPhone() async {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: widget._phoneNumber,
-        verificationCompleted: _verificationCompleted,
-        verificationFailed: _verificationFailed,
-        codeSent: _codeSent,
-        codeAutoRetrievalTimeout: _codeAutoRetrievalTimeout,
-        timeout: const Duration(seconds: 120));
-  }
-
-  void _codeAutoRetrievalTimeout(String verificationID) {
-    setState(() {
-      _verificationCode = verificationID;
-    });
-  }
-
   void _verificationFailed(FirebaseAuthException e) {
     log('verification failed$e');
   }
 
+//! Not going in VerificationCompleated when using other phone.
   void _verificationCompleted(PhoneAuthCredential credential) async {
     log('Verification Completed');
-    await FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .then((value) async {
-      log('Verification Completed');
-      if (value.user != null) {
-        Map<String, dynamic> userData = Map();
-        userData[KeyConstants.ID] = value.user!.uid;
-        userData[KeyConstants.LAST_SEEN] = FieldValue.serverTimestamp();
-        userData[KeyConstants.IMAGE_URL] = "";
-        userData[KeyConstants.CREATED_AT] = FieldValue.serverTimestamp();
-        userData[KeyConstants.ONLINE] = false;
-        userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
-        userData[KeyConstants.USER_NAME] = widget._username;
-        bool status = await UserServices().createUser(userData);
-        if (status) {
-          Navigator.pushAndRemoveUntil<dynamic>(
-            context,
-            MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const Dashboard(),
-            ),
-            (route) => false, //if you want to disable back feature set to false
-          );
-        } else {
-          log('Cant save user data');
-          const snackBar = SnackBar(
-            content: Text('Yay! A SnackBar!'),
-          );
+    try {
+      await FirebaseAuth.instance
+          .signInWithCredential(credential)
+          .then((value) async {
+        log('Verification Completed');
+        if (value.user != null) {
+          Map<String, dynamic> userData = Map();
+          userData[KeyConstants.ID] = value.user!.uid;
+          userData[KeyConstants.LAST_SEEN] = FieldValue.serverTimestamp();
+          userData[KeyConstants.IMAGE_URL] = "";
+          userData[KeyConstants.CREATED_AT] = FieldValue.serverTimestamp();
+          userData[KeyConstants.ONLINE] = false;
+          userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
+          userData[KeyConstants.USER_NAME] = widget._username;
 
-          // Find the ScaffoldMessenger in the widget tree
-          // and use it to show a SnackBar.
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        checkPhoneNumberinFirebaseCollectionandReturnBool(
+                            phoneNumber: value.user!.phoneNumber!,
+                            values: userData,
+                            context: context);
+
+          // checkPhoneNumberinFirebaseCollectionandReturnBool(
+          //     value.user!.phoneNumber!, userData, context);
+          // bool status = await UserServices().createUser(userData);
+          // if (status) {
+          //   Navigator.pushAndRemoveUntil<dynamic>(
+          //     context,
+          //     MaterialPageRoute<dynamic>(
+          //       builder: (BuildContext context) => const Dashboard(),
+          //     ),
+          //     (route) => false, //if you want to disable back feature set to false
+          //   );
+          // } else {
+          //   log('Cant save user data');
+          //   const snackBar = SnackBar(
+          //     content: Text('Yay! A SnackBar!'),
+          //   );
+
+          //   // Find the ScaffoldMessenger in the widget tree
+          //   // and use it to show a SnackBar.
+          //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          // }
+        } else {
+          log('Verification Incomplete...');
         }
-      } else {
-        log('Verification Incomplete...');
-      }
-    });
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _codeSent(String id, int? resendToken) {

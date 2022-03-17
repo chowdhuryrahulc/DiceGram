@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:demoji/demoji.dart';
 
@@ -9,8 +11,9 @@ class AvatarPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
+      // Used to differenciate btw 2 images.
       padding: EdgeInsets.all(size),
-      child: Container(
+      child: SizedBox(
         height: 30,
         width: 30,
         child: player == 1

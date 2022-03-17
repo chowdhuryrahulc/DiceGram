@@ -1,9 +1,15 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demoji/demoji.dart';
 import 'package:dicegram/helpers/game_service.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:dicegram/snake_ladder/stores/snakes-ladders.dart';
 import 'package:dicegram/snake_ladder/view/footer.dart';
@@ -41,30 +47,40 @@ class _SnakeLadderState extends State<SnakeLadder> {
     _snakesLaddersStore = GetIt.instance<SnakesLadders>();
     _snakesLaddersStore.init(widget.gameId, widget.players);
     utils = Utils();
-    // FirebaseUtils.getGameColRef().doc(widget.gameId).collection('game').snapshots().listen((event) {
-    //   if(event.docs.isNotEmpty){
-    //     setState(() {
-    //       dice = event.docs[0]["dice"];
-    //     });
-    //     dice =0;
-    //   }
-    // });
+    FirebaseUtils.getGameColRef()
+        .doc(widget.gameId)
+        .collection('game')
+        .snapshots()
+        .listen((event) {
+      if (event.docs.isNotEmpty) {
+        setState(() {
+          dice = event.docs[0]["dice"];
+        });
+        dice = 0;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
+        Container(
+          height: 300,
+          width: 300,
           child: AnimationLimiter(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Stack(children: [
-                Observer(
-                  builder: (BuildContext context) {
-                    return Container(
+            child: Stack(children: [
+              Observer(
+                builder: (BuildContext context) {
+                  // print('MediaQuery.of(context).size.height');
+                  // print(MediaQuery.of(context).size.height);
+                  ScreenUtil.setContext(context);
+                  return MediaQuery(
+                    data: MediaQuery.of(context).copyWith(size: Size(360, 690)),
+                    child: Container(
+                      // color: Colors.orange,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.orange.shade300),
                           borderRadius: BorderRadius.circular(3),
@@ -76,7 +92,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                           padding: EdgeInsets.all(3),
                           addAutomaticKeepAlives: true,
                           gridDelegate:
-                              new SliverGridDelegateWithFixedCrossAxisCount(
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 10),
                           itemCount: 100,
                           shrinkWrap: true,
@@ -121,52 +137,92 @@ class _SnakeLadderState extends State<SnakeLadder> {
                               },
                             );
                           }),
-                    );
-                  },
-                ),
-                ImageItem(), // All the laders and Snakes
-              ]),
-            ),
+                    ),
+                  );
+                },
+              ),
+              ImageItem(context), //! All the laders and Snakes
+            ]),
           ),
         ),
         Observer(
           builder: (context) {
-            return Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          utils.dialogRestart(context);
-                        },
-                        child: Text('Reset'),
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.orange)),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          GameService()
-                              .deleteGame(widget.gameId, widget.chatId);
-                          widget.onEnd();
-                        },
-                        child: Text('End'),
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.orange)),
-                      ),
-                    ],
-                  ),
-                  Footer(snakeLaddersStore: _snakesLaddersStore, diceTwo: dice),
-                ],
-              ),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        utils.dialogRestart(context);
+                      },
+                      child: Text('Reset'),
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.orange)),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // End updates gameId, gameName, player.uid,
+                        //! uid just keeps adding, adding. Makes 3-5 players.
+                        //? Why use players, users. different different??
+                        //? Where the SnakeLadder inPlaying data is stored??
+                        GameService().deleteGame(widget.gameId, widget.chatId);
+                        widget.onEnd();
+                      },
+                      child: Text('End'),
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.orange)),
+                    ),
+                    Dice()
+                    // Footer(snakeLaddersStore: _snakesLaddersStore, diceTwo: dice),
+                  ],
+                ),
+              ],
             );
           },
         ),
       ],
     );
+  }
+
+// getPositionOfPlayersfromFirebase()async{
+// // await FirebaseFirestore.instance.collection('SnakeLadderPosition').doc('active').
+// // sendTikTakToeData(String chatRoomId, messageMap) {
+//     //TODO COPY OF addCONVERSATIONMESSAGE
+//     FirebaseFirestore.instance
+//         .collection("GameRoom")
+//         .doc(chatRoomId)
+//         .collection("tikTakToe")
+//         //todo add or update
+//         .add(messageMap)
+//         .catchError((e) {});
+//   // }
+// }
+
+// updateActivePlayerInFirestore(String activePlayer, String chatRoomId) {
+//     Map<String, dynamic> activePlayerMap = {'activePlayer': activePlayer};
+//     FirebaseFirestore.instance
+//         .collection("GameRoom")
+//         .doc(chatRoomId)
+//         .collection("ActivePlayer")
+//         .doc('active')
+//         .update(activePlayerMap);
+//     // .add(activePlayer);
+//   }
+
+
+
+  Widget Dice() {
+    int number = 0;
+    return InkWell(
+        onTap: () {
+          number = Random().nextInt(6);
+          setState(() {
+            
+          });
+        },
+        child: Text(number.toString()));
   }
 }

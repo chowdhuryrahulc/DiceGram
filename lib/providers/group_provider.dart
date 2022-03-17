@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/group_service.dart';
+import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/group_data.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -44,16 +45,14 @@ class GroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dispose1(
-
-      ){
-    _grouppeople =[];
+  void dispose1() {
+    _grouppeople = [];
     notifyListeners();
   }
 
   void createGroup(List<UserModel> users, BuildContext context) {
     List<String> userIds = [];
-    print('asdfg');
+    // print('asdfg');
     users.forEach((element) {
       userIds.add(element.id);
     });
@@ -61,23 +60,36 @@ class GroupProvider extends ChangeNotifier {
 
     GroupService()
         .createGroup(
-        groupData : GroupData(
-          adminId: UserServices.userId,
-          users: userIds,
-          groupName: groupName,
-          imageUrl: imageUrl, createdAt: Timestamp.now(), players: [], gameId: '', gameName: '', isGroup: true,
-
-        ))
+            groupData: GroupData(
+      adminId: UserServices.userId,
+      users: userIds,
+      groupName: groupName,
+      imageUrl: imageUrl,
+      createdAt: Timestamp.now(),
+      players: [],
+      gameId: '',
+      gameName: '',
+      isGroup: true,
+    ))
         .then((value) {
+      GroupService().sendGroupMessage(
+          message: 'New Group Created',
+          groupId: value.id,
+          msgType: KeyConstants.GROUPCREATED);
+
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => GroupChatScreen(
-            groupData: GroupData(
-                adminId: UserServices.userId,
-                users: userIds,
-                groupName: groupName,
-                imageUrl: imageUrl, createdAt: Timestamp.now(), players: [], gameId: '', gameName: '', isGroup: true,
-
-            ),
+                groupData: GroupData(
+                  adminId: UserServices.userId,
+                  users: userIds,
+                  groupName: groupName,
+                  imageUrl: imageUrl,
+                  createdAt: Timestamp.now(),
+                  players: [],
+                  gameId: '',
+                  gameName: '',
+                  isGroup: true,
+                ),
                 chatId: value.id,
                 groupName: groupName,
               )));

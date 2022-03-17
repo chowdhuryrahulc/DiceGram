@@ -1,26 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// This modal class is stored in Database. Under groups.
 class GroupData {
-  String adminId ='';
-  Timestamp createdAt =Timestamp.now();
-  String groupName ='';
-  String imageUrl='';
-  bool isGroup=true;
-  List<String> players=[];
-  String gameName = '';
+  String adminId = '';
+  Timestamp createdAt = Timestamp.now();
+  String groupName = ''; // eg: Gamers.
+  String imageUrl = ''; // mostly null
+  bool isGroup = true; //? Whats the use?
+  List<String> players = [];
+  String gameName = ''; // eg: snakeLadder.
   String gameId = '';
-  List<String> users =[];
+  List<String> users = [];
 
   GroupData(
-      { required this.adminId ,
-        required this.createdAt,
-        required this.groupName,
-        required this.imageUrl,
-        required this.isGroup,
-        required this.players,
-        required this.gameName,
-        required this.gameId,
-        required this.users});
+      {required this.adminId,
+      required this.createdAt,
+      required this.groupName,
+      required this.imageUrl,
+      required this.isGroup,
+      required this.players,
+      required this.gameName,
+      required this.gameId,
+      required this.users});
 
   GroupData.fromSnapshot(DocumentSnapshot? snapshot) {
     Map<String, dynamic>? json = snapshot?.data() as Map<String, dynamic>?;
@@ -36,7 +37,7 @@ class GroupData {
   }
 
   Map<String, dynamic> toMap() {
-    final Map<String, dynamic> data =  <String, dynamic>{};
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['adminId'] = adminId;
     data['createdAt'] = createdAt;
     data['groupName'] = groupName;

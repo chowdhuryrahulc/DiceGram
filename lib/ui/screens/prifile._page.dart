@@ -1,24 +1,42 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:dicegram/main.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   static const Color bagroundColor = Color(0xffFA3E0E);
   static const Color subtextcolor = Color(0xff979797);
 
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
     final ProfileProvider watchprovider = context.watch<ProfileProvider>();
     final ProfileProvider readprovider = context.read<ProfileProvider>();
 
-    return FutureBuilder<UserModel>(
-        future: watchprovider.getCurrentUserModel(),
-        builder: (context, snapshot) {
-          UserModel? userModel = snapshot.data;
+    func() {
+      setState(() {});
+    }
+
+    ;
+    UserModel? userModel;
+    return StreamBuilder<UserModel>(
+        stream: watchprovider.getCurrentUserModel().asStream(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          userModel = snapshot.data;
+          print('userModel?.image');
+          print(userModel?.image);
+          // context.read<profilePicProvider>().updateProfilePic(userModel?.image);
+          // profilePicProvider()
           return Scaffold(
             body: Stack(
               children: [
@@ -29,7 +47,8 @@ class ProfilePage extends StatelessWidget {
                     child: Container(
                       height: 150,
                       width: double.infinity,
-                      decoration: const BoxDecoration(color: bagroundColor),
+                      decoration:
+                          const BoxDecoration(color: ProfilePage.bagroundColor),
                     )),
                 Positioned(
                   top: 50,
@@ -74,9 +93,11 @@ class ProfilePage extends StatelessWidget {
                     right: 135,
                     child: GestureDetector(
                         onTap: () async {
-                          readprovider.handleURLButtonPress(
-                            context,
-                          );
+                          // This opens the showDialog.
+                          watchprovider.showDialogToFetchProfilePic(
+                              context, func());
+                          //! need SetState
+                          // setState(() {});
                         },
                         child: Image.asset('assets/images/camera.png'))),
                 Positioned(
@@ -116,7 +137,7 @@ class ProfilePage extends StatelessWidget {
                         style: const TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: subtextcolor),
+                            color: ProfilePage.subtextcolor),
                       ),
                     ],
                   ),

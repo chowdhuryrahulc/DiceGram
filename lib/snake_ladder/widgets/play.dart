@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:dicegram/snake_ladder/widgets/avatar-player.dart';
 
@@ -16,6 +18,7 @@ class Play extends StatelessWidget {
     return Stack(
       children: [
         if (totalPlayerOne == (100 - index))
+        // If player 1, then women emoji, otherwise man emoji.
           AvatarPlayer(
             player: 1,
             size: totalPlayerOne == totalPlayerTwo ? 8 : 3,

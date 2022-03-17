@@ -21,9 +21,7 @@ class ProfileProvider extends ChangeNotifier {
   File? imageprofile;
   String? username;
 
-  void handleURLButtonPress(
-    BuildContext context,
-  ) {
+  void showDialogToFetchProfilePic(BuildContext context, Function? func) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -64,7 +62,9 @@ class ProfileProvider extends ChangeNotifier {
                   ],
                 )
               ],
-            ));
+            )).then((value) {
+      func;
+    });
   }
 
   void _cropImage(filePath, BuildContext context) async {

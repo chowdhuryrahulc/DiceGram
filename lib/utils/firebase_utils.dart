@@ -5,7 +5,6 @@ import 'package:dicegram/utils/utils.dart';
 class FirebaseUtils extends Utils {
 // Called
   static CollectionReference getUsersColRef() {
-    print('USERS = ${KeyConstants.USERS}');
     return FirebaseFirestore.instance.collection(KeyConstants.USERS);
   }
 
@@ -15,7 +14,6 @@ class FirebaseUtils extends Utils {
 
 // Called
   static CollectionReference getGroupListColRef() {
-    print('GROUPS = ${KeyConstants.GROUP_LIST}');
     return FirebaseFirestore.instance.collection(KeyConstants.GROUP_LIST);
   }
 
