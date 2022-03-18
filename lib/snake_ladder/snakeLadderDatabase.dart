@@ -1,18 +1,62 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../utils/firebase_utils.dart';
 
-storeDataInFirebase(String gameId, Map<String, int> updatePositionData){
+class snakeLadderDatabase {
+  sendSnakeLadderPositionData(String gameRoomId, positionAndActivePlayerMap) {
+    FirebaseFirestore.instance
+        .collection("GameRoom")
+        .doc(gameRoomId)
+        .collection("SnakeLadder")
+        .doc(gameRoomId)
+        .set(positionAndActivePlayerMap)
+        .catchError((e) {
+      print(e);
+    });
+  }
+
+  getSnakeLadderPositionData(String gameRoomId) {
+    return FirebaseFirestore.instance
+        .collection("GameRoom")
+        .doc(gameRoomId)
+        .collection("SnakeLadder").doc(gameRoomId)
+        .snapshots();
+  }
+
+updateSnakeLadderPositionData(String gameRoomId, positionAndActivePlayerMap){
+ FirebaseFirestore.instance
+        .collection("GameRoom")
+        .doc(gameRoomId)
+        .collection("SnakeLadder")
+        .doc(gameRoomId)
+        .update(positionAndActivePlayerMap)
+        .catchError((e) {
+      print(e);
+    });
+}
+//   getActivePlayerData(String gameRoomId) async {
+//   String active;
+//   QuerySnapshot<Map<String, dynamic>> x = await FirebaseFirestore.instance
+//       .collection('GameRoom')
+//       .doc(gameRoomId)
+//       .collection("SnakeLadder")
+//       .get();
+//       //! return only active player data.
+//   // .doc('active')
+//   // .get();
+
+//   // print(x.data()!['activePlayer']);
+//   // active = x.data()!['activePlayer'];
+//   // return active;
+// }
+
+}
+
+
+storeDataInFirebase(String gameId, Map<String, int> updatePositionData) {
   FirebaseUtils.getGameColRef()
-        .doc(gameId)
-        .collection('game')
-        .doc(gameId).update(updatePositionData)
-      //   .listen((event) {
-      // if (event.docs.isNotEmpty) {
-      //   _currentDiceOne = event.docs[0]["currentDiceOne"];
-      //   _totalPlayerOne = event.docs[0][p1];
-      //   _currentPlayer = event.docs[0]["currentPlayer"] == p1 ? 1 : 2;
-      //   _totalPlayerTwo = event.docs[0][p2];
-      // }
-    // }
-    // )
-    ;
+      .doc(gameId)
+      .collection('game')
+      .doc(gameId)
+      .update(updatePositionData);
 }

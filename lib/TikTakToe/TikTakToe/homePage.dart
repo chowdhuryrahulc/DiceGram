@@ -1,10 +1,6 @@
 // // ignore_for_file: deprecated_member_use, prefer_const_constructors, prefer_typing_uninitialized_variables, avoid_print
 
 // import 'dart:math';
-// // import 'package:chatapp/TikTakToe/TikTakToeDatabase.dart';
-// // import 'package:chatapp/TikTakToe/providers.dart';
-// // import 'package:chatapp/helper/constants.dart';
-// // import 'package:chatapp/views/search.dart';
 // import 'package:dicegram/TikTakToe/TikTakToe/TikTakToeDatabase.dart';
 // import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
@@ -329,11 +325,5 @@
 //   void resetGame() {
 //     buttonsList = doInit();
 //     Navigator.pop(context);
-//     // if (Navigator.canPop(context)) Navigator.pop(context);
-//     // setState(() {
-//     //   //! doinit will reset the game
-//     //   //! by setting player1 and player2 list to null
-//     //   buttonsList = doInit();
-//     // });
 //   }
 // }
