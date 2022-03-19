@@ -21,7 +21,7 @@ class ProfileProvider extends ChangeNotifier {
   File? imageprofile;
   String? username;
 
-  void showDialogToFetchProfilePic(BuildContext context, Function? func) {
+  void showDialogToFetchProfilePic(BuildContext context) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -63,7 +63,7 @@ class ProfileProvider extends ChangeNotifier {
                 )
               ],
             )).then((value) {
-      func;
+      // func;
     });
   }
 
@@ -75,7 +75,9 @@ class ProfileProvider extends ChangeNotifier {
     );
     if (croppedImage != null) {
       imageprofile = croppedImage;
-      uploadPic(imageprofile!);
+      await uploadPic(imageprofile!).then((value) {
+        // func!();
+      });
       notifyListeners();
 
       Navigator.of(context).pop();

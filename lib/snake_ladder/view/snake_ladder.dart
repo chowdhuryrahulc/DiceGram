@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print, prefer_const_literals_to_create_immutables
 
 import 'dart:developer';
 import 'dart:math';
@@ -13,18 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:dicegram/snake_ladder/widgets/image-item.dart';
 import 'package:dicegram/snake_ladder/widgets/play.dart';
-import 'package:dicegram/snake_ladder/widgets/utils.dart';
 
 class SnakeLadder extends StatefulWidget {
   const SnakeLadder({
     Key? key,
     required this.gameId,
     required this.players,
+    required this.playersName,
     required this.chatId,
     required this.onEnd,
   }) : super(key: key);
   final String gameId;
   final List<String> players;
+  final List<String> playersName;
   final String chatId;
   final VoidCallback onEnd;
 
@@ -33,22 +34,18 @@ class SnakeLadder extends StatefulWidget {
 }
 
 class _SnakeLadderState extends State<SnakeLadder> {
-  int dice = 0;
-  late Utils utils;
   Stream? getSnakeLadderDataStream;
-
-  // late SnakesLadders _snakesLaddersStore;
+  Duration duration = Duration(milliseconds: 500);
+  String? player1Name;
+  String? player2Name;
 
   @override
   void initState() {
     super.initState();
     initFunc();
-    // _snakesLaddersStore = GetIt.instance<SnakesLadders>();
-    // _snakesLaddersStore.init(widget.gameId, widget.players);
-    // utils = Utils();
   }
 
-  initFunc() {
+  initFunc() async {
     int position1 = 1;
     int position2 = 1;
     Map<String, dynamic> positionAndActivePlayerMap = {
@@ -58,7 +55,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
     };
     snakeLadderDatabase()
         .sendSnakeLadderPositionData(widget.gameId, positionAndActivePlayerMap);
-  }
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +135,43 @@ class _SnakeLadderState extends State<SnakeLadder> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        Column(
+                          children: [
+                            FutureBuilder(
+                                future: snakeLadderDatabase()
+                                    .searchUserNamefromIdAndShowInSnakeLadderGame(
+                                        widget.players[0]),
+                                builder: (context, AsyncSnapshot futureSnapshot) {
+                                  if (futureSnapshot.hasData) {
+                                    return Text(
+                                      futureSnapshot.data['username'].toString(),
+                                      style: TextStyle(fontSize: 10,
+                                      color: futureSnapshot.data['id'] == snapshot.data['activePlayer']? Colors.red:Colors.green
+                                      ),
+                                    );
+                                  } else {
+                                    return SizedBox();
+                                  }
+                                }),
+                            FutureBuilder(
+                                future: snakeLadderDatabase()
+                                    .searchUserNamefromIdAndShowInSnakeLadderGame(
+                                        widget.players[1]),
+                                builder: (context, AsyncSnapshot futureSnapshot) {
+                                  if (futureSnapshot.hasData) {
+                                    return Text(
+                                      futureSnapshot.data['username'].toString(),
+                                      style: TextStyle(fontSize: 10,
+                                      color: futureSnapshot.data['id'] ==  snapshot.data['activePlayer']? Colors.red:Colors.green
+                                      
+                                      ),
+                                    );
+                                  } else {
+                                    return SizedBox();
+                                  }
+                                })
+                          ],
+                        ),
                         ElevatedButton(
                           onPressed: () {
                             initFunc();
@@ -178,21 +212,108 @@ class _SnakeLadderState extends State<SnakeLadder> {
   }
 
   int number = 1;
+  int addAndDeleteIfFallOnSnakeOrLadder(int position1) {
+    if (position1 == 12) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('You climbed up a Ladder'), duration: duration));
+      position1 = 33;
+    }
+    if (position1 == 37) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('You stepped into a Snake'), duration: duration));
+      position1 = 17;
+    }
+    if (position1 == 55) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('You climbed up a Ladder'), duration: duration));
+      position1 = 58;
+    }
+    if (position1 == 50) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('You climbed up a Ladder'), duration: duration));
+      position1 = 70;
+    }
+    if (position1 == 62) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('You stepped into a Snake'), duration: duration));
+      position1 = 44;
+    }
+    if (position1 == 96) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('You stepped into a Snake'), duration: duration));
+      position1 = 78;
+    }
+    return position1;
+  }
+
+  int dontAllowMovementIfPositionIsHigherThan100(int position1, int number) {
+    if (position1 == 100) {
+      showResetDialog();
+      return 1;
+    } else if (position1 > 100) {
+      position1 = position1 - number;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Need ${100 - position1} more points to win'),
+        duration: duration,
+      ));
+    }
+    return position1;
+  }
+
+  showResetDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text(
+              'Do you want to start a new game?',
+              style: TextStyle(color: Colors.black54),
+            ),
+            backgroundColor: Colors.orange[100],
+            elevation: 10,
+            actions: [
+              TextButton(
+                  onPressed: () => {
+                        Navigator.of(context).pop(),
+                      },
+                  child: Text(
+                    "No",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              TextButton(
+                  onPressed: () => {
+                        Navigator.of(context).pop(),
+                        initFunc() // this
+                      },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(color: Colors.black),
+                  )),
+            ],
+          );
+        });
+  }
+
   void rollDice(AsyncSnapshot snapshot) {
-    number = Random().nextInt(6);
-    //todo should not go above 100.
-    // int oldPosition1 = snapshot.data[widget.players[0]] + number;
-    //todo update all the positions.
+    number = 1 + Random().nextInt(6);
+    int position1 = snapshot.data[widget.players[0]] + number;
+    position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
+    position1 = dontAllowMovementIfPositionIsHigherThan100(position1, number);
+    // int position2 = 1;
     //todo the ? needs to be uncommented during checking multiplayer
-    //? if (snapshot.data['activePlayer'] == UserServices.userId) {
+     if (snapshot.data['activePlayer'] == UserServices.userId) {
     Map<String, dynamic> positionAndActivePlayerMap = {
-      widget.players[0]: snapshot.data[widget.players[0]] + number,
+      widget.players[0]: position1,
       widget.players[1]: snapshot.data[widget.players[1]],
       'activePlayer': widget.players[1]
     };
     snakeLadderDatabase().updateSnakeLadderPositionData(
         widget.gameId, positionAndActivePlayerMap);
-    //? }
+     } else {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Not Your Turn'), duration: duration));
+     }
   }
 
   Widget Dice(AsyncSnapshot snapshot) {

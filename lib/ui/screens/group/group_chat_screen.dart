@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_is_empty, prefer_const_constructors
+// ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:dicegram/TikTakToe/tiktakHome.dart';
@@ -302,11 +302,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   Widget getSelectedGame(int selectedGame) {
     print(selectedGame);
+        print('_groupData.users');
+        print(_groupData.users);
+
     Widget game = SizedBox();
 
     switch (selectedGame) {
       case AppConstants.snakeLadder:
-      // 
+        //
         game = SnakeLadder(
           onEnd: () {
             setState(() {
@@ -315,6 +318,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           },
           gameId: _groupData.gameId,
           players: _groupData.players,
+          //todo send userNameList
+          playersName: [],
           chatId: widget.chatId,
         );
         break;
@@ -328,6 +333,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           },
           gameId: _groupData.gameId,
           players: _groupData.players,
+          playersName: [],
           chatId: widget.chatId,
         );
         break;
@@ -362,7 +368,6 @@ class playersList extends StatefulWidget {
 class _playersListState extends State<playersList> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return StreamBuilder<QuerySnapshot>(
         stream: UserServices().getFirebaseUsers(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

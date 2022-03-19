@@ -19,12 +19,13 @@ class snakeLadderDatabase {
     return FirebaseFirestore.instance
         .collection("GameRoom")
         .doc(gameRoomId)
-        .collection("SnakeLadder").doc(gameRoomId)
+        .collection("SnakeLadder")
+        .doc(gameRoomId)
         .snapshots();
   }
 
-updateSnakeLadderPositionData(String gameRoomId, positionAndActivePlayerMap){
- FirebaseFirestore.instance
+  updateSnakeLadderPositionData(String gameRoomId, positionAndActivePlayerMap) {
+    FirebaseFirestore.instance
         .collection("GameRoom")
         .doc(gameRoomId)
         .collection("SnakeLadder")
@@ -33,7 +34,16 @@ updateSnakeLadderPositionData(String gameRoomId, positionAndActivePlayerMap){
         .catchError((e) {
       print(e);
     });
-}
+  }
+
+  Future< DocumentSnapshot<Map<String, dynamic>>> searchUserNamefromIdAndShowInSnakeLadderGame(
+      String playerId) async {
+   return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(playerId)
+        .get();
+    // return await x['username'];
+  }
 //   getActivePlayerData(String gameRoomId) async {
 //   String active;
 //   QuerySnapshot<Map<String, dynamic>> x = await FirebaseFirestore.instance
@@ -51,7 +61,6 @@ updateSnakeLadderPositionData(String gameRoomId, positionAndActivePlayerMap){
 // }
 
 }
-
 
 storeDataInFirebase(String gameId, Map<String, int> updatePositionData) {
   FirebaseUtils.getGameColRef()

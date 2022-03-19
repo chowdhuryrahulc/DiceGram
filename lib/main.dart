@@ -1,6 +1,5 @@
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:dicegram/providers/profile_provider.dart';
-import 'package:dicegram/snake_ladder/snakeLadderProvider.dart';
 import 'package:dicegram/snake_ladder/stores/DatabaseSnake.dart';
 import 'package:dicegram/snake_ladder/view/snake_ladder.dart';
 import 'package:dicegram/ui/screens/dashboard.dart';
@@ -32,9 +31,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider<diceProvider>(create: (context) {
-            return diceProvider();
-          }),
           ChangeNotifierProvider<ProfileProvider>(
               create: (context) => ProfileProvider()),
           ChangeNotifierProvider<GroupProvider>(

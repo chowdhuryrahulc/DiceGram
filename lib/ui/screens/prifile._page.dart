@@ -20,17 +20,18 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
-     ProfileProvider watchprovider = context.watch<ProfileProvider>();
-     ProfileProvider readprovider = context.read<ProfileProvider>();
+    ProfileProvider watchprovider = context.watch<ProfileProvider>();
+    ProfileProvider readprovider = context.read<ProfileProvider>();
 
-    func() {
-      setState(() {});
+    void func() {
+      setState(() {
+        print('objecttttttttttt');
+      });
     }
 
-    ;
     UserModel? userModel;
-    return StreamBuilder<UserModel>(
-        stream: watchprovider.getCurrentUserModel().asStream(),
+    return FutureBuilder<UserModel>(
+        future: watchprovider.getCurrentUserModel(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           userModel = snapshot.data;
           print('userModel?.image');
@@ -94,8 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: GestureDetector(
                         onTap: () async {
                           // This opens the showDialog.
-                          watchprovider.showDialogToFetchProfilePic(
-                              context, func());
+                          watchprovider.showDialogToFetchProfilePic(context);
                           //! need SetState
                           // setState(() {});
                         },
