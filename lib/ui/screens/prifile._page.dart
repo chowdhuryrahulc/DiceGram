@@ -95,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: GestureDetector(
                         onTap: () async {
                           // This opens the showDialog.
-                          watchprovider.showDialogToFetchProfilePic(context);
+                          watchprovider.showDialogToFetchProfilePic(context, func);
                           //! need SetState
                           // setState(() {});
                         },

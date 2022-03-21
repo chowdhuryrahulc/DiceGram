@@ -55,7 +55,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
     };
     snakeLadderDatabase()
         .sendSnakeLadderPositionData(widget.gameId, positionAndActivePlayerMap);
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,13 +141,18 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                 future: snakeLadderDatabase()
                                     .searchUserNamefromIdAndShowInSnakeLadderGame(
                                         widget.players[0]),
-                                builder: (context, AsyncSnapshot futureSnapshot) {
+                                builder:
+                                    (context, AsyncSnapshot futureSnapshot) {
                                   if (futureSnapshot.hasData) {
                                     return Text(
-                                      futureSnapshot.data['username'].toString(),
-                                      style: TextStyle(fontSize: 10,
-                                      color: futureSnapshot.data['id'] == snapshot.data['activePlayer']? Colors.red:Colors.green
-                                      ),
+                                      futureSnapshot.data['username']
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          color: futureSnapshot.data['id'] ==
+                                                  snapshot.data['activePlayer']
+                                              ? Colors.red
+                                              : Colors.green),
                                     );
                                   } else {
                                     return SizedBox();
@@ -157,14 +162,18 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                 future: snakeLadderDatabase()
                                     .searchUserNamefromIdAndShowInSnakeLadderGame(
                                         widget.players[1]),
-                                builder: (context, AsyncSnapshot futureSnapshot) {
+                                builder:
+                                    (context, AsyncSnapshot futureSnapshot) {
                                   if (futureSnapshot.hasData) {
                                     return Text(
-                                      futureSnapshot.data['username'].toString(),
-                                      style: TextStyle(fontSize: 10,
-                                      color: futureSnapshot.data['id'] ==  snapshot.data['activePlayer']? Colors.red:Colors.green
-                                      
-                                      ),
+                                      futureSnapshot.data['username']
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          color: futureSnapshot.data['id'] ==
+                                                  snapshot.data['activePlayer']
+                                              ? Colors.red
+                                              : Colors.green),
                                     );
                                   } else {
                                     return SizedBox();
@@ -297,23 +306,60 @@ class _SnakeLadderState extends State<SnakeLadder> {
 
   void rollDice(AsyncSnapshot snapshot) {
     number = 1 + Random().nextInt(6);
-    int position1 = snapshot.data[widget.players[0]] + number;
-    position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
-    position1 = dontAllowMovementIfPositionIsHigherThan100(position1, number);
-    // int position2 = 1;
-    //todo the ? needs to be uncommented during checking multiplayer
-     if (snapshot.data['activePlayer'] == UserServices.userId) {
-    Map<String, dynamic> positionAndActivePlayerMap = {
-      widget.players[0]: position1,
-      widget.players[1]: snapshot.data[widget.players[1]],
-      'activePlayer': widget.players[1]
-    };
-    snakeLadderDatabase().updateSnakeLadderPositionData(
-        widget.gameId, positionAndActivePlayerMap);
-     } else {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Not Your Turn'), duration: duration));
-     }
+    if (widget.players[0] == UserServices.userId) {
+      print('User is First');
+      if (snapshot.data['activePlayer'] == UserServices.userId) {
+      int position1 = snapshot.data[widget.players[0]] + number;
+      position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
+      position1 = dontAllowMovementIfPositionIsHigherThan100(position1, number);
+      // int position2 = 1;
+      Map<String, dynamic> positionAndActivePlayerMap = {
+        widget.players[0]: position1,
+        widget.players[1]: snapshot.data[widget.players[1]],
+        'activePlayer': widget.players[1]
+      };
+      snakeLadderDatabase().updateSnakeLadderPositionData(
+          widget.gameId, positionAndActivePlayerMap);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Not Your Turn'), duration: duration));
+    }
+    }
+    if (widget.players[1] == UserServices.userId) {
+      print('User is Second');
+      if (snapshot.data['activePlayer'] == UserServices.userId) {
+      int position2 = snapshot.data[widget.players[1]] + number;
+      position2 = addAndDeleteIfFallOnSnakeOrLadder(position2);
+      position2 = dontAllowMovementIfPositionIsHigherThan100(position2, number);
+      // int position2 = 1;
+      Map<String, dynamic> positionAndActivePlayerMap = {
+        widget.players[0]: snapshot.data[widget.players[1]],
+        widget.players[1]: position2,
+        'activePlayer': widget.players[0]
+      };
+      snakeLadderDatabase().updateSnakeLadderPositionData(
+          widget.gameId, positionAndActivePlayerMap);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Not Your Turn'), duration: duration));
+    }
+    }
+    // if (snapshot.data['activePlayer'] == UserServices.userId) {
+    //   int position1 = snapshot.data[widget.players[0]] + number;
+    //   position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
+    //   position1 = dontAllowMovementIfPositionIsHigherThan100(position1, number);
+    //   // int position2 = 1;
+    //   Map<String, dynamic> positionAndActivePlayerMap = {
+    //     widget.players[0]: position1,
+    //     widget.players[1]: snapshot.data[widget.players[1]],
+    //     'activePlayer': widget.players[1]
+    //   };
+    //   snakeLadderDatabase().updateSnakeLadderPositionData(
+    //       widget.gameId, positionAndActivePlayerMap);
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Not Your Turn'), duration: duration));
+    // }
   }
 
   Widget Dice(AsyncSnapshot snapshot) {

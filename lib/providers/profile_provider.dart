@@ -21,7 +21,7 @@ class ProfileProvider extends ChangeNotifier {
   File? imageprofile;
   String? username;
 
-  void showDialogToFetchProfilePic(BuildContext context) {
+  void showDialogToFetchProfilePic(BuildContext context, VoidCallback func) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -38,7 +38,7 @@ class ProfileProvider extends ChangeNotifier {
                               imageQuality: 50,
                               preferredCameraDevice: CameraDevice.front);
                           if (image != null) {
-                            _cropImage(image.path, context);
+                            _cropImage(image.path, context, func);
                           } else {
                             Navigator.of(context).pop();
                           }
@@ -52,7 +52,7 @@ class ProfileProvider extends ChangeNotifier {
                             imageQuality: 50,
                           );
                           if (image != null) {
-                            _cropImage(image.path, context);
+                            _cropImage(image.path, context, func);
                           } else {
                             Navigator.of(context).pop();
                           }
@@ -67,7 +67,7 @@ class ProfileProvider extends ChangeNotifier {
     });
   }
 
-  void _cropImage(filePath, BuildContext context) async {
+  void _cropImage(filePath, BuildContext context, VoidCallback func) async {
     File? croppedImage = await ImageCropper.cropImage(
       sourcePath: filePath,
       // maxWidth: 1080,
@@ -76,7 +76,7 @@ class ProfileProvider extends ChangeNotifier {
     if (croppedImage != null) {
       imageprofile = croppedImage;
       await uploadPic(imageprofile!).then((value) {
-        // func!();
+        func();
       });
       notifyListeners();
 
