@@ -27,7 +27,7 @@ class TikTakToeDatabase {
   }
 
 //TODO PLAYERLIST DATA
- Future<String> getPlayerListData(String chatRoomId, int id) async {
+  Future<String> getPlayerListData(String chatRoomId, int id) async {
     print('INSIDE PLAYERS');
     String zeroKata;
     DocumentSnapshot<Map<String, dynamic>> x = await FirebaseFirestore.instance
@@ -49,7 +49,7 @@ class TikTakToeDatabase {
         .add(messageMap);
   }
 
-  getButtonData(String chatRoomId) async {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getButtonData(String chatRoomId) {
     return FirebaseFirestore.instance
         .collection("GameRoom")
         .doc(chatRoomId)
@@ -78,8 +78,8 @@ class TikTakToeDatabase {
         .update(messageMap);
   }
 
-  updateActivePlayerInFirestore(String activePlayer, String chatRoomId) {
-    Map<String, dynamic> activePlayerMap = {'activePlayer': activePlayer};
+  updateActivePlayerInFirestore(Map<String,String> activePlayerMap, String chatRoomId) {
+    // Map<String, dynamic> activePlayerMap = {'activePlayer': activePlayer};
     FirebaseFirestore.instance
         .collection("GameRoom")
         .doc(chatRoomId)
@@ -112,4 +112,15 @@ class TikTakToeDatabase {
     active = x.data()!['activePlayer'];
     return active;
   }
+
+  getStreamOfActivePlayerData(String chatRoomId) {
+    return FirebaseFirestore.instance
+        .collection('GameRoom')
+        .doc(chatRoomId)
+        .collection("ActivePlayer")
+        .doc('active')
+        .snapshots();
+  }
+  
+
 }

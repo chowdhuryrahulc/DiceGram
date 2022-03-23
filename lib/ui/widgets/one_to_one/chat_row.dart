@@ -31,6 +31,8 @@ class ChatRow extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: UserServices().getLastMessage(chatId, userId),
       builder: (context, snapshot) {
+        print('imageUrl');
+        print(imageUrl);
         var totalMessage = snapshot.data?.docs.length;
         if (totalMessage == null) {
           return const Text('No msg found');

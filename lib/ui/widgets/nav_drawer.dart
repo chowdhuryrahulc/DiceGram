@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_const
+// ignore_for_file: unnecessary_const, prefer_const_constructors
 
 import 'dart:developer';
 
@@ -12,7 +12,14 @@ import 'package:dicegram/utils/dimensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class NavDrawer extends StatelessWidget {
+class NavDrawer extends StatefulWidget {
+  const NavDrawer({Key? key}) : super(key: key);
+
+  @override
+  State<NavDrawer> createState() => _NavDrawerState();
+}
+
+class _NavDrawerState extends State<NavDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -23,62 +30,74 @@ class NavDrawer extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 48, 0, 24),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [Color(0xFFFF1803), Color(0xffFF4A0B)]),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black38,
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: Offset(4, 8), // changes position of shadow
+              child: FutureBuilder<UserModel>(
+                  future: UserServices().getUserById(UserServices.userId),
+                  builder: (context, snapshot) {
+                    return Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Color(0xFFFF1803),
+                                    Color(0xffFF4A0B)
+                                  ]),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black38,
+                                  spreadRadius: 1,
+                                  blurRadius: 8,
+                                  offset: Offset(
+                                      4, 8), // changes position of shadow
+                                ),
+                              ],
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: snapshot.data != null
+                                ? Image.network(snapshot.data!.image)
+                                : Image(
+                                    image: AssetImage('assets/images/user.jpg'),
+                                  ),
                           ),
-                        ],
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: const Image(
-                        image: AssetImage('assets/images/user.jpg'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  FutureBuilder<UserModel>(
-                    future: UserServices().getUserById(UserServices.userId),
-                    builder: (context, snapshot) {
-                      if (snapshot.data != null) {
-                        return Text(
-                          (snapshot.data?.username) != null
-                              ? 'Hi ${snapshot.data!.username}'
-                              : 'User Name',
-                          style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors1.primary),
-                          maxLines: 1,
-                        );
-                      } else {
-                        return const Text(
-                          'User Name',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors1.primary),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        FutureBuilder<UserModel>(
+                          future:
+                              UserServices().getUserById(UserServices.userId),
+                          builder: (context, snapshot) {
+                            if (snapshot.data != null) {
+                              return Text(
+                                (snapshot.data?.username) != null
+                                    ? 'Hi ${snapshot.data!.username}'
+                                    : 'User Name',
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors1.primary),
+                                maxLines: 1,
+                              );
+                            } else {
+                              return const Text(
+                                'User Name',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors1.primary),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  }),
             ),
             const Image(
               image: AssetImage('assets/images/line.png'),

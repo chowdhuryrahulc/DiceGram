@@ -24,20 +24,18 @@ import 'chat_list2.dart';
 deleteAllDublicateUsers() {}
 
 checkPhoneNumberinFirebaseCollectionandReturnBool(
-    {required String phoneNumber,required Map<String, dynamic> values, required BuildContext context}) async {
-  log('i am in checkPhoneNumberinFirebaseCollectionandReturnBool');
+    {required String phoneNumber,
+    required Map<String, dynamic> values,
+    required BuildContext context}) async {
   bool isPresent = false;
   var x = await FirebaseFirestore.instance
       .collection(KeyConstants.USERS)
       .where('number', isEqualTo: phoneNumber)
       .get();
-  print('xxxxxxxxxxxxxxxxxxxxxxx');
-  print(x.size);
   if (x.size > 0) {
     isPresent = true;
 
     UserServices().updateUserData(values).then((val) {
-      log('Updated');
       Navigator.pushAndRemoveUntil<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
@@ -80,6 +78,11 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
       setOnline(false);
     }
   }
+//  void func() {
+//       setState(() {
+//         print('objecttttttttttt');
+//       });
+//     }
 
   void setOnline(bool isOnline) async {
     try {
@@ -128,7 +131,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
       child: FutureBuilder<UserModel>(
         // userID is uid from Firebase.
         future: UserServices().getUserById(UserServices.userId),
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
@@ -136,6 +139,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
           // users=> imageURL
           // Setting this data in NavDrawer=> ProfilePage
           profileImage = snapshot.data?.image;
+          print('profileImage');
+          print(profileImage);
           return Scaffold(
             drawer: NavDrawer(),
             appBar: AppBar(
@@ -148,9 +153,13 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: profileImage != null
-                        // Image not picking up.
+                            // Image not picking up.
                             ? Image.network(
+                                // 'assets/images/person.png',
                                 profileImage!,
+                                // loadingBuilder: (context, load, h) {
+                                // return  CircularProgressIndicator();
+                                // },
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
                                       'assets/images/person.png');

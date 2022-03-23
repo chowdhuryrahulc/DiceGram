@@ -36,8 +36,6 @@ class _ProfilePageState extends State<ProfilePage> {
           userModel = snapshot.data;
           print('userModel?.image');
           print(userModel?.image);
-          // context.read<profilePicProvider>().updateProfilePic(userModel?.image);
-          // profilePicProvider()
           return Scaffold(
             body: Stack(
               children: [
@@ -96,8 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         onTap: () async {
                           // This opens the showDialog.
                           watchprovider.showDialogToFetchProfilePic(context, func);
-                          //! need SetState
-                          // setState(() {});
                         },
                         child: Image.asset('assets/images/camera.png'))),
                 Positioned(

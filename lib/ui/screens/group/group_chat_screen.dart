@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/TikTakToe/TikTakToe/TikTakToe.dart';
 // import 'package:dicegram/TikTakToe/tiktakHome.dart';
 // import 'package:dicegram/chess/chessmain.dart';
 import 'package:dicegram/helpers/game_service.dart';
@@ -183,7 +184,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     ),
                   ),
                   isShowBox
-                      ? Container(
+                      ? SizedBox(
                           height: 55.h,
                           width: double.infinity,
                           child: isGameInitiated
@@ -202,6 +203,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                     ElevatedButton(
                                       onPressed: () {
                                         selectedGame = AppConstants.snakeLadder;
+                                        setState(() {});
                                         onGameSelected(
                                             AppConstants.snakeLadder);
                                       },
@@ -214,13 +216,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                     //   },
                                     //   child: Text('Chess'),
                                     // ),
-                                    // ElevatedButton(
-                                    //   onPressed: () {
-                                    //     selectedGame = AppConstants.tikTackToe;
-                                    //     onGameSelected(AppConstants.tikTackToe);
-                                    //   },
-                                    //   child: Text('Tik-Tack Toe'),
-                                    // ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        selectedGame = AppConstants.tikTackToe;
+                                        setState(() {});
+                                        onGameSelected(AppConstants.tikTackToe);
+                                      },
+                                      child: Text('Tik-Tack Toe'),
+                                    ),
                                   ]),
                                 ))
                       : const SizedBox()
@@ -233,15 +236,19 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   void onGameSelected(int selectedGame) {
     String? keyConstraints;
+    int minimumPlayers = 0;
     switch (selectedGame) {
       case 0:
         keyConstraints = KeyConstants.SNAKE_LADDER;
+        minimumPlayers = 2;
         break;
       case 1:
         keyConstraints = KeyConstants.CHESS;
+        minimumPlayers = 2;
         break;
       case 2:
         keyConstraints = KeyConstants.TikTakToe;
+        minimumPlayers = 2;
         break;
       default:
     }
@@ -259,35 +266,43 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               children: [
                 const Text('Select Players'),
                 //! Where users is selected. Only 2 users for TikTakToe
-                playersList(users: _groupData.users),
+                playersList(
+                    users: _groupData.users, minimumPlayers: minimumPlayers),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
                         onPressed: () {
+                          selectedUsersList.clear;
                           Navigator.pop(context);
                         },
                         child: const Text('Cancel')),
                     ElevatedButton(
                         onPressed: () async {
+                          // print(selectedUsersList.length);
+                          // selectedUsersList.forEach((element) {
+                          //   print(element);
+                          // });
+                          //*******************************************************************************/
+                          // if (selectedUsersList.length - 1 == minimumPlayers) {
                           Navigator.pop(context);
                           //! Changes gameId, players, and users in Firebase.
                           // Why are we usingplayers?
                           String gameId = await GameService().createGameRoom(
                               groupId: widget.chatId,
                               userIds: selectedUsersList,
-                              // Key constraints.tiktaktoe.
                               game: keyConstraints!);
-                          // GameId: aV538hHnsz830uFVkczV
-                          print('Game ID ${gameId}'); // Working im TikTakToe
-                          _groupData.gameId = gameId; // goes in SnakeLadder
-                          _groupData.players =
-                              selectedUsersList; // goes in SnakeLadder
-                          // DOING NOTHING: to go to SnakeLadder
-                          // _groupData.gameName = KeyConstants.SNAKE_LADDER;
+                          _groupData.gameId = gameId;
+                          _groupData.players = selectedUsersList;
                           setState(() {
                             isGameInitiated = true;
                           });
+                          // } else {
+                          //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          //       content:
+                          //           Text('Game needs $minimumPlayers players'),
+                          //       duration: Duration(milliseconds: 500)));
+                          // }
                         },
                         child: Text('Next')),
                   ],
@@ -302,8 +317,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   Widget getSelectedGame(int selectedGame) {
     print(selectedGame);
-        print('_groupData.users');
-        print(_groupData.users);
+    print('_groupData.users');
+    print(_groupData.users);
 
     Widget game = SizedBox();
 
@@ -324,18 +339,28 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         );
         break;
       case AppConstants.tikTackToe:
-        // game = HomePage();
-        SnakeLadder(
+        game = TikTakToe(
+          gameId: _groupData.gameId,
+          players: _groupData.players,
+          playersName: [],
+          chatId: widget.chatId,
           onEnd: () {
             setState(() {
               isGameInitiated = false;
             });
           },
-          gameId: _groupData.gameId,
-          players: _groupData.players,
-          playersName: [],
-          chatId: widget.chatId,
         );
+        // SnakeLadder(
+        //   onEnd: () {
+        //     setState(() {
+        //       isGameInitiated = false;
+        //     });
+        //   },
+        //   gameId: _groupData.gameId,
+        //   players: _groupData.players,
+        //   playersName: [],
+        //   chatId: widget.chatId,
+        // );
         break;
       case AppConstants.chess:
         game = GameBoardStateLess({"name": 'Chess'}, widget.chatId, this.userId,
@@ -358,7 +383,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 }
 
 class playersList extends StatefulWidget {
-  const playersList({Key? key, required this.users}) : super(key: key);
+  const playersList(
+      {Key? key, required this.users, required int minimumPlayers})
+      : super(key: key);
   final List<String> users;
 
   @override
@@ -408,13 +435,13 @@ class _playersListState extends State<playersList> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              //! Player name, to be send to next screen
+                              // Player name, to be send to next screen
                               Expanded(
                                   child: Text(
                                 users.username.toString(),
                                 maxLines: 1,
                               )),
-                              //! CheckBox
+                              // CheckBox
                               SizedBox(
                                 width: 20,
                                 child: Checkbox(

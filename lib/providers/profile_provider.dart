@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/key_constants.dart';
@@ -8,10 +10,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 class ProfileProvider extends ChangeNotifier {
 //fireabse
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  // final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestoreCloud = FirebaseFirestore.instance;
   final String collectionname = 'profileimage';
   final String docname = 'user1';
@@ -47,7 +50,7 @@ class ProfileProvider extends ChangeNotifier {
 
                     TextButton(
                         onPressed: () async {
-                          XFile? image = await imagePicker.pickImage(
+                          XFile? image = await ImagePicker().pickImage(
                             source: ImageSource.gallery,
                             imageQuality: 50,
                           );
@@ -85,23 +88,17 @@ class ProfileProvider extends ChangeNotifier {
       Navigator.of(context).pop();
     }
   }
-  //!firebase upload
 
   Future<String> uploadPic(File imagefi) async {
-    final reference = _storage.ref().child("images/");
+    final destination = UserServices.userId;
+    final reference = FirebaseStorage.instance.ref(destination); 
     final UploadTask uploadTask = reference.putFile(imagefi);
-    final TaskSnapshot location = uploadTask.snapshot;
+    final TaskSnapshot location = await uploadTask
+        .whenComplete(() {});
     final String url = await location.ref.getDownloadURL();
-
-    print(url);
     uploadToCLoudstorege(url);
     return url;
   }
-
-  Future<UserModel> getCurrentUserModel() =>
-      FirebaseUtils.getUsersColRef().doc(UserServices.userId).get().then((doc) {
-        return UserModel.fromSnapshot(doc);
-      });
 
 //
   Future uploadToCLoudstorege(String url) async {
@@ -110,6 +107,11 @@ class ProfileProvider extends ChangeNotifier {
         .doc(UserServices.userId)
         .update({KeyConstants.IMAGE_URL: url});
   }
+
+  Future<UserModel> getCurrentUserModel() =>
+      FirebaseUtils.getUsersColRef().doc(UserServices.userId).get().then((doc) {
+        return UserModel.fromSnapshot(doc);
+      });
 
   //Edit BUtton
   void handleEditButton(

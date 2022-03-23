@@ -207,8 +207,6 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                             ),
                           );
                         }
-                        // else
-                        //   return const SizedBox();
                       }),
                 ))
           ],
