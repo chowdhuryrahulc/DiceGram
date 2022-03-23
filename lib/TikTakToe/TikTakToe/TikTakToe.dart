@@ -3,9 +3,9 @@
 import 'dart:math';
 import 'package:dicegram/TikTakToe/TikTakToe/TikTakToeDatabase.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/new_snake_ladder/snakeLadderDatabase.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../snake_ladder/snakeLadderDatabase.dart';
 import 'customDialog.dart';
 import 'gameButton.dart';
 

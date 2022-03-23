@@ -2,28 +2,23 @@ import 'package:country_code_picker/country_localizations.dart';
 import 'package:dicegram/ContactsBox.dart';
 import 'package:dicegram/StreamBuilderPage.dart';
 import 'package:dicegram/providers/profile_provider.dart';
-import 'package:dicegram/snake_ladder/stores/DatabaseSnake.dart';
-import 'package:dicegram/snake_ladder/view/snake_ladder.dart';
-import 'package:dicegram/ui/screens/dashboard.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:dicegram/ui/screens/login_screen.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'providers/group_provider.dart';
 
-late Box ContactsBox;
+late Box contactsBox;
 Future<void> main() async {
   await Hive.initFlutter();
-  ContactsBox = await Hive.openBox('ContactsBox');
-  Hive.registerAdapter(ContactsBoxAdapter());
-  // ContactsBox.put('ContactsBox', ContactsBox(number: 1, contactsName: 'KKK'));
+  // contactsBox = await Hive.openBox('contactsBox');
+  // Hive.registerAdapter(ContactsBoxAdapter());
+  // // Put in DB. In ListViewBuilder
+  // contactsBox.put('contactsBox', ContactsBox(number: 1, contactsName: 'KKK'));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());

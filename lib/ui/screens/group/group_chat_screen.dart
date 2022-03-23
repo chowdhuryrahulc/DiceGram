@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types
+// ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types, curly_braces_in_flow_control_structures
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/TikTakToe/TikTakToe/TikTakToe.dart';
@@ -10,7 +10,7 @@ import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/group_data.dart';
 import 'package:dicegram/models/user_model.dart';
-import 'package:dicegram/snake_ladder/view/snake_ladder.dart';
+import 'package:dicegram/new_snake_ladder/snake_ladder.dart';
 import 'package:dicegram/ui/screens/dashboard.dart';
 import 'package:dicegram/ui/widgets/group/group_chat_bubble.dart';
 import 'package:dicegram/utils/Color.dart';

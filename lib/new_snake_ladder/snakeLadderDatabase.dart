@@ -36,14 +36,32 @@ class snakeLadderDatabase {
     });
   }
 
-  Future< DocumentSnapshot<Map<String, dynamic>>> searchUserNamefromIdAndShowInSnakeLadderGame(
-      String playerId) async {
-   return await FirebaseFirestore.instance
+  Future<DocumentSnapshot<Map<String, dynamic>>>
+      searchUserNamefromIdAndShowInSnakeLadderGame(String playerId) async {
+    return await FirebaseFirestore.instance
         .collection("users")
         .doc(playerId)
         .get();
     // return await x['username'];
   }
+
+  Future<String?> searchUserNamefromIdAndShowWinner(String playerId) async {
+    // DocumentSnapshot<Map<String, dynamic>> x =
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(playerId)
+        .get()
+        .then((value) {
+      // if (value.data() != null) {
+      print('ValuATIONNNNNNN');
+      // print(value.data());
+      print(value.data()!['username']);
+      return value.data()!['username'];
+      // }
+    });
+    // return null;
+  }
+
 //   getActivePlayerData(String gameRoomId) async {
 //   String active;
 //   QuerySnapshot<Map<String, dynamic>> x = await FirebaseFirestore.instance

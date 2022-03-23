@@ -52,7 +52,6 @@ class _ContactsScreenState extends State<ContactListScreen> {
                       List<Contact> contactList = snapshot.data!;
                       print('snapshot.data');
                       print(snapshot.data);
-
                       return FutureBuilder<List<UserModel>>(
                           future: UserServices()
                               .getFirebaseUsersFromContacts(contactList),
@@ -77,6 +76,7 @@ class _ContactsScreenState extends State<ContactListScreen> {
                                             if (user.id != userId) {
                                               return InkWell(
                                                 onTap: () async {
+                                                  //! Store in Hive. Index is int.
                                                   await handleOnClick(
                                                       snapshot.data![index]);
                                                 },
@@ -95,6 +95,7 @@ class _ContactsScreenState extends State<ContactListScreen> {
                                                                       width *
                                                                           0.1),
                                                           child: Image.network(
+                                                            //!String imageUrl
                                                             user.image
                                                                 .toString(),
                                                             fit: BoxFit.cover,
@@ -165,8 +166,7 @@ class _ContactsScreenState extends State<ContactListScreen> {
                   )),
             ),
           ],
-        )
-        );
+        ));
   }
 
   Future<void> handleOnClick(UserModel senderData) async {
