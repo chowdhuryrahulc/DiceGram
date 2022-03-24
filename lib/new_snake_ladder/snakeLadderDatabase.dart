@@ -47,7 +47,7 @@ class snakeLadderDatabase {
 
   Future<String?> searchUserNamefromIdAndShowWinner(String playerId) async {
     // DocumentSnapshot<Map<String, dynamic>> x =
-    await FirebaseFirestore.instance
+    String x = await FirebaseFirestore.instance
         .collection("users")
         .doc(playerId)
         .get()
@@ -59,6 +59,7 @@ class snakeLadderDatabase {
       return value.data()!['username'];
       // }
     });
+    return x;
     // return null;
   }
 

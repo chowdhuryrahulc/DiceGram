@@ -33,7 +33,7 @@ class GroupChatScreen extends StatefulWidget {
   }) : super(key: key);
   final String chatId;
   final String groupName;
-  final GroupData groupData;
+  final GroupData groupData; //=> gameId
 
   @override
   State<GroupChatScreen> createState() => _GroupChatScreenState();
@@ -44,7 +44,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   bool isShowBox = false;
   bool isGameInitiated = false;
-  late GroupData _groupData;
+  late GroupData _groupData; // Comming from last screen.
   int selectedGame = -1;
 
   @override
@@ -331,7 +331,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               isGameInitiated = false;
             });
           },
-          gameId: _groupData.gameId,
+          gameId: _groupData.gameId, //=> GameRoom => doc()
           players: _groupData.players,
           //todo send userNameList
           playersName: [],

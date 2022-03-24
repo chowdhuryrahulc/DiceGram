@@ -22,26 +22,40 @@ class _GroupListState extends State<GroupList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: GroupService().getGroupList(),
+        stream: GroupService()
+            .getGroupList(), // In GroupList => doc() => users array contains name of current_user
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data?.docs.length == 0) {
             return const SizedBox();
           }
-
           return ListView.builder(
               itemCount: snapshot.data?.docs.length,
               itemBuilder: (context, index) {
                 var chatId = snapshot.data?.docs[index].id;
-
+                // DocomentName: GroupList().doc() //! Why do we need this?
+                // chatId:
+                // FK17naJe5FwiQkBwWxyI
+                // JUsrs6mPF0G05PMYcBaz
+                // rh1ZmgO5GDPWOQaHdrNZ
                 String? groupName =
                     snapshot.data?.docs[index][KeyConstants.GROUP_NAME];
+                print("snapshot.data?.docs[index]");
+                print(snapshot.data?.docs[index]['gameId']);
+                // groupName:
+                // ATGroup
+                // Next
+                // tushar
+                //! GameId: goes into GameRoom as docomentId
+                // T772fX3kNiqBvv5O5zlY
+                // EOF7uThT5csRGVMw8Lwa
+                // null
                 GroupData groupData =
                     GroupData.fromSnapshot(snapshot.data?.docs[index]);
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => GroupChatScreen(
-                              groupData: groupData,
+                              groupData: groupData, //=> gameId
                               chatId: chatId ?? "",
                               groupName: groupName.toString(),
                             )));

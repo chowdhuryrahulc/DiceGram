@@ -17,7 +17,7 @@ import 'image-item.dart';
 class SnakeLadder extends StatefulWidget {
   const SnakeLadder({
     Key? key,
-    required this.gameId,
+    required this.gameId, //=> GameRoom => doc()
     required this.players,
     required this.playersName,
     required this.chatId,
@@ -63,9 +63,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
         stream: snakeLadderDatabase().getSnakeLadderPositionData(widget.gameId),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            print(" snakeLadderDatabase().searchUserNamefromIdAndShowWinner(");
-            checkwhoWon(100, widget.players[0]);
-
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -147,9 +144,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                 builder:
                                     (context, AsyncSnapshot future1Snapshot) {
                                   if (future1Snapshot.hasData) {
-                                    // print("futureSnapshot.data['username'] 1");
-                                    // print(widget.players[0]);
-                                    // print(future1Snapshot.data['username']);
                                     return Text(
                                       future1Snapshot.data['username']
                                           .toString(),
@@ -157,8 +151,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                           fontSize: 10,
                                           color: future1Snapshot.data['id'] ==
                                                   snapshot.data['activePlayer']
-                                              ? Colors.red
-                                              : Colors.green),
+                                              ? Colors.green
+                                              : Colors.red),
                                     );
                                   } else {
                                     return SizedBox();
@@ -171,9 +165,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                 builder:
                                     (context, AsyncSnapshot future2Snapshot) {
                                   if (future2Snapshot.hasData) {
-                                    // print("futureSnapshot.data['username'] 2");
-                                    // print(widget.players[1]);
-                                    // print(future2Snapshot.data['username']);
                                     return Text(
                                       future2Snapshot.data['username']
                                           .toString(),
@@ -181,8 +172,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                           fontSize: 10,
                                           color: future2Snapshot.data['id'] ==
                                                   snapshot.data['activePlayer']
-                                              ? Colors.red
-                                              : Colors.green),
+                                              ? Colors.green
+                                              : Colors.red),
                                     );
                                   } else {
                                     return SizedBox();
@@ -206,6 +197,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                             //! uid just keeps adding, adding. Makes 3-5 players.
                             //? Why use players, users. different different??
                             //? Where the SnakeLadder inPlaying data is stored??
+                            initFunc();
                             GameService()
                                 .deleteGame(widget.gameId, widget.chatId);
                             widget.onEnd();
@@ -216,7 +208,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                   MaterialStateProperty.all(Colors.orange)),
                         ),
                         Dice(snapshot)
-                        // Footer(snakeLaddersStore: _snakesLaddersStore, diceTwo: dice),
                       ],
                     ),
                   ],
@@ -282,7 +273,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
         builder: (ctx) {
           return AlertDialog(
             title: Text(
-              '$nameOfWinner WON. Do you want to start a new game?',
+              '$nameOfWinner WON.\nDo you want to start a new game?',
+              textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black54),
             ),
             backgroundColor: Colors.orange[100],
@@ -319,7 +311,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
         position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
         position1 =
             dontAllowMovementIfPositionIsHigherThan100(position1, number);
-        // int position2 = 1;
         Map<String, dynamic> positionAndActivePlayerMap = {
           widget.players[0]: position1,
           widget.players[1]: snapshot.data[widget.players[1]],
@@ -340,9 +331,9 @@ class _SnakeLadderState extends State<SnakeLadder> {
         position2 = addAndDeleteIfFallOnSnakeOrLadder(position2);
         position2 =
             dontAllowMovementIfPositionIsHigherThan100(position2, number);
-        // int position2 = 1;
+        print(position2);
         Map<String, dynamic> positionAndActivePlayerMap = {
-          widget.players[0]: snapshot.data[widget.players[1]],
+          widget.players[0]: snapshot.data[widget.players[0]],
           widget.players[1]: position2,
           'activePlayer': widget.players[0]
         };
@@ -378,12 +369,9 @@ class _SnakeLadderState extends State<SnakeLadder> {
       await snakeLadderDatabase()
           .searchUserNamefromIdAndShowWinner(nameOfWinner)
           .then((value) {
-        print("valueeeeeeeeeeeeeeeeeeee");
-        print(value);
-
-        // if (value != null) {
-        //   showResetDialog(value);
-        // }
+        if (value != null) {
+          showResetDialog(value);
+        }
       });
     }
   }
