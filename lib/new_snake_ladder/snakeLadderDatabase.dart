@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../utils/firebase_utils.dart';
@@ -46,21 +48,15 @@ class snakeLadderDatabase {
   }
 
   Future<String?> searchUserNamefromIdAndShowWinner(String playerId) async {
-    // DocumentSnapshot<Map<String, dynamic>> x =
     String x = await FirebaseFirestore.instance
         .collection("users")
         .doc(playerId)
         .get()
         .then((value) {
-      // if (value.data() != null) {
-      print('ValuATIONNNNNNN');
-      // print(value.data());
-      print(value.data()!['username']);
       return value.data()!['username'];
       // }
     });
     return x;
-    // return null;
   }
 
 //   getActivePlayerData(String gameRoomId) async {

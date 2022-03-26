@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -20,8 +21,6 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
-
-deleteAllDublicateUsers() {}
 
 checkPhoneNumberinFirebaseCollectionandReturnBool(
     {required String phoneNumber,
@@ -46,7 +45,6 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
     });
   } else {
     UserServices().createUser(values).then((val) {
-      log('Created, Not Updated');
       Navigator.pushAndRemoveUntil<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
@@ -56,7 +54,6 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
       );
     });
   }
-  // return isPresent;
 }
 
 class Dashboard extends StatefulWidget {
@@ -78,11 +75,6 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
       setOnline(false);
     }
   }
-//  void func() {
-//       setState(() {
-//         print('objecttttttttttt');
-//       });
-//     }
 
   void setOnline(bool isOnline) async {
     try {
@@ -111,7 +103,6 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    deleteAllDublicateUsers();
     permissionContacts();
     WidgetsBinding.instance?.addObserver(this);
     setOnline(true);
@@ -121,11 +112,12 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     String userName = 'User Name';
     String? profileImage;
-
+    // showDialogIfOtherPersonsEngagedIsFalse();
+    // setIsEngagedToTrue();
+    // knowIfOtherPersonHasLoggedOut();
     return WillPopScope(
       onWillPop: () async {
         SystemNavigator.pop();
-        // put something that closes the app. or
         return true;
       },
       child: FutureBuilder<UserModel>(
@@ -139,8 +131,6 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
           // users=> imageURL
           // Setting this data in NavDrawer=> ProfilePage
           profileImage = snapshot.data?.image;
-          print('profileImage');
-          print(profileImage);
           return Scaffold(
             drawer: NavDrawer(),
             appBar: AppBar(
@@ -155,11 +145,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                         child: profileImage != null
                             // Image not picking up.
                             ? Image.network(
-                                // 'assets/images/person.png',
                                 profileImage!,
-                                // loadingBuilder: (context, load, h) {
-                                // return  CircularProgressIndicator();
-                                // },
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
                                       'assets/images/person.png');
@@ -177,7 +163,11 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                     color: Colors.white),
               ),
               actions: [
-                const Icon(Icons.search),
+                InkWell(
+                    onTap: () {
+                      // showDialogIfOtherPersonsEngagedIsFalse();
+                    },
+                    child: const Icon(Icons.search)),
                 // PopupMenuButton(
                 //   icon: const Icon(Icons.more_vert),
                 //   onSelected: (value) {

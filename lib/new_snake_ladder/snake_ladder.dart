@@ -2,6 +2,8 @@
 
 import 'dart:developer';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/new_snake_ladder/dice-item.dart';
 import 'package:dicegram/new_snake_ladder/dices.dart';
@@ -15,15 +17,17 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'image-item.dart';
 
 class SnakeLadder extends StatefulWidget {
-  const SnakeLadder({
-    Key? key,
-    required this.gameId, //=> GameRoom => doc()
-    required this.players,
-    required this.playersName,
-    required this.chatId,
-    required this.onEnd,
-  }) : super(key: key);
-  final String gameId;
+  SnakeLadder(
+      {Key? key,
+      required this.gameId, //=> GameRoom => doc()
+      required this.players,
+      required this.playersName,
+      required this.chatId,
+      required this.onEnd,
+      required this.isGameInitiated})
+      : super(key: key);
+  String gameId;
+  bool isGameInitiated;
   final List<String> players;
   final List<String> playersName;
   final String chatId;
@@ -43,6 +47,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
   void initState() {
     super.initState();
     initFunc();
+    // showDialogIfOtherPersonsEngagedIsFalse();
+    addFieldsofUsersInGameRoom(widget.players, widget.gameId);
   }
 
   initFunc() async {
@@ -57,167 +63,232 @@ class _SnakeLadderState extends State<SnakeLadder> {
         .sendSnakeLadderPositionData(widget.gameId, positionAndActivePlayerMap);
   }
 
+  showDialogIfOtherPersonsEngagedIsFalse() {
+    if (widget.players[0] == UserServices.userId) {
+      print('otherPlayerId is ${widget.players[1]}');
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.players[1])
+          .snapshots();
+    } else if (widget.players[1] == UserServices.userId) {
+      print('otherPlayerId is ${widget.players[0]}');
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.players[0])
+          .snapshots();
+    }
+  }
+
+  updatePlayerId() async {
+    await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+        .then((value) {
+      if (value != null) {
+        widget.gameId = value;
+        widget.isGameInitiated = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: snakeLadderDatabase().getSnakeLadderPositionData(widget.gameId),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 300,
-                  width: 300,
-                  child: AnimationLimiter(
-                    child: Stack(children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.orange.shade300),
-                            borderRadius: BorderRadius.circular(3),
-                            boxShadow: [
-                              BoxShadow(color: Colors.orange.shade100)
-                            ]),
-                        child: GridView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.all(3),
-                            addAutomaticKeepAlives: true,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 10),
-                            itemCount: 100,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              var color = index % 2 == 0
-                                  ? Colors.black38
-                                  : Colors.orange[300];
-                              return Stack(
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(color: color),
-                                    child: Center(
-                                      // For 100 only
-                                      child: (100 - index) == 100
-                                          ? Text(
-                                              Demoji.house,
-                                              style: TextStyle(fontSize: 18),
-                                            )
-                                          : Text(
-                                              (100 - index).toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12),
-                                            ),
-                                    ),
-                                  ),
-                                  Play(
-                                    // Real position of the player
-                                    totalPlayerOne:
-                                        snapshot.data[widget.players[0]],
-                                    totalPlayerTwo:
-                                        snapshot.data[widget.players[1]],
-                                    index: index,
-                                  )
-                                ],
-                              );
-                            }),
-                      ),
-                      ImageItem(context), // All the laders and Snakes
-                    ]),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: [
-                            FutureBuilder(
-                                future: snakeLadderDatabase()
-                                    .searchUserNamefromIdAndShowInSnakeLadderGame(
-                                        widget.players[0]),
-                                builder:
-                                    (context, AsyncSnapshot future1Snapshot) {
-                                  if (future1Snapshot.hasData) {
-                                    return Text(
-                                      future1Snapshot.data['username']
-                                          .toString(),
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: future1Snapshot.data['id'] ==
-                                                  snapshot.data['activePlayer']
-                                              ? Colors.green
-                                              : Colors.red),
-                                    );
-                                  } else {
-                                    return SizedBox();
-                                  }
-                                }),
-                            FutureBuilder(
-                                future: snakeLadderDatabase()
-                                    .searchUserNamefromIdAndShowInSnakeLadderGame(
-                                        widget.players[1]),
-                                builder:
-                                    (context, AsyncSnapshot future2Snapshot) {
-                                  if (future2Snapshot.hasData) {
-                                    return Text(
-                                      future2Snapshot.data['username']
-                                          .toString(),
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: future2Snapshot.data['id'] ==
-                                                  snapshot.data['activePlayer']
-                                              ? Colors.green
-                                              : Colors.red),
-                                    );
-                                  } else {
-                                    return SizedBox();
-                                  }
-                                })
-                          ],
-                        ),
-                        ElevatedButton(
+        stream: showDialogIfOtherPersonsEngagedIsFalse(),
+        builder: (context1, AsyncSnapshot snapshot1) {
+          return StreamBuilder(
+              stream: snakeLadderDatabase()
+                  .getSnakeLadderPositionData(widget.gameId),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot1.hasData && snapshot1.data['isEngaged'] == false) {
+                  print(snapshot1.data['isEngaged']);
+                  return AlertDialog(
+                    title: Text('Other person has quit the Game'),
+                    // content: Text('Do you also want to Quit the game?'),
+                    actions: [
+                      // TextButton(
+                      //     onPressed: () {
+                      //       Navigator.pop(context1);
+                      //     },
+                      //     child: Text('No')),
+                      TextButton(
                           onPressed: () {
                             initFunc();
-                            number = 1;
-                          },
-                          child: Text('Reset'),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.orange)),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            // End updates gameId, gameName, player.uid,
-                            //! uid just keeps adding, adding. Makes 3-5 players.
-                            //? Why use players, users. different different??
-                            //? Where the SnakeLadder inPlaying data is stored??
-                            initFunc();
+                            deletePresentUserFromGameRoom(widget.gameId);
                             GameService()
                                 .deleteGame(widget.gameId, widget.chatId);
                             widget.onEnd();
                           },
-                          child: Text('End'),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.orange)),
+                          child: Text('Quit')),
+                    ],
+                  );
+                }
+                // showDialogIfOtherPersonsEngagedIsFalse();
+                if (snapshot.hasData) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 300,
+                        width: 300,
+                        child: AnimationLimiter(
+                          child: Stack(children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.orange.shade300),
+                                  borderRadius: BorderRadius.circular(3),
+                                  boxShadow: [
+                                    BoxShadow(color: Colors.orange.shade100)
+                                  ]),
+                              child: GridView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.all(3),
+                                  addAutomaticKeepAlives: true,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 10),
+                                  itemCount: 100,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    var color = index % 2 == 0
+                                        ? Colors.black38
+                                        : Colors.orange[300];
+                                    return Stack(
+                                      children: [
+                                        Container(
+                                          width: 100,
+                                          height: 100,
+                                          decoration:
+                                              BoxDecoration(color: color),
+                                          child: Center(
+                                            // For 100 only
+                                            child: (100 - index) == 100
+                                                ? Text(
+                                                    Demoji.house,
+                                                    style:
+                                                        TextStyle(fontSize: 18),
+                                                  )
+                                                : Text(
+                                                    (100 - index).toString(),
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12),
+                                                  ),
+                                          ),
+                                        ),
+                                        Play(
+                                          // Real position of the player
+                                          totalPlayerOne:
+                                              snapshot.data[widget.players[0]],
+                                          totalPlayerTwo:
+                                              snapshot.data[widget.players[1]],
+                                          index: index,
+                                        )
+                                      ],
+                                    );
+                                  }),
+                            ),
+                            ImageItem(context), // All the laders and Snakes
+                          ]),
                         ),
-                        Dice(snapshot)
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            );
-          } else {
-            return Container();
-          }
-        });
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  FutureBuilder(
+                                      future: snakeLadderDatabase()
+                                          .searchUserNamefromIdAndShowInSnakeLadderGame(
+                                              widget.players[0]),
+                                      builder: (context,
+                                          AsyncSnapshot future1Snapshot) {
+                                        if (future1Snapshot.hasData) {
+                                          return Text(
+                                            future1Snapshot.data['username']
+                                                .toString(),
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: future1Snapshot
+                                                            .data['id'] ==
+                                                        snapshot.data[
+                                                            'activePlayer']
+                                                    ? Colors.green
+                                                    : Colors.red),
+                                          );
+                                        } else {
+                                          return SizedBox();
+                                        }
+                                      }),
+                                  FutureBuilder(
+                                      future: snakeLadderDatabase()
+                                          .searchUserNamefromIdAndShowInSnakeLadderGame(
+                                              widget.players[1]),
+                                      builder: (context,
+                                          AsyncSnapshot future2Snapshot) {
+                                        if (future2Snapshot.hasData) {
+                                          return Text(
+                                            future2Snapshot.data['username']
+                                                .toString(),
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: future2Snapshot
+                                                            .data['id'] ==
+                                                        snapshot.data[
+                                                            'activePlayer']
+                                                    ? Colors.green
+                                                    : Colors.red),
+                                          );
+                                        } else {
+                                          return SizedBox();
+                                        }
+                                      })
+                                ],
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  initFunc();
+                                  number = 1;
+                                },
+                                child: Text('Reset'),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.orange)),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // End updates gameId, gameName, player.uid,
+                                  //! uid just keeps adding, adding. Makes 3-5 players.
+                                  //? Why use players, users. different different??
+                                  //? Where the SnakeLadder inPlaying data is stored??
+                                  initFunc();
+                                  deletePresentUserFromGameRoom(widget.gameId);
+                                  GameService()
+                                      .deleteGame(widget.gameId, widget.chatId);
+                                  widget.onEnd();
+                                },
+                                child: Text('End'),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.orange)),
+                              ),
+                              Dice(snapshot)
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                } else {
+                  return Container();
+                }
+              });
+        }
+        // child:
+        );
   }
 
   int number = 1;
@@ -265,6 +336,26 @@ class _SnakeLadderState extends State<SnakeLadder> {
     }
     return position1;
   }
+
+//TODO INTEGRATE THIS
+  // showDialogIfOtherPersonsEngagedIsFalse() {
+  //   Stream<DocumentSnapshot<Map<String, dynamic>>> x = FirebaseFirestore
+  //       .instance
+  //       .collection('users')
+  //       .doc('lOrd0qJFKtYPud7GilwpSeoehZG2')
+  //       .snapshots();
+  //   return StreamBuilder(
+  //       stream: x,
+  //       builder: (context, AsyncSnapshot snapshot) {
+  //         print('Hello');
+  //         if (snapshot.hasData && snapshot.data['isEngaged'] == true) {
+  //           print(snapshot.data['isEngaged']);
+  //           return AlertDialog();
+  //         } else {
+  //           return SizedBox();
+  //         }
+  //       });
+  // }
 
   showResetDialog(String nameOfWinner) {
     showDialog(

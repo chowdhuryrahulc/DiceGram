@@ -136,11 +136,12 @@ class _OTPScreenState extends State<OtpScreen> {
                         userData[KeyConstants.ONLINE] = false;
                         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
                         userData[KeyConstants.USER_NAME] = widget._username;
+                        userData[KeyConstants.ISENGAGED] = false;
 
                         // Saves the Users in users profile.
                         // Logic: if the phoneNumber is present in the database, then update credentials.
                         // otherwise create in users.
-                        log('Gooooo');
+                        // log('Gooooo');
                         checkPhoneNumberinFirebaseCollectionandReturnBool(
                             phoneNumber: value.user!.phoneNumber!,
                             values: userData,

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/TikTakToe/TikTakToe/TikTakToe.dart';
+import 'package:dicegram/gameIdProblem.dart';
 // import 'package:dicegram/TikTakToe/tiktakHome.dart';
 // import 'package:dicegram/chess/chessmain.dart';
 import 'package:dicegram/helpers/game_service.dart';
@@ -40,7 +41,7 @@ class GroupChatScreen extends StatefulWidget {
 }
 
 class _GroupChatScreenState extends State<GroupChatScreen> {
-  //! Here we get the uid.
+  // Here we get the uid.
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   bool isShowBox = false;
   bool isGameInitiated = false;
@@ -56,11 +57,22 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     super.initState();
   }
 
+  updatePlayerId() async {
+    await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+        .then((value) {
+      if (value != null) {
+        _groupData.gameId = value;
+        isGameInitiated = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController textEditingController = TextEditingController();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    updatePlayerId();
     return WillPopScope(
       onWillPop: () {
         return Navigator.pushReplacement(context,
@@ -149,6 +161,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             prefixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
+                                    //todo problem with future
+                                    // searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+                                    //     .then((value) {
+                                    //   String? gameId = value;
+                                    // });
                                     isShowBox = !isShowBox;
                                   });
                                   if (isShowBox == true) {
@@ -187,17 +204,20 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                       ? SizedBox(
                           height: 55.h,
                           width: double.infinity,
+                          // todo put searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup().
+                          //todo if it returns null, gameInitilized = true.
+                          //todo also returns the gameId, that should go into
                           child: isGameInitiated
                               // Where is this comming from?
                               // it is comming from group_list.dart.
                               //     GroupData groupData =
                               // GroupData.fromSnapshot(snapshot.data?.docs[index]);
                               // isGameInnitiated depends on groupData.gameId!=''
-
                               //! Source of problem
                               ? getSelectedGame(
                                   // selectedGame
-                                  0)
+                                  0 // todo gameId:
+                                  )
                               : Center(
                                   child: Column(children: [
                                     ElevatedButton(
@@ -279,7 +299,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                         child: const Text('Cancel')),
                     ElevatedButton(
                         onPressed: () async {
-                          // print(selectedUsersList.length);
                           // selectedUsersList.forEach((element) {
                           //   print(element);
                           // });
@@ -315,10 +334,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
-  Widget getSelectedGame(int selectedGame) {
-    print(selectedGame);
-    print('_groupData.users');
-    print(_groupData.users);
+  Widget getSelectedGame(int selectedGame, {String? gameId}) {
+    // print(selectedGame);
+    // print('_groupData.users');
+    // print(_groupData.users);
 
     Widget game = SizedBox();
 
@@ -333,9 +352,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           },
           gameId: _groupData.gameId, //=> GameRoom => doc()
           players: _groupData.players,
-          //todo send userNameList
+          // send userNameList
           playersName: [],
-          chatId: widget.chatId,
+          chatId: widget.chatId, isGameInitiated: isGameInitiated,
         );
         break;
       case AppConstants.tikTackToe:
@@ -408,10 +427,13 @@ class _playersListState extends State<playersList> {
                 child: ListView.builder(
                     itemCount: snapshot.data?.docs.length,
                     itemBuilder: (context, index) {
+                      // print('asdfgfdsdfghjhgfdsdfghjklkjhgfdsdfghjklkjhgf');
+                      // print(snapshot.data?.docs[0]['isEngaged']);
                       UserModel users =
                           UserModel.fromSnapshot(snapshot.data?.docs[index]);
                       if (widget.users.contains(users.id) &&
-                          UserServices.userId != users.id) {
+                          UserServices.userId != users.id &&
+                          snapshot.data?.docs[index]['isEngaged'] == false) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -450,7 +472,11 @@ class _playersListState extends State<playersList> {
                                     if (value == true) {
                                       setState(() {
                                         //! The list where the users who will play are added.
-                                        selectedUsersList.add(users.id);
+                                        if (selectedUsersList
+                                            .contains(users.id)) {
+                                        } else {
+                                          selectedUsersList.add(users.id);
+                                        }
                                       });
                                     } else {
                                       setState(() {

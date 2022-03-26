@@ -59,8 +59,15 @@ class _NavDrawerState extends State<NavDrawer> {
                                   BorderRadius.all(Radius.circular(10))),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: snapshot.data != null
-                                ? Image.network(snapshot.data!.image)
+                            child: snapshot.data != null ||
+                                    snapshot.data?.image != null
+                                ? Image.network(
+                                    snapshot.data!.image,
+                                    errorBuilder: (x, y, z) {
+                                      return Image.asset(
+                                          'assets/images/user.jpg');
+                                    },
+                                  )
                                 : Image(
                                     image: AssetImage('assets/images/user.jpg'),
                                   ),

@@ -30,6 +30,9 @@ class UserServices {
 
   Future<bool> updateUserData(Map<String, dynamic> values) async {
     bool status = false;
+     print('KKKKKKKKKKKKKKKKKKKKK');
+      print(values['isEngaged']);
+  
     await FirebaseUtils.getUsersColRef()
         .doc(UserServices.userId)
         .update(values)
@@ -46,8 +49,11 @@ class UserServices {
     FirebaseUtils.getUsersColRef().doc(UserServices.userId).update(values);
   }
 
-  Future<UserModel> getUserById(String id) =>
-      FirebaseUtils.getUsersColRef().doc(id).get().then((doc) {
+  Future<UserModel> getUserById(String id) => FirebaseFirestore.instance
+          .collection(KeyConstants.USERS)
+          .doc(id)
+          .get()
+          .then((doc) {
         return UserModel.fromSnapshot(doc);
       });
 

@@ -8,7 +8,8 @@ class UserModel {
   String _imageUrl = "";
   bool _online = false;
   Timestamp _lastSeen = Timestamp.now();
-  String _username="" ;
+  String _username = "";
+  bool _isEngaged = false;
 
 //  getters
   String get number => _number;
@@ -18,6 +19,7 @@ class UserModel {
   bool get online => _online;
   Timestamp get lastSeen => _lastSeen;
   String get username => _username;
+  bool get isEngaged => _isEngaged;
 
   UserModel();
 
@@ -30,7 +32,6 @@ class UserModel {
     _online = data?[KeyConstants.ONLINE];
     _lastSeen = data?[KeyConstants.LAST_SEEN];
     _username = data?[KeyConstants.USER_NAME];
+    _isEngaged = data?[KeyConstants.ISENGAGED];
   }
-
-
 }
