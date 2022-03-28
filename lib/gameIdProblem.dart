@@ -115,9 +115,9 @@ Future<String?>
       .get()
       .whenComplete(() {});
   try {
-    // print('players');
-    // print(result.docs.length);
-    // print(result.docs[0]['players'][2]);
+    print('players');
+    print(result.docs.length);
+    print(result.docs[0]['players'][2]);
     return result.docs[0]['players'][2];
   } catch (e) {
     return null;

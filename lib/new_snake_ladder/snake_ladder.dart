@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print, prefer_const_literals_to_create_immutables, void_checks
 
 import 'dart:developer';
 import 'dart:math';
@@ -47,13 +47,13 @@ class _SnakeLadderState extends State<SnakeLadder> {
   void initState() {
     super.initState();
     initFunc();
-    // showDialogIfOtherPersonsEngagedIsFalse();
     addFieldsofUsersInGameRoom(widget.players, widget.gameId);
   }
 
   initFunc() async {
     int position1 = 1;
     int position2 = 1;
+    print(widget.players);
     Map<String, dynamic> positionAndActivePlayerMap = {
       widget.players[0]: position1,
       widget.players[1]: position2,
@@ -93,35 +93,11 @@ class _SnakeLadderState extends State<SnakeLadder> {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: showDialogIfOtherPersonsEngagedIsFalse(),
-        builder: (context1, AsyncSnapshot snapshot1) {
+        builder: (context1, AsyncSnapshot otherPersonEngagedOfNotSnapshot) {
           return StreamBuilder(
               stream: snakeLadderDatabase()
                   .getSnakeLadderPositionData(widget.gameId),
               builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot1.hasData && snapshot1.data['isEngaged'] == false) {
-                  print(snapshot1.data['isEngaged']);
-                  return AlertDialog(
-                    title: Text('Other person has quit the Game'),
-                    // content: Text('Do you also want to Quit the game?'),
-                    actions: [
-                      // TextButton(
-                      //     onPressed: () {
-                      //       Navigator.pop(context1);
-                      //     },
-                      //     child: Text('No')),
-                      TextButton(
-                          onPressed: () {
-                            initFunc();
-                            deletePresentUserFromGameRoom(widget.gameId);
-                            GameService()
-                                .deleteGame(widget.gameId, widget.chatId);
-                            widget.onEnd();
-                          },
-                          child: Text('Quit')),
-                    ],
-                  );
-                }
-                // showDialogIfOtherPersonsEngagedIsFalse();
                 if (snapshot.hasData) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -260,10 +236,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  // End updates gameId, gameName, player.uid,
-                                  //! uid just keeps adding, adding. Makes 3-5 players.
-                                  //? Why use players, users. different different??
-                                  //? Where the SnakeLadder inPlaying data is stored??
                                   initFunc();
                                   deletePresentUserFromGameRoom(widget.gameId);
                                   GameService()
@@ -275,7 +247,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                     backgroundColor: MaterialStateProperty.all(
                                         Colors.orange)),
                               ),
-                              Dice(snapshot)
+                              Dice(snapshot, otherPersonEngagedOfNotSnapshot)
                             ],
                           ),
                         ],
@@ -393,11 +365,88 @@ class _SnakeLadderState extends State<SnakeLadder> {
         });
   }
 
-  void rollDice(AsyncSnapshot snapshot) {
+  showOtherPlayerLeftAppDialog(String nameOfWinner) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text(
+              '$nameOfWinner has left the Game',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black54),
+            ),
+            content: Text('Do you also want to quit this Game?'),
+            backgroundColor: Colors.orange[100],
+            elevation: 10,
+            actions: [
+              TextButton(
+                  onPressed: () => {
+                        Navigator.of(context).pop(),
+                      },
+                  child: Text(
+                    "No",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              TextButton(
+                  onPressed: () => {
+                        Navigator.of(context).pop(),
+                        initFunc(),
+                        deletePresentUserFromGameRoom(widget.gameId),
+                        GameService().deleteGame(widget.gameId, widget.chatId),
+                        widget.onEnd(),
+
+                        // Navigator.of(context).pop(),
+                      },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(color: Colors.black),
+                  )),
+            ],
+          );
+        });
+  }
+
+  void rollDice(
+      AsyncSnapshot snapshot, AsyncSnapshot otherPersonEngagedOfNotSnapshot) {
     number = 1 + Random().nextInt(6);
+    print(otherPersonEngagedOfNotSnapshot.data['username']);
+    print(otherPersonEngagedOfNotSnapshot.data['isEngaged']);
+    if (otherPersonEngagedOfNotSnapshot.hasData &&
+        otherPersonEngagedOfNotSnapshot.data['isEngaged'] == false) {
+      print('Optimus Prime');
+      print(otherPersonEngagedOfNotSnapshot.data['isEngaged']);
+      return showOtherPlayerLeftAppDialog(
+          otherPersonEngagedOfNotSnapshot.data['username']);
+      // AlertDialog(
+      //   title: Text('Other person has quit the Game'),
+      //   // content: Text('Do you also want to Quit the game?'),
+      //   actions: [
+      //     // TextButton(
+      //     //     onPressed: () {
+      //     //       Navigator.pop(context1);
+      //     //     },
+      //     //     child: Text('No')),
+      //     TextButton(
+      //         onPressed: () {
+      //           initFunc();
+      //           deletePresentUserFromGameRoom(widget.gameId);
+      //           GameService()
+      //               .deleteGame(widget.gameId, widget.chatId);
+      //           widget.onEnd();
+      //         },
+      //         child: Text('Quit')),
+      //   ],
+      // );
+
+    }
+
     if (widget.players[0] == UserServices.userId) {
       print('User is First');
       if (snapshot.data['activePlayer'] == UserServices.userId) {
+        if (snapshot.data[widget.players[1]] == 100) {
+          checkwhoWon(snapshot.data[widget.players[1]], widget.players[1]);
+        }
         int position1 = snapshot.data[widget.players[0]] + number;
         position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
         position1 =
@@ -418,6 +467,9 @@ class _SnakeLadderState extends State<SnakeLadder> {
     if (widget.players[1] == UserServices.userId) {
       print('User is Second');
       if (snapshot.data['activePlayer'] == UserServices.userId) {
+        if (snapshot.data[widget.players[0]] == 100) {
+          checkwhoWon(snapshot.data[widget.players[0]], widget.players[1]);
+        }
         int position2 = snapshot.data[widget.players[1]] + number;
         position2 = addAndDeleteIfFallOnSnakeOrLadder(position2);
         position2 =
@@ -467,12 +519,13 @@ class _SnakeLadderState extends State<SnakeLadder> {
     }
   }
 
-  Widget Dice(AsyncSnapshot snapshot) {
+  Widget Dice(
+      AsyncSnapshot snapshot, AsyncSnapshot otherPersonEngagedOfNotSnapshot) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: () {
-          rollDice(snapshot);
+          rollDice(snapshot, otherPersonEngagedOfNotSnapshot);
         },
         child: DiceItem(
           dice: DicesConst.dice(

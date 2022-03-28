@@ -7,6 +7,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/ui/screens/chat_screen.dart';
+import 'package:dicegram/ui/screens/dashboard.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,7 @@ class ContactListScreen extends StatefulWidget {
 
 class _ContactsScreenState extends State<ContactListScreen> {
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-  PermissionStatus? status;
+  // PermissionStatus? status;
 
   @override
   Widget build(BuildContext context) {
@@ -41,102 +42,117 @@ class _ContactsScreenState extends State<ContactListScreen> {
         ),
         body: Column(
           children: [
-            Expanded(
-                child: FutureBuilder<List<Contact>>(
-                    // Doesnt fetch phoneContacts. Only simContacts
-                    future: ContactsService.getContacts(withThumbnails: false),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      if (snapshot.data == null) {
-                        return const Text('No Contact Found');
-                      }
-                      List<Contact> contactList = snapshot.data!;
-                      print('snapshot.data');
-                      print(snapshot.data);
-                      return FutureBuilder<List<UserModel>>(
-                          future: UserServices()
-                              .getFirebaseUsersFromContacts(contactList),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<List<UserModel>> snapshot) {
-                            if (snapshot.hasError) {
-                              return Text(snapshot.error.toString());
-                            } else if (snapshot.hasData &&
-                                snapshot.data != null) {
-                              if (snapshot.data!.isEmpty) {
-                                return const Center(
-                                    child: Text('No Contacts found'));
-                              } else {
-                                return Container(
-                                  height: 400,
-                                  child: Expanded(
-                                    child: Center(
-                                      child: ListView.builder(
-                                          itemCount: snapshot.data!.length,
-                                          itemBuilder: (context, index) {
-                                            user = snapshot.data![index];
-                                            if (user.id != userId) {
-                                              return InkWell(
-                                                onTap: () async {
-                                                  //! Store in Hive. Index is int.
-                                                  await handleOnClick(
-                                                      snapshot.data![index]);
-                                                },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: width * 0.1,
-                                                        height: width * 0.1,
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      width *
-                                                                          0.1),
-                                                          child: Image.network(
-                                                            //!String imageUrl
-                                                            user.image
-                                                                .toString(),
-                                                            fit: BoxFit.cover,
-                                                            errorBuilder:
-                                                                (context, error,
-                                                                    stackTrace) {
-                                                              return Image.network(
-                                                                  'https://picsum.photos/250?image=9');
-                                                            },
+            status == PermissionStatus.granted
+                ? Expanded(
+                    child: FutureBuilder<List<Contact>>(
+                        // Doesnt fetch phoneContacts. Only simContacts
+                        future:
+                            ContactsService.getContacts(withThumbnails: false),
+                        builder: (context, AsyncSnapshot snapshot) {
+                          if (snapshot.data == null) {
+                            return const Text('No Contact Found');
+                          }
+                          List<Contact> contactList = snapshot.data!;
+                          print('snapshot.data');
+                          print(snapshot.data);
+                          return FutureBuilder<List<UserModel>>(
+                              future: UserServices()
+                                  .getFirebaseUsersFromContacts(contactList),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<List<UserModel>> snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text(snapshot.error.toString());
+                                } else if (snapshot.hasData &&
+                                    snapshot.data != null) {
+                                  if (snapshot.data!.isEmpty) {
+                                    return const Center(
+                                        child: Text('No Contacts found'));
+                                  } else {
+                                    return Container(
+                                      height: 400,
+                                      child: Expanded(
+                                        child: Center(
+                                          child: ListView.builder(
+                                              itemCount: snapshot.data!.length,
+                                              itemBuilder: (context, index) {
+                                                user = snapshot.data![index];
+                                                if (user.id != userId) {
+                                                  return InkWell(
+                                                    onTap: () async {
+                                                      //! Store in Hive. Index is int.
+                                                      await handleOnClick(
+                                                          snapshot
+                                                              .data![index]);
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Row(
+                                                        children: [
+                                                          SizedBox(
+                                                            width: width * 0.1,
+                                                            height: width * 0.1,
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          width *
+                                                                              0.1),
+                                                              child:
+                                                                  Image.network(
+                                                                //!String imageUrl
+                                                                user.image
+                                                                    .toString(),
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                errorBuilder:
+                                                                    (context,
+                                                                        error,
+                                                                        stackTrace) {
+                                                                  return Image
+                                                                      .network(
+                                                                          'https://picsum.photos/250?image=9');
+                                                                },
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          SizedBox(
+                                                              width:
+                                                                  width * 0.7,
+                                                              child: Text(
+                                                                user.username,
+                                                                maxLines: 1,
+                                                              )),
+                                                          // Checkbox(value: false, onChanged: (bool? value) {  },
+                                                          // )
+                                                        ],
                                                       ),
-                                                      const SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      SizedBox(
-                                                          width: width * 0.7,
-                                                          child: Text(
-                                                            user.username,
-                                                            maxLines: 1,
-                                                          )),
-                                                      // Checkbox(value: false, onChanged: (bool? value) {  },
-                                                      // )
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            } else
-                                              return Center(
-                                                  child: Text('No User Found'));
-                                          }),
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                            return Center(
-                                child:
-                                    SpinKitPouringHourGlass(color: Colors.red));
-                          });
-                    })),
+                                                    ),
+                                                  );
+                                                } else
+                                                  return Center(
+                                                      child: Text(
+                                                          'No User Found'));
+                                              }),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                                return Center(
+                                    child: SpinKitPouringHourGlass(
+                                        color: Colors.red));
+                              });
+                        }))
+                : Container(
+                    child: Center(
+                      child: Text('Contact Permission Required'),
+                    ),
+                  ),
             InkWell(
               onTap: () async {
                 Share.share(

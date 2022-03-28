@@ -60,9 +60,19 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   updatePlayerId() async {
     await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
         .then((value) {
+      print("value");
+      print(value);
+      isShowBox = !isShowBox;
+      // if (value == null) {
+      //   CircularProgressIndicator();
+      // }
+      // Might cause problems?
+
       if (value != null) {
         _groupData.gameId = value;
         isGameInitiated = true;
+      } else {
+        CircularProgressIndicator();
       }
     });
   }
@@ -72,7 +82,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     TextEditingController textEditingController = TextEditingController();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    updatePlayerId();
     return WillPopScope(
       onWillPop: () {
         return Navigator.pushReplacement(context,
@@ -161,19 +170,24 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             prefixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
+                                    updatePlayerId();
                                     //todo problem with future
                                     // searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
                                     //     .then((value) {
                                     //   String? gameId = value;
                                     // });
-                                    isShowBox = !isShowBox;
+                                    // isShowBox = !isShowBox;
                                   });
                                   if (isShowBox == true) {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   } else {
-                                    FocusManager.instance.primaryFocus
-                                        ?.nextFocus();
+                                    try {
+                                      FocusManager.instance.primaryFocus
+                                          ?.nextFocus();
+                                    } catch (e) {
+                                      print(e);
+                                    }
                                   }
                                 },
                                 icon: Image.asset("assets/images/game.png")),
@@ -204,20 +218,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                       ? SizedBox(
                           height: 55.h,
                           width: double.infinity,
-                          // todo put searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup().
-                          //todo if it returns null, gameInitilized = true.
-                          //todo also returns the gameId, that should go into
                           child: isGameInitiated
-                              // Where is this comming from?
-                              // it is comming from group_list.dart.
-                              //     GroupData groupData =
-                              // GroupData.fromSnapshot(snapshot.data?.docs[index]);
-                              // isGameInnitiated depends on groupData.gameId!=''
-                              //! Source of problem
                               ? getSelectedGame(
                                   // selectedGame
-                                  0 // todo gameId:
-                                  )
+                                  0)
                               : Center(
                                   child: Column(children: [
                                     ElevatedButton(
@@ -335,15 +339,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   }
 
   Widget getSelectedGame(int selectedGame, {String? gameId}) {
-    // print(selectedGame);
-    // print('_groupData.users');
-    // print(_groupData.users);
-
     Widget game = SizedBox();
-
     switch (selectedGame) {
       case AppConstants.snakeLadder:
-        //
         game = SnakeLadder(
           onEnd: () {
             setState(() {

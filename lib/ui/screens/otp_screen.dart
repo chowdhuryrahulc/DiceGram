@@ -23,8 +23,7 @@ class _OTPScreenState extends State<OtpScreen> {
   @override
   void initState() {
     super.initState();
-    _verifyPhone(); // log code send is reciecieved from here
-    // Without this, code wont be send.
+    _verifyPhone();
   }
 
   void _verifyPhone() async {
@@ -126,7 +125,8 @@ class _OTPScreenState extends State<OtpScreen> {
                             verificationId: _verificationCode!, smsCode: _otp!))
                         .then((value) async {
                       if (value.user != null) {
-                        Map<String, dynamic> userData = Map();
+                        //! updated
+                        Map<String, dynamic> userData = {};
                         userData[KeyConstants.ID] = value.user!.uid;
                         userData[KeyConstants.LAST_SEEN] =
                             FieldValue.serverTimestamp();
@@ -142,6 +142,8 @@ class _OTPScreenState extends State<OtpScreen> {
                         // Logic: if the phoneNumber is present in the database, then update credentials.
                         // otherwise create in users.
                         // log('Gooooo');
+                        print('USERDATAAAAA');
+                        print(userData['isEngaged']);
                         checkPhoneNumberinFirebaseCollectionandReturnBool(
                             phoneNumber: value.user!.phoneNumber!,
                             values: userData,
@@ -230,10 +232,10 @@ class _OTPScreenState extends State<OtpScreen> {
           userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
           userData[KeyConstants.USER_NAME] = widget._username;
 
-                        checkPhoneNumberinFirebaseCollectionandReturnBool(
-                            phoneNumber: value.user!.phoneNumber!,
-                            values: userData,
-                            context: context);
+          checkPhoneNumberinFirebaseCollectionandReturnBool(
+              phoneNumber: value.user!.phoneNumber!,
+              values: userData,
+              context: context);
 
           // checkPhoneNumberinFirebaseCollectionandReturnBool(
           //     value.user!.phoneNumber!, userData, context);

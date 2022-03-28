@@ -14,12 +14,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UserServices {
   static String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  // Future<bool>
-
   Future<bool> createUser(Map<String, dynamic> values) async {
     String id = values[KeyConstants.ID];
     bool status = false;
     // await FirebaseUtils.getUsersColRef().doc(id).update(values);
+    print('IsUserServices1');
+    print(values['isEngaged']);
     await FirebaseUtils.getUsersColRef().doc(id).set(values).then((value) {
       status = true;
     }).catchError((onError) {
@@ -30,9 +30,9 @@ class UserServices {
 
   Future<bool> updateUserData(Map<String, dynamic> values) async {
     bool status = false;
-     print('KKKKKKKKKKKKKKKKKKKKK');
-      print(values['isEngaged']);
-  
+    print('InUserServices2');
+    print(values['isEngaged']);
+
     await FirebaseUtils.getUsersColRef()
         .doc(UserServices.userId)
         .update(values)

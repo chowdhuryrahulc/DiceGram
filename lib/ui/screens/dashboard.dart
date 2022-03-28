@@ -22,10 +22,15 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
 
+var status;
+
 checkPhoneNumberinFirebaseCollectionandReturnBool(
     {required String phoneNumber,
     required Map<String, dynamic> values,
     required BuildContext context}) async {
+  print('OOOOOOOOOOOOOOOOOOOOOOOOOO');
+  print(values['isEngaged']); //! Showing null
+  print(values['username']);
   bool isPresent = false;
   var x = await FirebaseFirestore.instance
       .collection(KeyConstants.USERS)
@@ -86,7 +91,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     }
   }
 
-  var status;
+//! permission error
   permissionContacts() async {
     status = await Permission.contacts.request();
     print(status);
