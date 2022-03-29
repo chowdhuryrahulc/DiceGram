@@ -31,7 +31,7 @@ class _GroupListState extends State<GroupList> {
           return ListView.builder(
               itemCount: snapshot.data?.docs.length,
               itemBuilder: (context, index) {
-                var chatId = snapshot.data?.docs[index].id;
+                var groupChatDocomentId = snapshot.data?.docs[index].id;
                 // DocomentName: GroupList().doc() //! Why do we need this?
                 // chatId:
                 // FK17naJe5FwiQkBwWxyI
@@ -40,7 +40,8 @@ class _GroupListState extends State<GroupList> {
                 String? groupName =
                     snapshot.data?.docs[index][KeyConstants.GROUP_NAME];
                 print("snapshot.data?.docs[index]");
-                print(snapshot.data?.docs[index]['gameId']);
+                print(snapshot.data?.docs[index]['users']);
+                print('done');
                 // groupName:
                 // ATGroup
                 // Next
@@ -55,13 +56,14 @@ class _GroupListState extends State<GroupList> {
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => GroupChatScreen(
+                              adminId: snapshot.data?.docs[index]['adminId'],
                               groupData: groupData, //=> gameId
-                              chatId: chatId ?? "",
+                              chatId: groupChatDocomentId ?? "",
                               groupName: groupName.toString(),
                             )));
                   },
                   child: GroupChatCard(
-                    groupId: chatId.toString(),
+                    groupId: groupChatDocomentId.toString(),
                   ),
                 );
               });

@@ -83,7 +83,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Image.network(
                           userModel?.image ?? '',
                           errorBuilder: (context, error, stackTrace) {
-                            print('Extra ${userModel?.image.toString()}');
                             return Image.asset('assets/images/person.png');
                           },
                         ))),
@@ -93,7 +92,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: GestureDetector(
                         onTap: () async {
                           // This opens the showDialog.
-                          watchprovider.showDialogToFetchProfilePic(context, func);
+                          watchprovider.showDialogToFetchProfilePic(
+                              context, func);
                         },
                         child: Image.asset('assets/images/camera.png'))),
                 Positioned(

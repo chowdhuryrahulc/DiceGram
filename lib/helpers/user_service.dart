@@ -196,6 +196,7 @@ class UserServices {
     List<List<String>> subList = [];
 
     //dividing list of 10 10 contacts
+    //! Not Required
     for (var i = 0; i < phoneNumberList.length; i += 10) {
       subList.add(phoneNumberList.sublist(i,
           i + 10 > phoneNumberList.length ? phoneNumberList.length : i + 10));

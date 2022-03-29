@@ -110,6 +110,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     super.initState();
     permissionContacts();
     WidgetsBinding.instance?.addObserver(this);
+    fetchAllFirebaseContats();
     setOnline(true);
   }
 
@@ -117,6 +118,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     String userName = 'User Name';
     String? profileImage;
+    streamToGetSnapshotOfChatListUserData('RjuyX2EYmazbJWRM1jsT');
     // showDialogIfOtherPersonsEngagedIsFalse();
     // setIsEngagedToTrue();
     // knowIfOtherPersonHasLoggedOut();
@@ -132,6 +134,14 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
+          // returnUserNameFromUserId([
+          //   '8ffhjaxUjgd2ZmYtcFjVaqZuaix1',
+          //   'H8vz29qDDbZzcGjW7MBLPMp34wm1',
+          //   'LUwHiFM0rHYgWIQcx4401ytTF673'
+          // ]);
+          // addUserInGroup('99nhZPjcB7ey9Zw8nCH3', ['a', 'b', 'c']);
+          // deleteUserFromGroup(
+          //     "99nhZPjcB7ey9Zw8nCH3", "XXZFT8jZXTa8VlxmtYw8EblEUpI3");
           // we are getting this data from:
           // users=> imageURL
           // Setting this data in NavDrawer=> ProfilePage
@@ -266,7 +276,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                               builder: (context) => isChatSelected
-                                  ? ContactListScreen() // Create one to one chat.
+                                  ? ContactsScreen() // Create one to one chat.
                                   : ContactsScreen2())); // Create group
                     } else {
                       var snackBar = SnackBar(

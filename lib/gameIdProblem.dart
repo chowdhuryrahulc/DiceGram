@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, camel_case_types
 
 /*
 Q1) How do we get the same gameId in both the devices?
@@ -44,12 +44,88 @@ Q2) What all methords do we need?
 
 */
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/models/group_data.dart';
+import 'package:dicegram/models/user_model.dart';
+import 'package:dicegram/ui/screens/group/group_chat_screen.dart';
+import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
+
+/*
+Logic:
+  showing: 
+  select and delete.
+*/
+
+streamToGetSnapshotOfChatListUserData(String chatId) {
+  var x = FirebaseFirestore.instance
+      .collection('Chat List')
+      .doc(chatId)
+      .snapshots();
+  log('X');
+  print(x);
+}
+
+updateGroupName(String docId, String newGroupName) {
+  FirebaseFirestore.instance
+      .collection('Group List')
+      .doc(docId)
+      .update({'groupName': newGroupName});
+}
+
+// Working
+Future<List<String>> returnUserNameFromUserId(List<String> listOfUsers) async {
+  List<String> userNameList = [];
+  try {
+    for (var i = 0; i < listOfUsers.length; i++) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(listOfUsers[i])
+          .get()
+          .then((value) {
+        // print(value['username']);
+        userNameList.add(value['username']);
+      });
+    }
+  } catch (e) {}
+  return userNameList;
+}
+
+// Working
+deleteUserFromGroup(String groupId, List<String> idOfPlayer) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('Group List')
+        .doc(groupId)
+        .update({'users': FieldValue.arrayRemove(idOfPlayer)}).whenComplete(() {
+      print('Compleated');
+    });
+  } catch (e) {
+    print(e);
+  }
+}
+
+// Working
+addUsersInGroup(String groupId, List<String> idOfNewPlayer) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('Group List')
+        .doc(groupId)
+        .update({'users': FieldValue.arrayUnion(idOfNewPlayer)}).whenComplete(
+            () {
+      print('Compleated');
+    });
+  } catch (e) {
+    print(e);
+  }
+}
 
 //! join the player in the existing game?
 //! pull the docomentId and put it in the gameId in SnakeLadder game. It will work.
+
 // put docId inside players. InNextButton,
 // fetch is done.
 
@@ -199,12 +275,16 @@ setIsEngagedToTrue({required String playerDocId, required bool boolToSet}) {
 //     return value.data()!['online'];
 //   });
 
-  //     .update({
-  //   'players': FieldValue.arrayRemove(['SZZzDRzMdEf2TlnoFdaY3s8W43f1'])
-  // }).whenComplete(() {
-  //   print('Compleated');
-  // });
+//     .update({
+//   'players': FieldValue.arrayRemove(['SZZzDRzMdEf2TlnoFdaY3s8W43f1'])
+// }).whenComplete(() {
+//   print('Compleated');
+// });
 // }
 
 // playerStatus 0/1
 // Winners:
+
+fetchAllFirebaseContats() {
+  return FirebaseUtils.getUsersColRef().get();
+}

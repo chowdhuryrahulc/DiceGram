@@ -54,13 +54,15 @@ class _SnakeLadderState extends State<SnakeLadder> {
     int position1 = 1;
     int position2 = 1;
     print(widget.players);
-    Map<String, dynamic> positionAndActivePlayerMap = {
-      widget.players[0]: position1,
-      widget.players[1]: position2,
-      'activePlayer': widget.players[0]
-    };
-    snakeLadderDatabase()
-        .sendSnakeLadderPositionData(widget.gameId, positionAndActivePlayerMap);
+    try {
+      Map<String, dynamic> positionAndActivePlayerMap = {
+        widget.players[0]: position1,
+        widget.players[1]: position2,
+        'activePlayer': widget.players[0]
+      };
+      snakeLadderDatabase().sendSnakeLadderPositionData(
+          widget.gameId, positionAndActivePlayerMap);
+    } catch (e) {}
   }
 
   showDialogIfOtherPersonsEngagedIsFalse() {

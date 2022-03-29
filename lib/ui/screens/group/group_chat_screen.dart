@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types, curly_braces_in_flow_control_structures
+// ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/TikTakToe/TikTakToe/TikTakToe.dart';
@@ -12,6 +12,7 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/group_data.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/new_snake_ladder/snake_ladder.dart';
+import 'package:dicegram/providers/group_provider.dart';
 import 'package:dicegram/ui/screens/dashboard.dart';
 import 'package:dicegram/ui/widgets/group/group_chat_bubble.dart';
 import 'package:dicegram/utils/Color.dart';
@@ -19,19 +20,28 @@ import 'package:dicegram/utils/app_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../gamemain.dart';
+import 'Widgets/addPlayerList.dart';
+import 'Widgets/deletePlayerList.dart';
 
 List<String> selectedUsersList = [];
+List<String> deletedUsersList = [];
+List<String> newAddedUsersList = [];
 
 class GroupChatScreen extends StatefulWidget {
   const GroupChatScreen({
     Key? key,
+    // required this.users,
+    required this.adminId,
     required this.chatId,
     required this.groupName,
     required this.groupData,
   }) : super(key: key);
+  // final List<String> users;
+  final String adminId;
   final String chatId;
   final String groupName;
   final GroupData groupData; //=> gameId
@@ -47,6 +57,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   bool isGameInitiated = false;
   late GroupData _groupData; // Comming from last screen.
   int selectedGame = -1;
+  Future<List<String>>? listOfUsername;
 
   @override
   void initState() {
@@ -79,9 +90,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController newGroupController = TextEditingController();
     TextEditingController textEditingController = TextEditingController();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    final _formKey = GlobalKey<FormState>();
     return WillPopScope(
       onWillPop: () {
         return Navigator.pushReplacement(context,
@@ -97,6 +110,136 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               color: Colors.white, //change your color here
             ),
             title: Text(widget.groupName),
+            actions: [
+              widget.adminId == UserServices.userId
+                  ? PopupMenuButton(
+                      itemBuilder: (popupContext) => [
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      showDialog(
+                                          context: popupContext,
+                                          builder: (popupContext) {
+                                            return SizedBox(
+                                              height: 100,
+                                              child: updateGroupNameDialogBox(
+                                                  _formKey,
+                                                  newGroupController,
+                                                  context,
+                                                  popupContext),
+                                            );
+                                          });
+                                    },
+                                    child: Text('Update GroupName'))),
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      showDialog(
+                                        context: popupContext,
+                                        builder: (context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            elevation: 16,
+                                            child: Column(
+                                              children: [
+                                                const Text('Select Players'),
+                                                addPlayersList(
+                                                    groupData: _groupData),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          newAddedUsersList
+                                                              .clear;
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: const Text(
+                                                            'Cancel')),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          addUsersInGroup(
+                                                              widget.chatId,
+                                                              newAddedUsersList);
+                                                          newAddedUsersList
+                                                              .clear();
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text('Next')),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Add players'))),
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: popupContext,
+                                        builder: (context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            elevation: 16,
+                                            child: SizedBox(
+                                              height: 500,
+                                              child: Column(
+                                                children: [
+                                                  const Text('Select Players'),
+                                                  deletePlayersList(
+                                                      groupData: _groupData),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            selectedUsersList
+                                                                .clear;
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: const Text(
+                                                              'Cancel')),
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            deleteUserFromGroup(
+                                                                widget.chatId,
+                                                                deletedUsersList);
+                                                            deletedUsersList
+                                                                .clear();
+                                                            Navigator.pop(
+                                                                context);
+                                                            setState(() {});
+                                                          },
+                                                          child: Text('Next')),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Remove Players')))
+                          ])
+                  : SizedBox()
+            ],
           ),
           body: SingleChildScrollView(
             child: SizedBox(
@@ -255,6 +398,37 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               ),
             ),
           )),
+    );
+  }
+
+  updateGroupNameDialogBox(
+      GlobalKey<FormState> _formKey,
+      TextEditingController newGroupController,
+      BuildContext context,
+      BuildContext popupContext) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 16,
+      title: Text('Enter New Group Name'),
+      actions: [
+        ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                Navigator.pop(context);
+                updateGroupName(widget.chatId, newGroupController.text);
+                Navigator.pop(popupContext);
+                setState(() {});
+              }
+            },
+            child: Text('Submit'))
+      ],
+      content: Form(
+          key: _formKey,
+          child: TextFormField(
+              validator: (value) =>
+                  value!.isNotEmpty ? null : 'GroupName Should Not Be Empty',
+              controller: newGroupController,
+              decoration: InputDecoration())),
     );
   }
 

@@ -79,6 +79,8 @@ class GroupProvider extends ChangeNotifier {
 
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => GroupChatScreen(
+                //! might break?
+                adminId: UserServices.userId,
                 groupData: GroupData(
                   adminId: UserServices.userId,
                   users: userIds,
