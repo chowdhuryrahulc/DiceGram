@@ -67,6 +67,7 @@ class UserServices {
             createdAt: Timestamp.now(),
             groupName: '',
             imageUrl: '',
+            isPlaying: false,
             isGroup: false,
             userIds: userIds)
         .toMap());

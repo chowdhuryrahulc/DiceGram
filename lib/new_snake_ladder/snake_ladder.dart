@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print, prefer_const_literals_to_create_immutables, void_checks
 
-import 'dart:developer';
+import 'dart:developer' as log;
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/gameIdProblem.dart';
@@ -24,10 +24,12 @@ class SnakeLadder extends StatefulWidget {
       required this.playersName,
       required this.chatId,
       required this.onEnd,
-      required this.isGameInitiated})
+      required this.isGameInitiated,
+      this.inSingleChat})
       : super(key: key);
   String gameId;
   bool isGameInitiated;
+  bool? inSingleChat = false;
   final List<String> players;
   final List<String> playersName;
   final String chatId;
@@ -53,7 +55,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
   initFunc() async {
     int position1 = 1;
     int position2 = 1;
-    print(widget.players);
+    print("players ${widget.players}");
     try {
       Map<String, dynamic> positionAndActivePlayerMap = {
         widget.players[0]: position1,
@@ -62,7 +64,10 @@ class _SnakeLadderState extends State<SnakeLadder> {
       };
       snakeLadderDatabase().sendSnakeLadderPositionData(
           widget.gameId, positionAndActivePlayerMap);
-    } catch (e) {}
+    } catch (e) {
+      log.log('Harammmm');
+      print(e);
+    }
   }
 
   showDialogIfOtherPersonsEngagedIsFalse() {
@@ -81,6 +86,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
     }
   }
 
+//todo: Do not need this. Instead gameId is chatId. And isInitilized is done from the lastPage.
   updatePlayerId() async {
     await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
         .then((value) {
@@ -155,7 +161,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                           ),
                                         ),
                                         Play(
-                                          // Real position of the player
                                           totalPlayerOne:
                                               snapshot.data[widget.players[0]],
                                           totalPlayerTwo:
@@ -238,11 +243,23 @@ class _SnakeLadderState extends State<SnakeLadder> {
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  initFunc();
-                                  deletePresentUserFromGameRoom(widget.gameId);
-                                  GameService()
-                                      .deleteGame(widget.gameId, widget.chatId);
-                                  widget.onEnd();
+                                  try {
+                                    initFunc();
+                                    //todo Added in SingleChat
+                                    if (widget.inSingleChat == true) {
+                                      setIsPlaying(
+                                          chatDocId: widget.chatId,
+                                          boolToSet: false);
+                                    }
+                                    deletePresentUserFromGameRoom(
+                                        widget.gameId);
+                                    GameService().deleteGame(
+                                        widget.gameId, widget.chatId);
+                                    widget.onEnd();
+                                  } catch (e) {
+                                    log.log('HaramKhor');
+                                    print(e);
+                                  }
                                 },
                                 child: Text('End'),
                                 style: ButtonStyle(
@@ -260,9 +277,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                   return Container();
                 }
               });
-        }
-        // child:
-        );
+        });
   }
 
   int number = 1;
@@ -310,26 +325,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
     }
     return position1;
   }
-
-//TODO INTEGRATE THIS
-  // showDialogIfOtherPersonsEngagedIsFalse() {
-  //   Stream<DocumentSnapshot<Map<String, dynamic>>> x = FirebaseFirestore
-  //       .instance
-  //       .collection('users')
-  //       .doc('lOrd0qJFKtYPud7GilwpSeoehZG2')
-  //       .snapshots();
-  //   return StreamBuilder(
-  //       stream: x,
-  //       builder: (context, AsyncSnapshot snapshot) {
-  //         print('Hello');
-  //         if (snapshot.hasData && snapshot.data['isEngaged'] == true) {
-  //           print(snapshot.data['isEngaged']);
-  //           return AlertDialog();
-  //         } else {
-  //           return SizedBox();
-  //         }
-  //       });
-  // }
 
   showResetDialog(String nameOfWinner) {
     showDialog(
@@ -397,8 +392,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                         deletePresentUserFromGameRoom(widget.gameId),
                         GameService().deleteGame(widget.gameId, widget.chatId),
                         widget.onEnd(),
-
-                        // Navigator.of(context).pop(),
                       },
                   child: Text(
                     "Yes",
@@ -412,35 +405,10 @@ class _SnakeLadderState extends State<SnakeLadder> {
   void rollDice(
       AsyncSnapshot snapshot, AsyncSnapshot otherPersonEngagedOfNotSnapshot) {
     number = 1 + Random().nextInt(6);
-    print(otherPersonEngagedOfNotSnapshot.data['username']);
-    print(otherPersonEngagedOfNotSnapshot.data['isEngaged']);
     if (otherPersonEngagedOfNotSnapshot.hasData &&
         otherPersonEngagedOfNotSnapshot.data['isEngaged'] == false) {
-      print('Optimus Prime');
-      print(otherPersonEngagedOfNotSnapshot.data['isEngaged']);
       return showOtherPlayerLeftAppDialog(
           otherPersonEngagedOfNotSnapshot.data['username']);
-      // AlertDialog(
-      //   title: Text('Other person has quit the Game'),
-      //   // content: Text('Do you also want to Quit the game?'),
-      //   actions: [
-      //     // TextButton(
-      //     //     onPressed: () {
-      //     //       Navigator.pop(context1);
-      //     //     },
-      //     //     child: Text('No')),
-      //     TextButton(
-      //         onPressed: () {
-      //           initFunc();
-      //           deletePresentUserFromGameRoom(widget.gameId);
-      //           GameService()
-      //               .deleteGame(widget.gameId, widget.chatId);
-      //           widget.onEnd();
-      //         },
-      //         child: Text('Quit')),
-      //   ],
-      // );
-
     }
 
     if (widget.players[0] == UserServices.userId) {
@@ -490,23 +458,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
             SnackBar(content: Text('Not Your Turn'), duration: duration));
       }
     }
-
-    // if (snapshot.data['activePlayer'] == UserServices.userId) {
-    //   int position1 = snapshot.data[widget.players[0]] + number;
-    //   position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
-    //   position1 = dontAllowMovementIfPositionIsHigherThan100(position1, number);
-    //   // int position2 = 1;
-    //   Map<String, dynamic> positionAndActivePlayerMap = {
-    //     widget.players[0]: position1,
-    //     widget.players[1]: snapshot.data[widget.players[1]],
-    //     'activePlayer': widget.players[1]
-    //   };
-    //   snakeLadderDatabase().updateSnakeLadderPositionData(
-    //       widget.gameId, positionAndActivePlayerMap);
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('Not Your Turn'), duration: duration));
-    // }
   }
 
   checkwhoWon(int position, String nameOfWinner) async {
@@ -527,6 +478,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: () {
+          print("onpressed users data ${widget.players}");
           rollDice(snapshot, otherPersonEngagedOfNotSnapshot);
         },
         child: DiceItem(

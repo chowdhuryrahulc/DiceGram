@@ -54,6 +54,7 @@ class _GroupListState extends State<GroupList> {
                     GroupData.fromSnapshot(snapshot.data?.docs[index]);
                 return InkWell(
                   onTap: () {
+                    //! gets groupdata. users
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => GroupChatScreen(
                               adminId: snapshot.data?.docs[index]['adminId'],

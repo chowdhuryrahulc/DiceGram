@@ -231,6 +231,7 @@ class _OTPScreenState extends State<OtpScreen> {
           userData[KeyConstants.ONLINE] = false;
           userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
           userData[KeyConstants.USER_NAME] = widget._username;
+          userData[KeyConstants.ISENGAGED] = false;
 
           checkPhoneNumberinFirebaseCollectionandReturnBool(
               phoneNumber: value.user!.phoneNumber!,

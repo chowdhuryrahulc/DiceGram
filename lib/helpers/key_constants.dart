@@ -15,6 +15,7 @@ class KeyConstants {
   static const SENDER_NAME = "senderName";
   static const IS_GROUP = 'isGroup';
   static const ADMIN_ID = 'adminId';
+  static const ISPLAYING = 'isPlaying';
   static const USERS = 'users';
   static const GROUP_NAME = 'groupName';
   static const MESSAGE = 'message';

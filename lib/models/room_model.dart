@@ -6,6 +6,7 @@ class Room {
   bool isGroup = false;
   String adminId = '';
   List<String> userIds = [];
+  bool isPlaying = false;
   String groupName = '';
   Timestamp createdAt = Timestamp.now();
 
@@ -15,6 +16,7 @@ class Room {
       required this.groupName,
       required this.adminId,
       required this.isGroup,
+      required this.isPlaying,
       required this.userIds});
 
   Room.fromSnapshot(DocumentSnapshot? snapshot) {
@@ -22,6 +24,7 @@ class Room {
     imageUrl = data?[KeyConstants.IMAGE_URL];
     isGroup = data?[KeyConstants.IS_GROUP];
     adminId = data?[KeyConstants.ADMIN_ID];
+    isPlaying = data?[KeyConstants.ISPLAYING];
     userIds.addAll(data?[KeyConstants.USERS]);
     groupName = data?[KeyConstants.GROUP_NAME];
     createdAt = data?[KeyConstants.CREATED_AT];
@@ -32,6 +35,7 @@ class Room {
     room[KeyConstants.IMAGE_URL] = imageUrl;
     room[KeyConstants.IS_GROUP] = isGroup;
     room[KeyConstants.ADMIN_ID] = adminId;
+    room[KeyConstants.ISPLAYING] = isPlaying;
     room[KeyConstants.USERS] = userIds;
     room[KeyConstants.GROUP_NAME] = groupName;
     room[KeyConstants.CREATED_AT] = createdAt;

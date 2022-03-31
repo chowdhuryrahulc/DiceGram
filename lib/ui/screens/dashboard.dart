@@ -134,17 +134,6 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
-          // returnUserNameFromUserId([
-          //   '8ffhjaxUjgd2ZmYtcFjVaqZuaix1',
-          //   'H8vz29qDDbZzcGjW7MBLPMp34wm1',
-          //   'LUwHiFM0rHYgWIQcx4401ytTF673'
-          // ]);
-          // addUserInGroup('99nhZPjcB7ey9Zw8nCH3', ['a', 'b', 'c']);
-          // deleteUserFromGroup(
-          //     "99nhZPjcB7ey9Zw8nCH3", "XXZFT8jZXTa8VlxmtYw8EblEUpI3");
-          // we are getting this data from:
-          // users=> imageURL
-          // Setting this data in NavDrawer=> ProfilePage
           profileImage = snapshot.data?.image;
           return Scaffold(
             drawer: NavDrawer(),

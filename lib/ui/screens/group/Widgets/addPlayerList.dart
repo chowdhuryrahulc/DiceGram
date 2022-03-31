@@ -18,6 +18,7 @@ class _addPlayersListState extends State<addPlayersList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
+        //todo add filteration
         stream: UserServices().getFirebaseUsers(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {

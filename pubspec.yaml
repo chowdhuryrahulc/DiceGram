@@ -104,6 +104,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/snakeLadder/snake_ladder.jpeg
     - assets/snakeLadder/dice/
     - assets/snakeLadder/prints_screens/
     - assets/snakeLadder/
@@ -120,6 +121,7 @@ flutter:
     - assets/images/dark_brown_board.png
     - assets/images/2.0x/dark_brown_board.png
     - assets/images/3.0x/dark_brown_board.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

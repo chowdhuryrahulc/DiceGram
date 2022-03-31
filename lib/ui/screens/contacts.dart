@@ -312,14 +312,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
                           builder: (context, AsyncSnapshot contactSnapshot) {
                             if (contactSnapshot.data != null) {
                               List<Contact> contactList = contactSnapshot.data!;
-                              // print('object');
-                              // print(contactList[234]
-                              //     .phones
-                              //     ?.first
-                              //     .value
-                              //     .toString()
-                              //     .replaceAll(' ', '')); // prints G256, correct
-
                               //todo first for loop for all firebase docs
                               for (var i = 0;
                                   i < firebaseSnapshot.data!.docs.length;
@@ -332,8 +324,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
                                     j < contactList.length - 1;
                                     j++) {
                                   try {
-                                    // print(
-                                    //     "contacts ${contactList[j].phones?.first.value}");
                                     if (name.number ==
                                         contactList[j]
                                             .phones
@@ -342,8 +332,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
                                             .toString()
                                             .replaceAll(' ', '')) {
                                       log(name.username);
-                                      peopleList.add(name);
-                                      // return Text(name.username);
+                                      if (peopleList.contains(name)) {
+                                      } else {
+                                        peopleList.add(name);
+                                      }
                                     }
                                   } catch (e) {}
                                 }
