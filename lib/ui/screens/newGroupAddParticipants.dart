@@ -86,6 +86,11 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                           //todo place for next for loop
                           for (var j = 0; j < contactList.length - 1; j++) {
                             try {
+                              if (contactList[j].phones?.first.value?[0] !=
+                                  '+') {
+                                contactList[j].phones?.first.value =
+                                    '+91' + contactList[j].phones!.first.value!;
+                              }
                               if (name.number ==
                                   contactList[j]
                                       .phones
@@ -93,7 +98,6 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                                       .value
                                       .toString()
                                       .replaceAll(' ', '')) {
-                                log(name.username);
                                 if (peopleList.contains(name)) {
                                 } else {
                                   peopleList.add(name);
@@ -138,7 +142,7 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                                                                     .network(
                                                                   peopleList[
                                                                           index]
-                                                                      .image
+                                                                      .imageUrl
                                                                       .toString(),
                                                                   fit: BoxFit
                                                                       .cover,

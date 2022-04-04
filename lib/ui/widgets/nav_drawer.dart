@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/ui/screens/login_screen.dart';
-import 'package:dicegram/ui/screens/prifile._page.dart';
+import 'package:dicegram/ui/screens/profilePage.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:dicegram/utils/app_constants.dart';
 import 'package:dicegram/utils/dimensions.dart';
@@ -60,9 +60,9 @@ class _NavDrawerState extends State<NavDrawer> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: snapshot.data != null ||
-                                    snapshot.data?.image != null
+                                    snapshot.data?.imageUrl != null
                                 ? Image.network(
-                                    snapshot.data!.image,
+                                    snapshot.data!.imageUrl,
                                     errorBuilder: (x, y, z) {
                                       return Image.asset(
                                           'assets/images/user.jpg');

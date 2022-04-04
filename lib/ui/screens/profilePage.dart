@@ -22,20 +22,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final TextEditingController controller = TextEditingController();
     ProfileProvider watchprovider = context.watch<ProfileProvider>();
     ProfileProvider readprovider = context.read<ProfileProvider>();
-
-    void func() {
-      setState(() {
-        print('objecttttttttttt');
-      });
-    }
-
     UserModel? userModel;
     return FutureBuilder<UserModel>(
         future: watchprovider.getCurrentUserModel(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           userModel = snapshot.data;
-          print('userModel?.image');
-          print(userModel?.image);
           return Scaffold(
             body: Stack(
               children: [
@@ -81,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 100,
                         width: 110,
                         child: Image.network(
-                          userModel?.image ?? '',
+                          userModel?.imageUrl ?? '',
                           errorBuilder: (context, error, stackTrace) {
                             return Image.asset('assets/images/person.png');
                           },
@@ -92,8 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: GestureDetector(
                         onTap: () async {
                           // This opens the showDialog.
-                          watchprovider.showDialogToFetchProfilePic(
-                              context, func);
+                          watchprovider.showDialogToFetchProfilePic(context);
                         },
                         child: Image.asset('assets/images/camera.png'))),
                 Positioned(

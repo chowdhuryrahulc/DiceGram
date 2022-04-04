@@ -9,7 +9,7 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/ui/screens/chatroom.dart';
 import 'package:dicegram/ui/screens/newGroupAddParticipants.dart';
-import 'package:dicegram/ui/screens/contacts.dart';
+import 'package:dicegram/ui/screens/InvitePage.dart';
 import 'package:dicegram/ui/screens/group/create_group_screen.dart';
 import 'package:dicegram/ui/screens/group/group_list.dart';
 import 'package:dicegram/ui/widgets/nav_drawer.dart';
@@ -19,8 +19,9 @@ import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
-import 'chat_list2.dart';
+import 'dashboardChats.dart';
 
 var status;
 
@@ -116,12 +117,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    String? h = context.watch<updateGroup>().newName;
+    print(h);
     String userName = 'User Name';
     String? profileImage;
-    streamToGetSnapshotOfChatListUserData('RjuyX2EYmazbJWRM1jsT');
-    // showDialogIfOtherPersonsEngagedIsFalse();
-    // setIsEngagedToTrue();
-    // knowIfOtherPersonHasLoggedOut();
     return WillPopScope(
       onWillPop: () async {
         SystemNavigator.pop();
@@ -134,7 +133,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
-          profileImage = snapshot.data?.image;
+          profileImage = snapshot.data?.imageUrl;
           return Scaffold(
             drawer: NavDrawer(),
             appBar: AppBar(
@@ -250,7 +249,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                 body: const TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    ChatList2(),
+                    DashboardChats(),
                     GroupList(),
                   ],
                 ),
@@ -258,14 +257,12 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                   shape: ContinuousRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   onPressed: () {
-                    if (status == PermissionStatus.granted
-                        // status.isGranted
-                        ) {
+                    if (status == PermissionStatus.granted) {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => isChatSelected
-                                  ? ContactsScreen() // Create one to one chat.
+                                  ? InvitePage() // Create one to one chat.
                                   : ContactsScreen2())); // Create group
                     } else {
                       var snackBar = SnackBar(

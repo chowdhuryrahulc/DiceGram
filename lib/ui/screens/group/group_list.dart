@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/group_service.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/models/group_data.dart';
@@ -10,6 +11,7 @@ import 'package:dicegram/ui/widgets/group/group_chat_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class GroupList extends StatefulWidget {
   const GroupList({Key? key}) : super(key: key);
@@ -39,9 +41,10 @@ class _GroupListState extends State<GroupList> {
                 // rh1ZmgO5GDPWOQaHdrNZ
                 String? groupName =
                     snapshot.data?.docs[index][KeyConstants.GROUP_NAME];
-                print("snapshot.data?.docs[index]");
-                print(snapshot.data?.docs[index]['users']);
-                print('done');
+                // print("snapshot.data?.docs[index]");
+                // print(snapshot.data?.docs[index]['users']);
+                log('Hellow');
+                log("GroupName $groupName");
                 // groupName:
                 // ATGroup
                 // Next
@@ -60,6 +63,8 @@ class _GroupListState extends State<GroupList> {
                               adminId: snapshot.data?.docs[index]['adminId'],
                               groupData: groupData, //=> gameId
                               chatId: groupChatDocomentId ?? "",
+                              //todo Sending groupName to be shown in AppBar
+                              //todo updating in this stream, but not inside GroupChatScreen.
                               groupName: groupName.toString(),
                             )));
                   },

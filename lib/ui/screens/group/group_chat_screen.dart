@@ -64,6 +64,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   @override
   void initState() {
     _groupData = widget.groupData;
+    updatePlayerId();
     print("InitState groupChatScreen ${_groupData.players}");
     if (_groupData.gameId != '') {
       log('groupData.gameId');
@@ -78,7 +79,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         .then((value) {
       print("value");
       print(value); // z0a5E7N4P3d5NXAyHVexXbZn9xB2
-      isShowBox = !isShowBox;
       // if (value == null) {
       //   CircularProgressIndicator();
       // }
@@ -100,8 +100,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     final _formKey = GlobalKey<FormState>();
+    // String? h = context.watch<updateGroup>().newName;
     return WillPopScope(
       onWillPop: () {
+        // log(h ?? '');
         return Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
           return Dashboard();
@@ -131,7 +133,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                               child: updateGroupNameDialogBox(
                                                   _formKey,
                                                   newGroupController,
-                                                  context,
+                                                  // context,
                                                   popupContext),
                                             );
                                           });
@@ -142,46 +144,16 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                     onPressed: () {
                                       Navigator.pop(context);
                                       showDialog(
-                                        context: popupContext,
+                                        context: context,
                                         builder: (context) {
                                           return Dialog(
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             elevation: 16,
-                                            child: Column(
-                                              children: [
-                                                const Text('Select Players'),
-                                                addPlayersList(
-                                                    groupData: _groupData),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    ElevatedButton(
-                                                        onPressed: () {
-                                                          newAddedUsersList
-                                                              .clear;
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text(
-                                                            'Cancel')),
-                                                    ElevatedButton(
-                                                        onPressed: () {
-                                                          addUsersInGroup(
-                                                              widget.chatId,
-                                                              newAddedUsersList);
-                                                          newAddedUsersList
-                                                              .clear();
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Text('Next')),
-                                                  ],
-                                                )
-                                              ],
+                                            child: addPlayersList(
+                                              groupData: _groupData,
+                                              chatId: widget.chatId,
                                             ),
                                           );
                                         },
@@ -321,45 +293,35 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                           Fetch value beforehand. Then you can Set is initilized or not. Also is loading, circular indicator.
                           After fetching value from streambuilder? We can set isGameInitilized and gameId directly from stream.
                           */
-                            prefixIcon: FutureBuilder(
-                                future:
-                                    futuretoSearchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup(),
-                                builder: (context, AsyncSnapshot snapshot) {
-                                  if (snapshot.hasData) {
-                                    try {
-                                      print(
-                                          "futureBuilderTesting: ${snapshot.data![0]}");
-                                    } catch (e) {
-                                      print(e);
-                                    }
-                                  }
-                                  return IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          updatePlayerId();
-                                          //   //todo problem with future
-                                          //   // searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
-                                          //   //     .then((value) {
-                                          //   //   print("values: $value");
-                                          //   //   String? gameId = value;
-                                          //   // });
-                                        });
-                                        if (isShowBox == true) {
-                                          FocusManager.instance.primaryFocus
-                                              ?.unfocus();
-                                        } else {
-                                          try {
-                                            FocusManager.instance.primaryFocus
-                                                ?.nextFocus();
-                                          } catch (e) {
-                                            log('Error Occured');
-                                            print(e);
-                                          }
-                                        }
-                                      },
-                                      icon: Image.asset(
-                                          "assets/images/game.png"));
-                                }),
+                            prefixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    print(
+                                        "isShowBoxBefore: $isShowBox"); //? true
+                                    isShowBox = !isShowBox;
+                                    print("isShowBox: $isShowBox"); //? false
+                                    // updatePlayerId();
+                                    //   //todo problem with future
+                                    //   // searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+                                    //   //     .then((value) {
+                                    //   //   print("values: $value");
+                                    //   //   String? gameId = value;
+                                    //   // });
+                                  });
+                                  //   if (isShowBox == true) {
+                                  //     FocusManager.instance.primaryFocus
+                                  //         ?.unfocus();
+                                  //   } else {
+                                  //     try {
+                                  //       FocusManager.instance.primaryFocus
+                                  //           ?.nextFocus();
+                                  //     } catch (e) {
+                                  //       log('Error Occured');
+                                  //       print(e);
+                                  //     }
+                                  //   }
+                                },
+                                icon: Image.asset("assets/images/game.png")),
                             suffixIcon: IconButton(
                                 onPressed: () {
                                   if (textEditingController.text
@@ -391,54 +353,52 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                               ? getSelectedGame(
                                   // selectedGame
                                   0)
-                              : Center(
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            selectedGame =
-                                                AppConstants.snakeLadder;
-                                            setState(() {});
-                                            onGameSelected(
-                                                AppConstants.snakeLadder);
-                                          },
-                                          child: ClipOval(
-                                            child: Container(
-                                              height: 200,
-                                              child: Image.asset(
-                                                  "assets/snakeLadder/snake_ladder.jpeg"),
-                                            ),
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                      InkWell(
+                                        onTap: () {
+                                          selectedGame =
+                                              AppConstants.snakeLadder;
+                                          setState(() {});
+                                          onGameSelected(
+                                              AppConstants.snakeLadder);
+                                        },
+                                        child: ClipOval(
+                                          child: Container(
+                                            height: 200,
+                                            child: Image.asset(
+                                                "assets/snakeLadder/snake_ladder.png"),
                                           ),
                                         ),
-                                        // ElevatedButton(
-                                        //   onPressed: () {
-                                        //     selectedGame =
-                                        //         AppConstants.snakeLadder;
-                                        //     setState(() {});
-                                        //     onGameSelected(
-                                        //         AppConstants.snakeLadder);
-                                        //   },
-                                        //   child: Text('Snake Ladder'),
-                                        // ),
-                                        // ElevatedButton(
-                                        //   onPressed: () {
-                                        //     selectedGame = AppConstants.chess;
-                                        //     onGameSelected(AppConstants.chess);
-                                        //   },
-                                        //   child: Text('Chess'),
-                                        // ),
-                                        // ElevatedButton(
-                                        //   onPressed: () {
-                                        //     selectedGame = AppConstants.tikTackToe;
-                                        //     setState(() {});
-                                        //     onGameSelected(AppConstants.tikTackToe);
-                                        //   },
-                                        //   child: Text('Tik-Tack Toe'),
-                                        // ),
-                                      ]),
-                                ))
+                                      ),
+                                      // ElevatedButton(
+                                      //   onPressed: () {
+                                      //     selectedGame =
+                                      //         AppConstants.snakeLadder;
+                                      //     setState(() {});
+                                      //     onGameSelected(
+                                      //         AppConstants.snakeLadder);
+                                      //   },
+                                      //   child: Text('Snake Ladder'),
+                                      // ),
+                                      // ElevatedButton(
+                                      //   onPressed: () {
+                                      //     selectedGame = AppConstants.chess;
+                                      //     onGameSelected(AppConstants.chess);
+                                      //   },
+                                      //   child: Text('Chess'),
+                                      // ),
+                                      // ElevatedButton(
+                                      //   onPressed: () {
+                                      //     selectedGame = AppConstants.tikTackToe;
+                                      //     setState(() {});
+                                      //     onGameSelected(AppConstants.tikTackToe);
+                                      //   },
+                                      //   child: Text('Tik-Tack Toe'),
+                                      // ),
+                                    ]))
                       : const SizedBox()
                 ],
               ),
@@ -448,10 +408,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   }
 
   updateGroupNameDialogBox(
-      GlobalKey<FormState> _formKey,
-      TextEditingController newGroupController,
-      BuildContext context,
-      BuildContext popupContext) {
+    GlobalKey<FormState> _formKey,
+    TextEditingController newGroupController,
+    context,
+    // BuildContext popupContext
+  ) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 16,
@@ -462,7 +423,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               if (_formKey.currentState!.validate()) {
                 Navigator.pop(context);
                 updateGroupName(widget.chatId, newGroupController.text);
-                Navigator.pop(popupContext);
+                // context.read<updateGroup>().update(newGroupController.text);
+                // Navigator.pop(popupContext);
                 setState(() {});
               }
             },
@@ -658,7 +620,7 @@ class _playersListState extends State<playersList> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50),
                                   child: Image.network(
-                                    users.image.toString(),
+                                    users.imageUrl.toString(),
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Image.network(

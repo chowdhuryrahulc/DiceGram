@@ -104,7 +104,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/snakeLadder/snake_ladder.jpeg
+    - assets/snakeLadder/snake_ladder.png
     - assets/snakeLadder/dice/
     - assets/snakeLadder/prints_screens/
     - assets/snakeLadder/

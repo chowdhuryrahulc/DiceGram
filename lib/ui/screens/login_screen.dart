@@ -164,13 +164,18 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => OtpScreen(
-                            countryPhoneCode + _mobileController.text,
-                            _usernameController.text)),
-                  );
+                  if (_usernameController.text.characters.length < 3) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Add valid User name')));
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OtpScreen(
+                              countryPhoneCode + _mobileController.text,
+                              _usernameController.text)),
+                    );
+                  }
                 },
                 child: Container(
                   decoration: const BoxDecoration(

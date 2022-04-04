@@ -1,7 +1,8 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_const_constructors
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
 class ProfileProvider extends ChangeNotifier {
 //fireabse
@@ -24,53 +26,63 @@ class ProfileProvider extends ChangeNotifier {
   File? imageprofile;
   String? username;
 
-  void showDialogToFetchProfilePic(BuildContext context, VoidCallback func) {
+  void showDialogToFetchProfilePic(BuildContext context) {
+    bool x =
+        Provider.of<circularProgressIndicatorController>(context, listen: false)
+            .showProgressIndicator;
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-              actionsAlignment: MainAxisAlignment.center,
-              actions: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                        onPressed: () async {
-                          XFile? image = await imagePicker.pickImage(
-                              source: ImageSource.camera,
+        builder: (context) => Provider.of<circularProgressIndicatorController>(
+                    context,
+                    listen: false)
+                .showProgressIndicator
+            ? Center(child: CircularProgressIndicator())
+            : AlertDialog(
+                actionsAlignment: MainAxisAlignment.center,
+                actions: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          onPressed: () async {
+                            context
+                                .read<circularProgressIndicatorController>()
+                                .updateCircularProgressIndictor(true);
+                            XFile? image = await imagePicker.pickImage(
+                                source: ImageSource.camera,
+                                imageQuality: 50,
+                                preferredCameraDevice: CameraDevice.front);
+                            if (image != null) {
+                              _cropImage(image.path, context);
+                            } else {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: const Text('Pick From Camera')),
+                      TextButton(
+                          onPressed: () async {
+                            context
+                                .read<circularProgressIndicatorController>()
+                                .updateCircularProgressIndictor(true);
+                            XFile? image = await ImagePicker().pickImage(
+                              source: ImageSource.gallery,
                               imageQuality: 50,
-                              preferredCameraDevice: CameraDevice.front);
-                          if (image != null) {
-                            _cropImage(image.path, context, func);
-                          } else {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        child: const Text('Pick From Camera')),
-
-                    TextButton(
-                        onPressed: () async {
-                          XFile? image = await ImagePicker().pickImage(
-                            source: ImageSource.gallery,
-                            imageQuality: 50,
-                          );
-                          if (image != null) {
-                            _cropImage(image.path, context, func);
-                          } else {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        child: const Text('Pick From Gallery'))
-                    // : const Text('Pick From Gallery')),
-                  ],
-                )
-              ],
-            )).then((value) {
-      // func;
-    });
+                            );
+                            if (image != null) {
+                              _cropImage(image.path, context);
+                            } else {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: const Text('Pick From Gallery'))
+                    ],
+                  )
+                ],
+              )).then((value) {});
   }
 
-  void _cropImage(filePath, BuildContext context, VoidCallback func) async {
+  void _cropImage(filePath, BuildContext context) async {
     File? croppedImage = await ImageCropper.cropImage(
       sourcePath: filePath,
       // maxWidth: 1080,
@@ -78,11 +90,15 @@ class ProfileProvider extends ChangeNotifier {
     );
     if (croppedImage != null) {
       imageprofile = croppedImage;
+      print('Before Upload Image');
       await uploadPic(imageprofile!).then((value) {
-        func();
+        print('Started Uploading');
       });
       notifyListeners();
-
+      context
+          .read<circularProgressIndicatorController>()
+          .updateCircularProgressIndictor(false);
+      print('Upper crop Image');
       Navigator.of(context).pop();
     } else {
       Navigator.of(context).pop();
@@ -91,10 +107,9 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<String> uploadPic(File imagefi) async {
     final destination = UserServices.userId;
-    final reference = FirebaseStorage.instance.ref(destination); 
+    final reference = FirebaseStorage.instance.ref(destination);
     final UploadTask uploadTask = reference.putFile(imagefi);
-    final TaskSnapshot location = await uploadTask
-        .whenComplete(() {});
+    final TaskSnapshot location = await uploadTask.whenComplete(() {});
     final String url = await location.ref.getDownloadURL();
     uploadToCLoudstorege(url);
     return url;

@@ -1,6 +1,6 @@
 import 'package:country_code_picker/country_localizations.dart';
-import 'package:dicegram/ContactsBox.dart';
 import 'package:dicegram/StreamBuilderPage.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/providers/profile_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -12,13 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'providers/group_provider.dart';
 
-late Box contactsBox;
 Future<void> main() async {
-  await Hive.initFlutter();
-  // contactsBox = await Hive.openBox('contactsBox');
-  // Hive.registerAdapter(ContactsBoxAdapter());
-  // // Put in DB. In ListViewBuilder
-  // contactsBox.put('contactsBox', ContactsBox(number: 1, contactsName: 'KKK'));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -27,11 +21,14 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          ChangeNotifierProvider<circularProgressIndicatorController>(
+              create: (context) => circularProgressIndicatorController()),
+          ChangeNotifierProvider<updateGroup>(
+              create: (context) => updateGroup()),
           ChangeNotifierProvider<ProfileProvider>(
               create: (context) => ProfileProvider()),
           ChangeNotifierProvider<GroupProvider>(

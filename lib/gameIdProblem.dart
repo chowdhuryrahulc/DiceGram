@@ -88,6 +88,38 @@ AdminEnd: Starts game, isPlaying(in Chat_List) set to true, isEngaged set to tru
 CustomerEnd: 
 */
 
+class circularProgressIndicatorController extends ChangeNotifier {
+  bool showProgressIndicator = false;
+  updateCircularProgressIndictor(bool b) {
+    showProgressIndicator = b;
+    print('showProgressIndicator updated ${showProgressIndicator}');
+    notifyListeners();
+  }
+}
+
+class addPlayerProvider extends ChangeNotifier {
+  List<String> userModelList = [];
+  addUserModelToUserModelList(String y) {
+    userModelList.add(y);
+    notifyListeners();
+  }
+
+  removeUserModelToUserModelList(String y) {
+    userModelList.remove(y);
+    notifyListeners();
+  }
+}
+
+class updateGroup extends ChangeNotifier {
+  String? newName;
+  update(String x) {
+    newName = x;
+    // log('NewName');
+    log(newName!);
+    notifyListeners();
+  }
+}
+
 class providerTest extends ChangeNotifier {
   List<UserModel> userModelList = [];
   addUserModelToUserModelList(UserModel y) {
@@ -230,8 +262,8 @@ knowIfOtherPersonHasLoggedOut() {
   print(x);
 }
 
-futuretoSearchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup() {
-  return FirebaseFirestore.instance
+futuretoSearchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup() async {
+  return await FirebaseFirestore.instance
       .collection('GameRoom')
       .where("players",
           arrayContains: UserServices.userId // user1 id in place of a
@@ -253,7 +285,11 @@ Future<String?>
   if (result.docs.isEmpty) {
     log('isEmpty');
   } else {
-    return result.docs[0]['players'][2];
+    try {
+      return result.docs[0]['players'][2];
+    } catch (e) {
+      return null;
+    }
   }
   // try {
   //   print('players');
