@@ -5,10 +5,12 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/new_snake_ladder/addAndDeleteIfFallOnSnakeOrLadder.dart';
 import 'package:dicegram/new_snake_ladder/dice-item.dart';
 import 'package:dicegram/new_snake_ladder/dices.dart';
 import 'package:dicegram/new_snake_ladder/play.dart';
 import 'package:dicegram/new_snake_ladder/snakeLadderDatabase.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:spring/spring.dart';
 import 'package:demoji/demoji.dart';
 import 'package:dicegram/helpers/game_service.dart';
@@ -42,8 +44,6 @@ class SnakeLadder extends StatefulWidget {
 class _SnakeLadderState extends State<SnakeLadder> {
   Stream? getSnakeLadderDataStream;
   Duration duration = Duration(milliseconds: 500);
-  String? player1Name;
-  String? player2Name;
 
   @override
   void initState() {
@@ -97,11 +97,18 @@ class _SnakeLadderState extends State<SnakeLadder> {
     });
   }
 
+  String? otherPlayerUserId;
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: showDialogIfOtherPersonsEngagedIsFalse(),
         builder: (context1, AsyncSnapshot otherPersonEngagedOfNotSnapshot) {
+          if (widget.players[0] == UserServices.userId) {
+            otherPlayerUserId = widget.players[1];
+          }
+          if (widget.players[1] == UserServices.userId) {
+            otherPlayerUserId = widget.players[0];
+          }
           return StreamBuilder(
               stream: snakeLadderDatabase()
                   .getSnakeLadderPositionData(widget.gameId),
@@ -140,8 +147,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                     return Stack(
                                       children: [
                                         Container(
-                                          width: 100,
-                                          height: 100,
+                                          width: 100.w,
+                                          height: 100.h,
                                           decoration:
                                               BoxDecoration(color: color),
                                           child: Center(
@@ -149,8 +156,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                             child: (100 - index) == 100
                                                 ? Text(
                                                     Demoji.house,
-                                                    style:
-                                                        TextStyle(fontSize: 18),
+                                                    style: TextStyle(
+                                                        fontSize: 18.sp),
                                                   )
                                                 : Text(
                                                     (100 - index).toString(),
@@ -194,7 +201,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                             future1Snapshot.data['username']
                                                 .toString(),
                                             style: TextStyle(
-                                                fontSize: 10,
+                                                fontSize: 10.sp,
                                                 color: future1Snapshot
                                                             .data['id'] ==
                                                         snapshot.data[
@@ -217,7 +224,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                             future2Snapshot.data['username']
                                                 .toString(),
                                             style: TextStyle(
-                                                fontSize: 10,
+                                                fontSize: 10.sp,
                                                 color: future2Snapshot
                                                             .data['id'] ==
                                                         snapshot.data[
@@ -251,8 +258,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                           chatDocId: widget.chatId,
                                           boolToSet: false);
                                     }
-                                    deletePresentUserFromGameRoom(
-                                        widget.gameId);
+                                    deleteUsersFromGameRoom(
+                                        widget.gameId, otherPlayerUserId!);
                                     GameService().deleteGame(
                                         widget.gameId, widget.chatId);
                                     widget.onEnd();
@@ -281,40 +288,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
   }
 
   int number = 1;
-  int addAndDeleteIfFallOnSnakeOrLadder(int position1) {
-    if (position1 == 12) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('You climbed up a Ladder'), duration: duration));
-      position1 = 33;
-    }
-    if (position1 == 37) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('You stepped into a Snake'), duration: duration));
-      position1 = 17;
-    }
-    if (position1 == 55) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('You climbed up a Ladder'), duration: duration));
-      position1 = 58;
-    }
-    if (position1 == 50) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('You climbed up a Ladder'), duration: duration));
-      position1 = 70;
-    }
-    if (position1 == 62) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('You stepped into a Snake'), duration: duration));
-      position1 = 44;
-    }
-    if (position1 == 96) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('You stepped into a Snake'), duration: duration));
-      position1 = 78;
-    }
-    return position1;
-  }
-
   int dontAllowMovementIfPositionIsHigherThan100(int position1, int number) {
     if (position1 > 100) {
       position1 = position1 - number;
@@ -389,7 +362,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
                   onPressed: () => {
                         Navigator.of(context).pop(),
                         initFunc(),
-                        deletePresentUserFromGameRoom(widget.gameId),
+                        deleteUsersFromGameRoom(
+                            widget.gameId, otherPlayerUserId!),
                         GameService().deleteGame(widget.gameId, widget.chatId),
                         widget.onEnd(),
                       },
@@ -418,7 +392,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
           checkwhoWon(snapshot.data[widget.players[1]], widget.players[1]);
         }
         int position1 = snapshot.data[widget.players[0]] + number;
-        position1 = addAndDeleteIfFallOnSnakeOrLadder(position1);
+        position1 =
+            addAndDeleteIfFallOnSnakeOrLadder(position1, context, duration);
         position1 =
             dontAllowMovementIfPositionIsHigherThan100(position1, number);
         Map<String, dynamic> positionAndActivePlayerMap = {
@@ -441,7 +416,8 @@ class _SnakeLadderState extends State<SnakeLadder> {
           checkwhoWon(snapshot.data[widget.players[0]], widget.players[1]);
         }
         int position2 = snapshot.data[widget.players[1]] + number;
-        position2 = addAndDeleteIfFallOnSnakeOrLadder(position2);
+        position2 =
+            addAndDeleteIfFallOnSnakeOrLadder(position2, context, duration);
         position2 =
             dontAllowMovementIfPositionIsHigherThan100(position2, number);
         print(position2);

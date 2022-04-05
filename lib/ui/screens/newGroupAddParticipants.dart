@@ -16,12 +16,12 @@ import 'package:provider/provider.dart';
 import 'chatroom.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class ContactsScreen2 extends StatefulWidget {
+class NewGroupAddParticipants extends StatefulWidget {
   @override
-  State<ContactsScreen2> createState() => _ContactsScreenState();
+  State<NewGroupAddParticipants> createState() => _ContactsScreenState();
 }
 
-class _ContactsScreenState extends State<ContactsScreen2> {
+class _ContactsScreenState extends State<NewGroupAddParticipants> {
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   final scafolfkey = GlobalKey<ScaffoldState>();
   List<UserModel> usersList = [];
@@ -81,9 +81,14 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                         for (var i = 0;
                             i < firebaseSnapshot.data!.docs.length;
                             i++) {
+                          log(UserServices.userId);
+                          if (firebaseSnapshot.data?.docs[i]['id'] ==
+                              UserServices.userId) {
+                            log('User Id From Firebase ${firebaseSnapshot.data?.docs[i]['username']}');
+                          }
                           UserModel name = UserModel.fromSnapshot(
                               firebaseSnapshot.data?.docs[i]);
-                          //todo place for next for loop
+                          // place for next for loop
                           for (var j = 0; j < contactList.length - 1; j++) {
                             try {
                               if (contactList[j].phones?.first.value?[0] !=
@@ -214,12 +219,21 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                                                 context,
                                                 listen: false)
                                             .userModelList;
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    NewGroupProfile(
-                                                      users: x,
-                                                    )));
+                                        if (x.length < 1) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Add At Least one member in the Group.'),
+                                                  duration:
+                                                      Duration(seconds: 3)));
+                                        } else {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NewGroupProfile(
+                                                        users: x,
+                                                      )));
+                                        }
                                       },
                                       shape: ContinuousRectangleBorder(
                                           borderRadius:

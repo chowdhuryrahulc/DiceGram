@@ -10,8 +10,15 @@ import 'package:provider/provider.dart';
 import '../../../../models/user_model.dart';
 
 class addPlayersList extends StatefulWidget {
-  addPlayersList({Key? key, required this.groupData, required this.chatId})
+  addPlayersList(
+      {Key? key,
+      required this.groupData,
+      required this.chatId,
+      required this.adminId,
+      required this.groupName})
       : super(key: key);
+  final String adminId;
+  final String groupName;
   GroupData groupData;
   String chatId;
 
@@ -107,7 +114,6 @@ class _addPlayersListState extends State<addPlayersList> {
                                                   peopleList[index].username,
                                                   maxLines: 1,
                                                 )),
-                                                // CheckBox
                                                 SizedBox(
                                                   width: 20,
                                                   child: Checkbox(
@@ -166,6 +172,18 @@ class _addPlayersListState extends State<addPlayersList> {
                                         addUsersInGroup(widget.chatId, x);
                                         newAddedUsersList.clear();
                                         Navigator.pop(context);
+                                        //todo change
+                                        GroupData groupData =
+                                            GroupData.addUsers(x);
+                                        // Navigator.pushReplacement(context,
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) {
+                                        //   return GroupChatScreen(
+                                        //     adminId: widget.adminId,
+                                        //     chatId: widget.chatId,
+                                        //     groupData: groupData,
+                                        //   );
+                                        // }));
                                       },
                                       child: Text('Next')),
                                 ],

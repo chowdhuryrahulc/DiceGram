@@ -64,10 +64,10 @@ Widget ImageItem(context) {
         top: 45,
         left: 83,
         child: RotationTransition(
-          turns: AlwaysStoppedAnimation(270 / 360),
+          turns: AlwaysStoppedAnimation(320 / 360),
           child: Image.asset(
             SnakesLaddersConst.ladders,
-            height: 160,
+            height: 170,
             width: 70,
           ),
         ),

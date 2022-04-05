@@ -7,18 +7,19 @@ import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/ui/widgets/group/group_unread_message_count.dart';
 import 'package:dicegram/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GroupChatRow extends StatelessWidget {
   const GroupChatRow({
     Key? key,
-    required this.width,
+    // required this.width,
     required this.imageUrl,
     required this.isOnline,
     required this.username,
     required this.groupId,
   }) : super(key: key);
 
-  final double width;
+  // final double width;
   final String imageUrl;
   final bool isOnline;
   final String username;
@@ -60,8 +61,8 @@ class GroupChatRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: width * 0.16,
-                height: width * 0.16,
+                width: (MediaQuery.of(context).size.width * 0.16).w,
+                height: (MediaQuery.of(context).size.width * 0.16).h,
                 child: Stack(fit: StackFit.expand, children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -85,11 +86,11 @@ class GroupChatRow extends StatelessWidget {
                 ]),
               ),
               SizedBox(
-                width: width * 0.04,
+                width: (MediaQuery.of(context).size.width * 0.04).w,
               ),
               SizedBox(
-                height: width * 0.16,
-                width: width * 0.5,
+                height: (MediaQuery.of(context).size.width * 0.16).h,
+                width: (MediaQuery.of(context).size.width * 0.5).w,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,6 +102,8 @@ class GroupChatRow extends StatelessWidget {
                     Text(
                       lastMessage,
                       maxLines: 1,
+                      style:
+                          const TextStyle(fontSize: 13, color: Colors.black54),
                     )
                   ],
                 ),
@@ -108,7 +111,7 @@ class GroupChatRow extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
-                  width: width * 0.2,
+                  width: (MediaQuery.of(context).size.width).w * 0.2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

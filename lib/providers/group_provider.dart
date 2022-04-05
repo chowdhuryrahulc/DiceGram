@@ -97,7 +97,6 @@ class GroupProvider extends ChangeNotifier {
                   isGroup: true,
                 ),
                 chatId: value.id,
-                groupName: groupName,
               )));
     }).onError((error, stackTrace) {});
   }

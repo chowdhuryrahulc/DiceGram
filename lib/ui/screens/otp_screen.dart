@@ -137,34 +137,12 @@ class _OTPScreenState extends State<OtpScreen> {
                         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
                         userData[KeyConstants.USER_NAME] = widget._username;
                         userData[KeyConstants.ISENGAGED] = false;
-
-                        // Saves the Users in users profile.
-                        // Logic: if the phoneNumber is present in the database, then update credentials.
-                        // otherwise create in users.
-                        // log('Gooooo');
-                        print('USERDATAAAAA');
-                        print(userData['isEngaged']);
+//todo Send only name in case of update.
                         checkPhoneNumberinFirebaseCollectionandReturnBool(
                             phoneNumber: value.user!.phoneNumber!,
+                            username: widget._username,
                             values: userData,
                             context: context);
-                        // checkPhoneNumberinFirebaseCollectionandReturnBool(
-                        //     value.user!.phoneNumber!, userData, context);
-
-// await checkPhoneNumberinFirebaseCollectionandReturnBool(phoneNumber, values, context)
-                        // bool status = await UserServices().createUser(userData);
-                        // if (status) {
-                        //   Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //           builder: (context) => const Dashboard()));
-                        // } else {
-                        //   log('Cant save user data');
-                        //   const snackBar = SnackBar(
-                        //     content: Text('Cant save user data!'),
-                        //   );
-                        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        // }
                       } else {
                         FocusScope.of(context).unfocus();
                         _scaffoldkey.currentState?.showSnackBar(
@@ -235,6 +213,7 @@ class _OTPScreenState extends State<OtpScreen> {
 
           checkPhoneNumberinFirebaseCollectionandReturnBool(
               phoneNumber: value.user!.phoneNumber!,
+              username: widget._username,
               values: userData,
               context: context);
 

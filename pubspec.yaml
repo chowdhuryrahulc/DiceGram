@@ -108,6 +108,7 @@ flutter:
     - assets/snakeLadder/dice/
     - assets/snakeLadder/prints_screens/
     - assets/snakeLadder/
+    - assets/TikTakToe.png
     - assets/images/chess_board.png
     - assets/images/brown_board.png
     - assets/images/2.0x/brown_board.png

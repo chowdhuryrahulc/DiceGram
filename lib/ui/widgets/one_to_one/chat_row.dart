@@ -33,11 +33,11 @@ class ChatRow extends StatelessWidget {
       builder: (context, snapshot) {
         var totalMessage = snapshot.data?.docs.length;
         if (totalMessage == null) {
-          return const Text('No msg found');
+          return const Text('');
         }
         var lastMsgData = (totalMessage > 0) ? snapshot.data?.docs[0] : null;
         if (lastMsgData == null) {
-          lastMessage = 'No Messages';
+          lastMessage = '';
           lastMessageTime = '';
         } else {
           lastMessage = lastMsgData[KeyConstants.MESSAGE];

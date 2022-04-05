@@ -13,14 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class GroupList extends StatefulWidget {
-  const GroupList({Key? key}) : super(key: key);
+class DashboardGroups extends StatefulWidget {
+  const DashboardGroups({Key? key}) : super(key: key);
 
   @override
-  State<GroupList> createState() => _GroupListState();
+  State<DashboardGroups> createState() => _DashboardGroupsState();
 }
 
-class _GroupListState extends State<GroupList> {
+class _DashboardGroupsState extends State<DashboardGroups> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -34,30 +34,15 @@ class _GroupListState extends State<GroupList> {
               itemCount: snapshot.data?.docs.length,
               itemBuilder: (context, index) {
                 var groupChatDocomentId = snapshot.data?.docs[index].id;
-                // DocomentName: GroupList().doc() //! Why do we need this?
-                // chatId:
-                // FK17naJe5FwiQkBwWxyI
-                // JUsrs6mPF0G05PMYcBaz
-                // rh1ZmgO5GDPWOQaHdrNZ
                 String? groupName =
                     snapshot.data?.docs[index][KeyConstants.GROUP_NAME];
-                // print("snapshot.data?.docs[index]");
-                // print(snapshot.data?.docs[index]['users']);
-                log('Hellow');
-                log("GroupName $groupName");
-                // groupName:
-                // ATGroup
-                // Next
-                // tushar
-                //! GameId: goes into GameRoom as docomentId
-                // T772fX3kNiqBvv5O5zlY
-                // EOF7uThT5csRGVMw8Lwa
-                // null
+                log(groupName!);
+                // GameId: goes into GameRoom as docomentId
                 GroupData groupData =
                     GroupData.fromSnapshot(snapshot.data?.docs[index]);
                 return InkWell(
                   onTap: () {
-                    //! gets groupdata. users
+                    // gets groupdata. users
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => GroupChatScreen(
                               adminId: snapshot.data?.docs[index]['adminId'],
@@ -65,7 +50,6 @@ class _GroupListState extends State<GroupList> {
                               chatId: groupChatDocomentId ?? "",
                               //todo Sending groupName to be shown in AppBar
                               //todo updating in this stream, but not inside GroupChatScreen.
-                              groupName: groupName.toString(),
                             )));
                   },
                   child: GroupChatCard(

@@ -36,6 +36,19 @@ class GroupData {
     users = json?['users'].cast<String>();
   }
 
+  GroupData.addUsers(List<String> newUsers) {
+    // Map<String, dynamic>? json;
+    adminId = adminId;
+    createdAt = createdAt;
+    groupName = groupName;
+    imageUrl = imageUrl;
+    isGroup = isGroup;
+    players = players;
+    gameName = gameName;
+    gameId = gameId;
+    users = users + newUsers;
+  }
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['adminId'] = adminId;

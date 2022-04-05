@@ -88,6 +88,13 @@ AdminEnd: Starts game, isPlaying(in Chat_List) set to true, isEngaged set to tru
 CustomerEnd: 
 */
 
+getGroupListInformationFromDocoment(String docomentId) {
+  return FirebaseFirestore.instance
+      .collection('Group List')
+      .doc(docomentId)
+      .snapshots();
+}
+
 class circularProgressIndicatorController extends ChangeNotifier {
   bool showProgressIndicator = false;
   updateCircularProgressIndictor(bool b) {
@@ -315,25 +322,25 @@ addFieldsofUsersInGameRoom(List<String> playerList, String gameId) {
     playerList.add(gameId);
   }
   // playerList.reversed;
-
   FirebaseFirestore.instance.collection("GameRoom").doc(gameId).set({
     'players': playerList,
   }).whenComplete(() {
-    //todo commented 8pm 31 March
     // playerList.remove(gameId);
   });
 }
 
 //Working, to be placed in Exit button.
 //! INTEGRATED
-deletePresentUserFromGameRoom(String gameId) async {
+deleteUsersFromGameRoom(String gameId, String otherPersonsUserId) async {
   try {
     await FirebaseFirestore.instance.collection('GameRoom').doc(gameId).update({
-      'players': FieldValue.arrayRemove([UserServices.userId])
+      //todo delete also other player
+      'players': []
     }).whenComplete(() {
       print('Compleated');
     });
     setIsEngagedToTrue(playerDocId: UserServices.userId, boolToSet: false);
+    setIsEngagedToTrue(playerDocId: otherPersonsUserId, boolToSet: false);
   } catch (e) {
     log('This Is ErrorZone');
     print(e);

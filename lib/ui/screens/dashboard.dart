@@ -11,7 +11,7 @@ import 'package:dicegram/ui/screens/chatroom.dart';
 import 'package:dicegram/ui/screens/newGroupAddParticipants.dart';
 import 'package:dicegram/ui/screens/InvitePage.dart';
 import 'package:dicegram/ui/screens/group/create_group_screen.dart';
-import 'package:dicegram/ui/screens/group/group_list.dart';
+import 'package:dicegram/ui/screens/group/dashboardGroups.dart';
 import 'package:dicegram/ui/widgets/nav_drawer.dart';
 import 'package:dicegram/utils/app_constants.dart';
 import 'package:dicegram/utils/dimensions.dart';
@@ -27,11 +27,9 @@ var status;
 
 checkPhoneNumberinFirebaseCollectionandReturnBool(
     {required String phoneNumber,
+    required String username,
     required Map<String, dynamic> values,
     required BuildContext context}) async {
-  print('OOOOOOOOOOOOOOOOOOOOOOOOOO');
-  print(values['isEngaged']); //! Showing null
-  print(values['username']);
   bool isPresent = false;
   var x = await FirebaseFirestore.instance
       .collection(KeyConstants.USERS)
@@ -40,7 +38,7 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
   if (x.size > 0) {
     isPresent = true;
 
-    UserServices().updateUserData(values).then((val) {
+    UserServices().updateUserData({'username': username}).then((val) {
       Navigator.pushAndRemoveUntil<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
@@ -250,7 +248,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                   physics: NeverScrollableScrollPhysics(),
                   children: [
                     DashboardChats(),
-                    GroupList(),
+                    DashboardGroups(),
                   ],
                 ),
                 floatingActionButton: FloatingActionButton(
@@ -262,8 +260,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                               builder: (context) => isChatSelected
-                                  ? InvitePage() // Create one to one chat.
-                                  : ContactsScreen2())); // Create group
+                                  ? InvitePage()
+                                  : NewGroupAddParticipants())); // Create group
                     } else {
                       var snackBar = SnackBar(
                           content: Text('Contacts Permission Required'));
