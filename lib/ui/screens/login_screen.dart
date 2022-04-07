@@ -4,6 +4,7 @@ import 'package:dicegram/utils/Color.dart';
 import 'package:dicegram/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -25,49 +26,50 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         height: height,
         width: width,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
-            end: Alignment(-0.5, 0.5),
-            colors: [Color(0xffFCEE21), Color(0xFFFF0000)],
+            end: Alignment(-0.5.sp, 0.5.sp),
+            colors: const [Color(0xffFCEE21), Color(0xFFFF0000)],
           ),
         ),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(40.0),
+              padding: EdgeInsets.all(40.sp),
               child: Image(
                   fit: BoxFit.fill,
-                  width: width,
-                  image: const AssetImage('assets/images/logo2.png')),
+                  width: width.w,
+                  image: AssetImage('assets/images/logo2.png')),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.h),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black38,
-                        spreadRadius: 1,
-                        blurRadius: 8,
-                        offset: Offset(4, 8), // changes position of shadow
+                        spreadRadius: 1.r,
+                        blurRadius: 8.r,
+                        offset:
+                            Offset(4.sp, 8.sp), // changes position of shadow
                       ),
                     ],
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                    borderRadius: BorderRadius.all(Radius.circular(10.r))),
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                      EdgeInsets.symmetric(vertical: 8.w, horizontal: 16.h),
                   child: TextFormField(
                     obscureText: false,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Name',
                         hintStyle: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.black)),
                     controller: _usernameController,
@@ -75,27 +77,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.h),
               child: Container(
                 width: width,
-                margin: const EdgeInsets.symmetric(vertical: 16.0),
-                decoration: const BoxDecoration(
+                margin: EdgeInsets.symmetric(vertical: 16.w),
+                decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black38,
-                        spreadRadius: 1,
-                        blurRadius: 8,
-                        offset: Offset(4, 8), // changes position of shadow
+                        spreadRadius: 1.r,
+                        blurRadius: 8.r,
+                        offset:
+                            Offset(4.sp, 8.sp), // changes position of shadow
                       ),
                     ],
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                    borderRadius: BorderRadius.all(Radius.circular(10.r))),
                 child: SizedBox(
-                  width: 500,
+                  width: 500.w,
                   child: Row(
                     children: [
                       CountryCodePicker(
@@ -110,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         countryFilter: AppConstants.list,
                         showFlag: false,
                         flagDecoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
+                          borderRadius: BorderRadius.circular(7.r),
                         ),
                       ),
                       Expanded(
@@ -121,12 +124,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             LengthLimitingTextInputFormatter(10),
                             FilteringTextInputFormatter.digitsOnly
                           ],
+                          keyboardType: TextInputType.phone,
                           controller: _mobileController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Phone',
                               hintStyle: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black)),
                         ),
@@ -134,33 +138,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                //Padding(
-                //   padding: const EdgeInsets.symmetric(vertical: 16.0,horizontal: 16),
-                //   child: DropdownButton(
-                //     value: dropdownValue,
-                //     underline: SizedBox(),
-                //     icon: const Icon(Icons.arrow_drop_down_rounded,color: Colors1.primary,),
-                //     elevation: 16,
-                //     style: const TextStyle( fontSize : 16,color: Colors.black, fontWeight: FontWeight.bold),
-                //     isDense: true,
-                //     onChanged: (String? newValue) {
-                //       setState(() {
-                //         dropdownValue = newValue!;
-                //       });
-                //     },
-                //     items: <String>['One', 'Two', 'Free', 'Four']
-                //         .map<DropdownMenuItem<String>>((String value) {
-                //       return DropdownMenuItem<String>(
-                //         value: value,
-                //         child: Text(value),
-                //       );
-                //     }).toList(),
-                //   ),
-                // ),
               ),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             InkWell(
                 onTap: () {
@@ -192,13 +173,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: const Padding(
+                  child: Padding(
                     padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 32),
+                        EdgeInsets.symmetric(vertical: 8.w, horizontal: 32.h),
                     child: Text(
                       'Get OTP',
                       style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),

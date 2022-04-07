@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/providers/group_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import 'group/group_chat_screen.dart';
@@ -47,18 +48,18 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
       body: Stack(
         children: [
           Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
+              top: 0.h,
+              left: 0.w,
+              right: 0.w,
               child: Container(
-                height: 150,
+                height: 150.h,
                 width: double.infinity,
                 decoration:
                     const BoxDecoration(color: NewGroupProfile.bagroundColor),
               )),
           Positioned(
-            top: 50,
-            left: 5,
+            top: 50.h,
+            left: 5.w,
             child: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -70,23 +71,23 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
               ),
             ),
           ),
-          const Positioned(
-            top: 65,
-            left: 55,
+          Positioned(
+            top: 65.h,
+            left: 55.w,
             child: Text(
               'New Group',
               style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
           ),
           Positioned(
-              top: 125,
-              left: 115,
+              top: 125.h,
+              left: 115.w,
               child: SizedBox(
-                height: 100,
-                width: 110,
+                height: 100.h,
+                width: 110.w,
                 child: watchprovider.imageprofile != null
                     ? Image.file(
                         watchprovider.imageprofile!,
@@ -94,14 +95,14 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                         // alignment: FractionalOffset.topCenter,
                       )
                     : Container(
-                        height: 110,
-                        width: 110,
+                        height: 110.h,
+                        width: 110.w,
                         color: Colors.grey[300],
                       ),
               )),
           Positioned(
-              top: 205,
-              right: 135,
+              top: 205.h,
+              right: 135.w,
               child: GestureDetector(
                   onTap: () async {
                     //todo sending image
@@ -113,11 +114,11 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
           Positioned(
             left: 0,
             right: 0,
-            top: 160,
+            top: 160.h,
             child: Column(
               children: [
-                const SizedBox(
-                  height: 90,
+                SizedBox(
+                  height: 90.h,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48.0),
@@ -140,7 +141,7 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                           controller: controller,
                           decoration: InputDecoration(
                               label: Text('Group Name'),
-                              contentPadding: const EdgeInsets.only(left: 20),
+                              contentPadding: EdgeInsets.only(left: 20.w),
                               border: InputBorder.none)),
                     ),
                   ),
@@ -149,18 +150,18 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
             ),
           ),
           Positioned(
-              top: 310,
-              left: 15,
+              top: 310.h,
+              left: 15.w,
               child: Text(
                 'Players : ${widget.users.length}',
                 style: TextStyle(color: Theme.of(context).primaryColor),
               )),
           Positioned(
-              top: 300,
+              top: 300.h,
               left: 0,
               right: 0,
               child: SizedBox(
-                height: 400,
+                height: 400.h,
                 child: ListView.builder(
                     itemCount: widget.users.length,
                     itemBuilder: (context, index) {
@@ -176,11 +177,11 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                             child: Row(
                               children: [
                                 SizedBox(
-                                  width: width * 0.1,
-                                  height: width * 0.1,
+                                  width: width.w * 0.1,
+                                  height: width.w * 0.1,
                                   child: ClipRRect(
                                     borderRadius:
-                                        BorderRadius.circular(width * 0.1),
+                                        BorderRadius.circular(width.w * 0.1),
                                     child: Image.network(
                                       data.imageUrl.toString(),
                                       fit: BoxFit.cover,
@@ -192,11 +193,11 @@ class _NewGroupProfileState extends State<NewGroupProfile> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 10,
+                                SizedBox(
+                                  width: 10.w,
                                 ),
                                 SizedBox(
-                                    width: width * 0.7,
+                                    width: width.w * 0.7,
                                     child: Text(
                                       data.username.toString(),
                                       maxLines: 1,

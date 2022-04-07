@@ -36,20 +36,16 @@ class _DashboardGroupsState extends State<DashboardGroups> {
                 var groupChatDocomentId = snapshot.data?.docs[index].id;
                 String? groupName =
                     snapshot.data?.docs[index][KeyConstants.GROUP_NAME];
-                log(groupName!);
                 // GameId: goes into GameRoom as docomentId
                 GroupData groupData =
                     GroupData.fromSnapshot(snapshot.data?.docs[index]);
                 return InkWell(
                   onTap: () {
-                    // gets groupdata. users
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => GroupChatScreen(
                               adminId: snapshot.data?.docs[index]['adminId'],
                               groupData: groupData, //=> gameId
                               chatId: groupChatDocomentId ?? "",
-                              //todo Sending groupName to be shown in AppBar
-                              //todo updating in this stream, but not inside GroupChatScreen.
                             )));
                   },
                   child: GroupChatCard(

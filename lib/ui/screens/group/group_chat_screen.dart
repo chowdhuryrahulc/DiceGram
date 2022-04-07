@@ -4,7 +4,9 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/TikTakToe/TikTakToe/TikTakToe.dart';
+import 'package:dicegram/chessGame.dart';
 import 'package:dicegram/gameIdProblem.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:dicegram/TikTakToe/tiktakHome.dart';
 // import 'package:dicegram/chess/chessmain.dart';
 import 'package:dicegram/helpers/game_service.dart';
@@ -23,7 +25,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
 
 import '../gamemain.dart';
 import 'Widgets/addPlayerList.dart';
@@ -105,7 +106,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           stream: getGroupListInformationFromDocoment(widget.chatId),
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
-              log(snapshot.data['adminId']);
+              log("Height: ${MediaQuery.of(context).size.height.toString()}");
+              log("Width: ${MediaQuery.of(context).size.width.toString()}");
               groupData = GroupData.fromSnapshot(snapshot.data);
               if (groupData.gameId != '') {
                 // _groupData.gameId = value;
@@ -126,7 +128,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               } else {
                 isGameInitiated = false;
               }
-              log("GroupData: ${isGameInitiated}");
               return Scaffold(
                   appBar: AppBar(
                     iconTheme: const IconThemeData(
@@ -310,10 +311,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                       return SizedBox();
                                   })),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
+                            padding: EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 8),
                             child: Container(
-                              height: 50,
+                              height: 50.h,
+                              width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 color: Colors1.textInputBocColor,
@@ -325,14 +327,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                 maxLines: 5,
                                 minLines: 1,
                                 decoration: InputDecoration(
-                                    //todo add streabuilder.
-                                    /*
-                              StreamBuilder of searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup() stream. 
-                              Fetch value beforehand. Then you can Set is initilized or not. Also is loading, circular indicator.
-                              After fetching value from streambuilder? We can set isGameInitilized and gameId directly from stream.
-                              */
                                     prefixIcon: IconButton(
                                         onPressed: () {
+                                          log('Before setstate');
                                           setState(() {
                                             isShowBox = !isShowBox;
                                           });
@@ -378,15 +375,12 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                           ),
                           isShowBox
                               ? SizedBox(
-                                  height: 55.h,
+                                  height: 400.h,
                                   width: double.infinity,
                                   child: isGameInitiated
                                       ? getSelectedGame(groupData, selectedGame)
-                                      : Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                      : GridView.count(
+                                          crossAxisCount: 2,
                                           children: [
                                               InkWell(
                                                 onTap: () {
@@ -397,7 +391,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                                       AppConstants.snakeLadder);
                                                 },
                                                 child: ClipOval(
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     height: 25.h,
                                                     child: Image.asset(
                                                         "assets/snakeLadder/snake_ladder.png"),
@@ -413,38 +407,29 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                                       AppConstants.tikTackToe);
                                                 },
                                                 child: ClipOval(
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     height: 25.h,
                                                     child: Image.asset(
                                                         "assets/TikTakToe.png"),
                                                   ),
                                                 ),
                                               ),
-                                              // ElevatedButton(
-                                              //   onPressed: () {
-                                              //     selectedGame =
-                                              //         AppConstants.snakeLadder;
-                                              //     setState(() {});
-                                              //     onGameSelected(
-                                              //         AppConstants.snakeLadder);
-                                              //   },
-                                              //   child: Text('Snake Ladder'),
-                                              // ),
-                                              // ElevatedButton(
-                                              //   onPressed: () {
-                                              //     selectedGame = AppConstants.chess;
-                                              //     onGameSelected(AppConstants.chess);
-                                              //   },
-                                              //   child: Text('Chess'),
-                                              // ),
-                                              // ElevatedButton(
-                                              //   onPressed: () {
-                                              //     selectedGame = AppConstants.tikTackToe;
-                                              //     setState(() {});
-                                              //     onGameSelected(AppConstants.tikTackToe);
-                                              //   },
-                                              //   child: Text('Tik-Tack Toe'),
-                                              // ),
+                                              InkWell(
+                                                onTap: () {
+                                                  selectedGame =
+                                                      AppConstants.chess;
+                                                  setState(() {});
+                                                  onGameSelected(
+                                                      AppConstants.chess);
+                                                },
+                                                child: ClipOval(
+                                                  child: SizedBox(
+                                                    height: 25.h,
+                                                    child: Image.asset(
+                                                        "assets/TikTakToe.png"),
+                                                  ),
+                                                ),
+                                              ),
                                             ]))
                               : const SizedBox()
                         ],
@@ -581,8 +566,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           gameId: groupData.gameId, //=> GameRoom => doc()
           players: groupData.players,
           // send userNameList
+          isGameInitiated: isGameInitiated,
           playersName: [],
-          chatId: widget.chatId, isGameInitiated: isGameInitiated,
+          chatId: widget.chatId,
+          // isGameInitiated: isGameInitiated,
         );
         break;
       case AppConstants.tikTackToe:
@@ -597,6 +584,21 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             });
           },
         );
+        break;
+      case AppConstants.chess:
+        game = ChessGame(
+          gameId: groupData.gameId,
+          players: groupData.players,
+          playersName: [],
+          chatId: widget.chatId,
+          isGameInitiated: isGameInitiated,
+          onEnd: () {
+            setState(() {
+              isGameInitiated = false;
+            });
+          },
+        );
+        break;
         // SnakeLadder(
         //   onEnd: () {
         //     setState(() {

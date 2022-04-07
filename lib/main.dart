@@ -7,9 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
 import 'providers/group_provider.dart';
 
 Future<void> main() async {
@@ -34,10 +32,22 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<GroupProvider>(
               create: (context) => GroupProvider()),
         ],
-        child: Sizer(builder: (context, orientation, deviceType) {
-          return ScreenUtilInit(
+        child: ScreenUtilInit(
+//             Height: 745.0
+// [log] Width: 360.0
+// [log] GameName: tikTackToe
+            designSize: Size(360, 745),
+            minTextAdapt: true,
+            splitScreenMode: true,
             builder: () {
               return MaterialApp(
+                  builder: (context, widget) {
+                    ScreenUtil.setContext(context);
+                    return MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaleFactor: 1.0),
+                        child: widget!);
+                  },
                   supportedLocales: const [
                     Locale("af"),
                     Locale("am"),
@@ -122,8 +132,6 @@ class MyApp extends StatelessWidget {
                       primarySwatch: Colors1.primaryApp,
                       primaryColor: Colors1.primaryApp),
                   home: StreamBuilderPage());
-            },
-          );
-        }));
+            }));
   }
 }

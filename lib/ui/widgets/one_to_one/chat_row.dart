@@ -4,11 +4,12 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/ui/widgets/one_to_one/unread_message_count.dart';
 import 'package:dicegram/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatRow extends StatelessWidget {
   const ChatRow({
     Key? key,
-    required this.width,
+    // required this.width,
     required this.imageUrl,
     required this.isOnline,
     required this.username,
@@ -16,7 +17,7 @@ class ChatRow extends StatelessWidget {
     required this.chatId,
   }) : super(key: key);
 
-  final double width;
+  // final double width;
   final String imageUrl;
   final bool isOnline;
   final String username;
@@ -56,8 +57,8 @@ class ChatRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: width * 0.16,
-                      height: width * 0.16,
+                      width: MediaQuery.of(context).size.width.w * 0.16,
+                      height: MediaQuery.of(context).size.width.w * 0.16,
                       child: Stack(fit: StackFit.expand, children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
@@ -82,11 +83,11 @@ class ChatRow extends StatelessWidget {
                       ]),
                     ),
                     SizedBox(
-                      width: width * 0.04,
+                      width: MediaQuery.of(context).size.width.w * 0.04,
                     ),
                     SizedBox(
-                      height: width * 0.16,
-                      width: width * 0.5,
+                      height: MediaQuery.of(context).size.width.w * 0.16,
+                      width: MediaQuery.of(context).size.width.w * 0.5,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,8 +99,8 @@ class ChatRow extends StatelessWidget {
                           Text(
                             lastMessage,
                             maxLines: 1,
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.black54),
+                            style: TextStyle(
+                                fontSize: 13.sp, color: Colors.black54),
                           )
                         ],
                       ),
@@ -107,7 +108,7 @@ class ChatRow extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
-                        width: width * 0.2,
+                        width: MediaQuery.of(context).size.width * 0.2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -115,8 +116,8 @@ class ChatRow extends StatelessWidget {
                               lastMessageTime.toString(),
                               style: const TextStyle(color: Colors.black45),
                             ),
-                            const SizedBox(
-                              height: 6,
+                            SizedBox(
+                              height: 6.h,
                             ),
                             UnreadMessageCount(userId: userId, chatId: chatId),
                           ],

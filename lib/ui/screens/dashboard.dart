@@ -18,6 +18,7 @@ import 'package:dicegram/utils/dimensions.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
@@ -116,7 +117,6 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     String? h = context.watch<updateGroup>().newName;
-    print(h);
     String userName = 'User Name';
     String? profileImage;
     return WillPopScope(
@@ -140,11 +140,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                 return InkWell(
                   onTap: () => Scaffold.of(context).openDrawer(),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.r),
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         child: profileImage != null
-                            // Image not picking up.
                             ? Image.network(
                                 profileImage!,
                                 errorBuilder: (context, error, stackTrace) {
@@ -158,17 +157,13 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
               }),
               title: Text(
                 userName,
-                style: const TextStyle(
-                    fontSize: 16,
+                style: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
               actions: [
-                InkWell(
-                    onTap: () {
-                      // showDialogIfOtherPersonsEngagedIsFalse();
-                    },
-                    child: const Icon(Icons.search)),
+                InkWell(onTap: () {}, child: const Icon(Icons.search)),
                 // PopupMenuButton(
                 //   icon: const Icon(Icons.more_vert),
                 //   onSelected: (value) {
@@ -201,8 +196,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                 //   ],
                 // ),
 
-                const SizedBox(
-                  width: 8,
+                SizedBox(
+                  width: 8.w,
                 )
               ],
             ),

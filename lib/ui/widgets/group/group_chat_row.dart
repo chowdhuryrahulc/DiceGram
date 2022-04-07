@@ -12,14 +12,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class GroupChatRow extends StatelessWidget {
   const GroupChatRow({
     Key? key,
-    // required this.width,
     required this.imageUrl,
     required this.isOnline,
     required this.username,
     required this.groupId,
   }) : super(key: key);
 
-  // final double width;
   final String imageUrl;
   final bool isOnline;
   final String username;
@@ -41,9 +39,6 @@ class GroupChatRow extends StatelessWidget {
           return const Text('No msg found');
         }
 
-        print('Hello ${snapshot.data!.docs[0].data().toString()}');
-        // var totalMessage = 5;
-
         var lastMsgData = (totalMessage > 0) ? snapshot.data?.docs[0] : null;
         if (lastMsgData != null) {
           lastMessage = lastMsgData[KeyConstants.MESSAGE];
@@ -61,8 +56,8 @@ class GroupChatRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: (MediaQuery.of(context).size.width * 0.16).w,
-                height: (MediaQuery.of(context).size.width * 0.16).h,
+                width: MediaQuery.of(context).size.width.w * 0.16,
+                height: MediaQuery.of(context).size.width.w * 0.16,
                 child: Stack(fit: StackFit.expand, children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -74,23 +69,14 @@ class GroupChatRow extends StatelessWidget {
                       },
                     ),
                   ),
-                  // Positioned(
-                  //   bottom: 0,
-                  //   right: 0,
-                  //   child: Icon(
-                  //     Icons.circle,
-                  //     size: 15,
-                  //     color: isOnline ? Colors.green : Colors.red,
-                  //   ),
-                  // )
                 ]),
               ),
               SizedBox(
-                width: (MediaQuery.of(context).size.width * 0.04).w,
+                width: MediaQuery.of(context).size.width.w * 0.04,
               ),
               SizedBox(
-                height: (MediaQuery.of(context).size.width * 0.16).h,
-                width: (MediaQuery.of(context).size.width * 0.5).w,
+                height: MediaQuery.of(context).size.width.w * 0.16,
+                width: MediaQuery.of(context).size.width.w * 0.5,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,8 +88,7 @@ class GroupChatRow extends StatelessWidget {
                     Text(
                       lastMessage,
                       maxLines: 1,
-                      style:
-                          const TextStyle(fontSize: 13, color: Colors.black54),
+                      style: TextStyle(fontSize: 13.sp, color: Colors.black54),
                     )
                   ],
                 ),
@@ -119,8 +104,8 @@ class GroupChatRow extends StatelessWidget {
                         lastMessageTime.toString(),
                         style: const TextStyle(color: Colors.black45),
                       ),
-                      const SizedBox(
-                        height: 6,
+                      SizedBox(
+                        height: 6.h,
                       ),
                       GroupUnreadMessageCount(groupId: groupId),
                     ],

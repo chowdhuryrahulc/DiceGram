@@ -14,9 +14,9 @@ import 'package:dicegram/ui/widgets/one_to_one/chat_bubble.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../utils/app_constants.dart';
 
@@ -75,8 +75,8 @@ class _ChatSccreenState extends State<ChatSccreen> {
                   }
                   bool isOnline = snapshot.data?.docs[0][KeyConstants.ONLINE];
                   return isOnline
-                      ? const Text('Online', style: TextStyle(fontSize: 10))
-                      : const Text('Offline', style: TextStyle(fontSize: 10));
+                      ? Text('Online', style: TextStyle(fontSize: 10.sp))
+                      : Text('Offline', style: TextStyle(fontSize: 10.sp));
                 },
               ),
             ]),
@@ -97,12 +97,6 @@ class _ChatSccreenState extends State<ChatSccreen> {
                               chatListUserDataSnapshot.data!['users']);
                           isPLaying =
                               chatListUserDataSnapshot.data!['isPlaying'];
-                          //working
-                          print("isPlaying: $isPLaying");
-                          // if playing, isGameInnitilized is true.
-                          if (isPLaying == true) {
-                            isGameInitiated = true;
-                          }
                           return StreamBuilder<QuerySnapshot>(
                               stream: UserServices().getChat(widget.chatId),
                               builder: (BuildContext context,
@@ -152,12 +146,12 @@ class _ChatSccreenState extends State<ChatSccreen> {
                       },
                     )),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   child: Container(
-                    height: 50,
+                    height: 50.sp,
+                    width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(5.sp),
                       color: Colors1.textInputBocColor,
                     ),
                     child: TextFormField(
@@ -168,19 +162,6 @@ class _ChatSccreenState extends State<ChatSccreen> {
                       maxLines: 5,
                       minLines: 1,
                       decoration: InputDecoration(
-                          // prefixIcon: IconButton(
-                          //     onPressed: () {
-                          //       setState(() {
-                          //         isShowBox = !isShowBox;
-                          //       });
-                          //       if (isShowBox == true) {
-                          //         FocusManager.instance.primaryFocus?.unfocus();
-                          //       } else {
-                          //         FocusManager.instance.primaryFocus
-                          //             ?.nextFocus();
-                          //       }
-                          //     },
-                          //     icon: Image.asset("assets/images/game.png")),
                           suffixIcon: IconButton(
                               onPressed: () {
                                 if (textEditingController.text
@@ -197,7 +178,7 @@ class _ChatSccreenState extends State<ChatSccreen> {
                           border: InputBorder.none,
                           hintText: 'Type a message...',
                           hintStyle: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w200,
                               color: Colors.grey[400])),
                       controller: textEditingController,
@@ -254,10 +235,11 @@ class _ChatSccreenState extends State<ChatSccreen> {
               isGameInitiated = false;
             });
           },
+          isGameInitiated: isGameInitiated,
           gameId: widget.chatId, //=> GameRoom => doc()
           players: users!,
           playersName: [],
-          chatId: widget.chatId, isGameInitiated: isGameInitiated,
+          chatId: widget.chatId,
           inSingleChat: true,
         );
         break;

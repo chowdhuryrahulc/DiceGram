@@ -8,6 +8,7 @@ import 'package:dicegram/helpers/game_service.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/new_snake_ladder/snakeLadderDatabase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'customDialog.dart';
 import 'gameButton.dart';
@@ -204,72 +205,70 @@ class _TikTakToeState extends State<TikTakToe> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        height: 300,
-                        width: 300,
-                        color: Colors.yellow,
-                        child: GridView.builder(
-                            padding: const EdgeInsets.all(10.0),
-                            // GriDelegate controlls the layout of GridView
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    //TO Change Size here
-                                    crossAxisCount: 3,
-                                    childAspectRatio: 1.0,
-                                    crossAxisSpacing: 9.0,
-                                    mainAxisSpacing: 9.0),
-                            itemCount: snapshot.data.docs.length, // 9 buttons
-                            itemBuilder: (context, i) {
-                              return SizedBox(
-                                width: 50.0,
-                                height: 50.0,
-                                child: RaisedButton(
-                                  padding: const EdgeInsets.all(8.0),
-                                  // if enabled, call a function
-                                  onPressed:
-                                      snapshot.data.docs[i].data()['enabled'] ==
-                                              false
-                                          ? () {
-                                              playGame(
-                                                  snapshot, buttonsList![i], i);
-                                            }
-                                          : null,
-                                  child: Text(
-                                    snapshot.data.docs[i].data()['text'],
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 40.0,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            height: 300.h,
+                            width: 300.w,
+                            color: Colors.yellow,
+                            child: GridView.builder(
+                                padding: EdgeInsets.all(10),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        childAspectRatio: 1.0,
+                                        crossAxisSpacing: 9.0,
+                                        mainAxisSpacing: 9.sp),
+                                itemCount:
+                                    snapshot.data.docs.length, // 9 buttons
+                                itemBuilder: (context, i) {
+                                  return RaisedButton(
+                                    padding: EdgeInsets.all(8.0),
+                                    // if enabled, call a function
+                                    onPressed: snapshot.data.docs[i]
+                                                .data()['enabled'] ==
+                                            false
+                                        ? () {
+                                            playGame(
+                                                snapshot, buttonsList![i], i);
+                                          }
+                                        : null,
+                                    child: Text(
+                                      snapshot.data.docs[i].data()['text'],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 40.sp,
+                                      ),
                                     ),
-                                  ),
-                                  // Innitially grey
-                                  color: snapshot.data.docs[i]
-                                              .data()['background'] ==
-                                          'grey'
-                                      ? Colors.grey
-                                      : snapshot.data.docs[i]
-                                                  .data()['background'] ==
-                                              'red'
-                                          ? Colors.red
-                                          : Colors.green,
-                                  disabledColor: snapshot.data.docs[i]
-                                              .data()['background'] ==
-                                          'grey'
-                                      ? Colors.grey
-                                      : snapshot.data.docs[i]
-                                                  .data()['background'] ==
-                                              'red'
-                                          ? Colors.red
-                                          : Colors.green,
-                                ),
-                              );
-                            }),
+                                    // Innitially grey
+                                    color: snapshot.data.docs[i]
+                                                .data()['background'] ==
+                                            'grey'
+                                        ? Colors.grey
+                                        : snapshot.data.docs[i]
+                                                    .data()['background'] ==
+                                                'red'
+                                            ? Colors.red
+                                            : Colors.green,
+                                    disabledColor: snapshot.data.docs[i]
+                                                .data()['background'] ==
+                                            'grey'
+                                        ? Colors.grey
+                                        : snapshot.data.docs[i]
+                                                    .data()['background'] ==
+                                                'red'
+                                            ? Colors.red
+                                            : Colors.green,
+                                  );
+                                }),
+                          ),
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
+                        padding: EdgeInsets.symmetric(vertical: 15.h),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Column(
                               children: [

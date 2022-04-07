@@ -244,7 +244,9 @@ class _ContactsScreenState extends State<NewGroupAddParticipants> {
                               );
                             });
                       } else {
-                        return Center(child: Text('No Contacts Found'));
+                        return Center(
+                                      child: SpinKitPouringHourGlass(
+                                          color: Colors.red));
                       }
                     });
               }

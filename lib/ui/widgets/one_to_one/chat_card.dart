@@ -19,7 +19,7 @@ class ChatCard1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    // double width = MediaQuery.of(context).size.width;
     return StreamBuilder<QuerySnapshot>(
       stream: UserServices().getUserStreamByUserId(userId),
       builder: (context, snapshot) {
@@ -27,7 +27,6 @@ class ChatCard1 extends StatelessWidget {
           return const SizedBox();
         }
         var userData = UserModel.fromSnapshot(snapshot.data?.docs[0]);
-        // var userData = snapshot.data?.docs[0];
         if (userData == null) {
           return const SizedBox();
         }
@@ -41,7 +40,7 @@ class ChatCard1 extends StatelessWidget {
                     )));
           },
           child: ChatRow(
-              width: width,
+              // width: width,
               imageUrl: userData.imageUrl,
               isOnline: userData.online,
               username: userData.username,

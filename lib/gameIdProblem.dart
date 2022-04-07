@@ -88,6 +88,29 @@ AdminEnd: Starts game, isPlaying(in Chat_List) set to true, isEngaged set to tru
 CustomerEnd: 
 */
 
+class ChessGameDatabase {
+  storeFen(Map<String, dynamic> fen, String docId) {
+    FirebaseFirestore.instance
+        .collection("GameRoom")
+        .doc(docId)
+        .collection('chess')
+        .doc(docId)
+        .set(fen)
+        .catchError((error) {
+      print('>>> set move :: error :: $error');
+    });
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getFen(String docId) {
+    return FirebaseFirestore.instance
+        .collection("GameRoom")
+        .doc(docId)
+        .collection('chess')
+        .doc(docId)
+        .snapshots();
+  }
+}
+
 getGroupListInformationFromDocoment(String docomentId) {
   return FirebaseFirestore.instance
       .collection('Group List')

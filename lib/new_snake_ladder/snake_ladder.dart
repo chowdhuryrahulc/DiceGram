@@ -87,15 +87,15 @@ class _SnakeLadderState extends State<SnakeLadder> {
   }
 
 //todo: Do not need this. Instead gameId is chatId. And isInitilized is done from the lastPage.
-  updatePlayerId() async {
-    await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
-        .then((value) {
-      if (value != null) {
-        widget.gameId = value;
-        widget.isGameInitiated = true;
-      }
-    });
-  }
+  // updatePlayerId() async {
+  //   await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+  //       .then((value) {
+  //     if (value != null) {
+  //       widget.gameId = value;
+  //       widget.isGameInitiated = true;
+  //     }
+  //   });
+  // }
 
   String? otherPlayerUserId;
   @override
@@ -118,68 +118,73 @@ class _SnakeLadderState extends State<SnakeLadder> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 300,
-                        width: 300,
-                        child: AnimationLimiter(
-                          child: Stack(children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.orange.shade300),
-                                  borderRadius: BorderRadius.circular(3),
-                                  boxShadow: [
-                                    BoxShadow(color: Colors.orange.shade100)
-                                  ]),
-                              child: GridView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.all(3),
-                                  addAutomaticKeepAlives: true,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 10),
-                                  itemCount: 100,
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) {
-                                    var color = index % 2 == 0
-                                        ? Colors.black38
-                                        : Colors.orange[300];
-                                    return Stack(
-                                      children: [
-                                        Container(
-                                          width: 100.w,
-                                          height: 100.h,
-                                          decoration:
-                                              BoxDecoration(color: color),
-                                          child: Center(
-                                            // For 100 only
-                                            child: (100 - index) == 100
-                                                ? Text(
-                                                    Demoji.house,
-                                                    style: TextStyle(
-                                                        fontSize: 18.sp),
-                                                  )
-                                                : Text(
-                                                    (100 - index).toString(),
-                                                    style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 12),
-                                                  ),
-                                          ),
-                                        ),
-                                        Play(
-                                          totalPlayerOne:
-                                              snapshot.data[widget.players[0]],
-                                          totalPlayerTwo:
-                                              snapshot.data[widget.players[1]],
-                                          index: index,
-                                        )
-                                      ],
-                                    );
-                                  }),
+                      Expanded(
+                        child: Center(
+                          child: SizedBox(
+                            height: 300.h,
+                            width: 300.w,
+                            child: AnimationLimiter(
+                              child: Stack(children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.orange.shade300),
+                                      borderRadius: BorderRadius.circular(3),
+                                      boxShadow: [
+                                        BoxShadow(color: Colors.orange.shade100)
+                                      ]),
+                                  child: GridView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.all(3),
+                                      addAutomaticKeepAlives: true,
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 10),
+                                      itemCount: 100,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        var color = index % 2 == 0
+                                            ? Colors.black38
+                                            : Colors.orange[300];
+                                        return Stack(
+                                          children: [
+                                            Container(
+                                              width: 100.w,
+                                              height: 100.h,
+                                              decoration:
+                                                  BoxDecoration(color: color),
+                                              child: Center(
+                                                // For 100 only
+                                                child: (100 - index) == 100
+                                                    ? Text(
+                                                        Demoji.house,
+                                                        style: TextStyle(
+                                                            fontSize: 18.sp),
+                                                      )
+                                                    : Text(
+                                                        (100 - index)
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12),
+                                                      ),
+                                              ),
+                                            ),
+                                            Play(
+                                              totalPlayerOne: snapshot
+                                                  .data[widget.players[0]],
+                                              totalPlayerTwo: snapshot
+                                                  .data[widget.players[1]],
+                                              index: index,
+                                            )
+                                          ],
+                                        );
+                                      }),
+                                ),
+                                ImageItem(context), // All the laders and Snakes
+                              ]),
                             ),
-                            ImageItem(context), // All the laders and Snakes
-                          ]),
+                          ),
                         ),
                       ),
                       Column(
