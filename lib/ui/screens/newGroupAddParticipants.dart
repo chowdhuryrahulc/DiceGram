@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/main.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/providers/group_provider.dart';
 import 'package:dicegram/ui/screens/group/group_chat_screen.dart';
@@ -78,17 +79,18 @@ class _ContactsScreenState extends State<NewGroupAddParticipants> {
                     builder: (context, AsyncSnapshot contactSnapshot) {
                       if (contactSnapshot.data != null) {
                         List<Contact> contactList = contactSnapshot.data!;
+                        //! First loop
                         for (var i = 0;
                             i < firebaseSnapshot.data!.docs.length;
                             i++) {
                           log(UserServices.userId);
                           if (firebaseSnapshot.data?.docs[i]['id'] ==
                               UserServices.userId) {
-                            log('User Id From Firebase ${firebaseSnapshot.data?.docs[i]['username']}');
+                            // log('User Id From Firebase ${firebaseSnapshot.data?.docs[i]['username']}');
                           }
                           UserModel name = UserModel.fromSnapshot(
                               firebaseSnapshot.data?.docs[i]);
-                          // place for next for loop
+                          //! place for next for loop
                           for (var j = 0; j < contactList.length - 1; j++) {
                             try {
                               if (contactList[j].phones?.first.value?[0] !=
@@ -103,13 +105,11 @@ class _ContactsScreenState extends State<NewGroupAddParticipants> {
                                       .value
                                       .toString()
                                       .replaceAll(' ', '')) {
-                                if (peopleList.contains(name)) {
-                                } else {
-                                  peopleList.add(name);
-                                }
-                              }
+                                peopleList = ifDoesntContainsAddAndReturnListOfUserModel(
+                                    peopleList, name);
+                               }
                             } catch (e) {
-                              log('O my god, Error');
+                              print('O my god, Error');
                               print(e);
                             }
                           }
@@ -245,8 +245,7 @@ class _ContactsScreenState extends State<NewGroupAddParticipants> {
                             });
                       } else {
                         return Center(
-                                      child: SpinKitPouringHourGlass(
-                                          color: Colors.red));
+                            child: SpinKitPouringHourGlass(color: Colors.red));
                       }
                     });
               }

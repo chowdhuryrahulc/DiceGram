@@ -46,6 +46,7 @@ class ProfileProvider extends ChangeNotifier {
                     children: [
                       TextButton(
                           onPressed: () async {
+                            Navigator.of(context).pop();
                             context
                                 .read<circularProgressIndicatorController>()
                                 .updateCircularProgressIndictor(true);
@@ -56,12 +57,12 @@ class ProfileProvider extends ChangeNotifier {
                             if (image != null) {
                               _cropImage(image.path, context);
                             } else {
-                              Navigator.of(context).pop();
                             }
                           },
                           child: const Text('Pick From Camera')),
                       TextButton(
                           onPressed: () async {
+                            Navigator.of(context).pop();
                             context
                                 .read<circularProgressIndicatorController>()
                                 .updateCircularProgressIndictor(true);
@@ -72,7 +73,6 @@ class ProfileProvider extends ChangeNotifier {
                             if (image != null) {
                               _cropImage(image.path, context);
                             } else {
-                              Navigator.of(context).pop();
                             }
                           },
                           child: const Text('Pick From Gallery'))
@@ -90,18 +90,12 @@ class ProfileProvider extends ChangeNotifier {
     );
     if (croppedImage != null) {
       imageprofile = croppedImage;
-      print('Before Upload Image');
       await uploadPic(imageprofile!).then((value) {
         print('Started Uploading');
       });
       notifyListeners();
-      context
-          .read<circularProgressIndicatorController>()
-          .updateCircularProgressIndictor(false);
       print('Upper crop Image');
-      Navigator.of(context).pop();
     } else {
-      Navigator.of(context).pop();
     }
   }
 

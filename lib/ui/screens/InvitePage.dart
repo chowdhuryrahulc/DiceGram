@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/main.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -87,10 +88,10 @@ class _InvitePageState extends State<InvitePage> {
                                               .value
                                               .toString()
                                               .replaceAll(' ', '')) {
-                                        if (peopleList.contains(name)) {
-                                        } else {
-                                          peopleList.add(name);
-                                        }
+                                          peopleList = ifDoesntContainsAddAndReturnListOfUserModel(
+                                    peopleList, name);
+                              
+
                                       }
                                     } catch (e) {}
                                   }

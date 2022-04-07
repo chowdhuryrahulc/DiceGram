@@ -329,7 +329,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                 decoration: InputDecoration(
                                     prefixIcon: IconButton(
                                         onPressed: () {
-                                          log('Before setstate');
                                           setState(() {
                                             isShowBox = !isShowBox;
                                           });
@@ -414,22 +413,22 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              InkWell(
-                                                onTap: () {
-                                                  selectedGame =
-                                                      AppConstants.chess;
-                                                  setState(() {});
-                                                  onGameSelected(
-                                                      AppConstants.chess);
-                                                },
-                                                child: ClipOval(
-                                                  child: SizedBox(
-                                                    height: 25.h,
-                                                    child: Image.asset(
-                                                        "assets/TikTakToe.png"),
-                                                  ),
-                                                ),
-                                              ),
+                                              // InkWell(
+                                              //   onTap: () {
+                                              //     selectedGame =
+                                              //         AppConstants.chess;
+                                              //     setState(() {});
+                                              //     onGameSelected(
+                                              //         AppConstants.chess);
+                                              //   },
+                                              //   child: ClipOval(
+                                              //     child: SizedBox(
+                                              //       height: 25.h,
+                                              //       child: Image.asset(
+                                              //           "assets/TikTakToe.png"),
+                                              //     ),
+                                              //   ),
+                                              // ),
                                             ]))
                               : const SizedBox()
                         ],
@@ -520,8 +519,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                         onPressed: () async {
                           if (selectedUsersList.length == 1) {
                             Navigator.pop(context);
-                            //! Changes gameId, players, and users in Firebase.
-                            // Why are we usingplayers?
                             String gameId = await GameService().createGameRoom(
                                 groupId: widget.chatId,
                                 userIds: selectedUsersList,
@@ -554,7 +551,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       {String? gameId}) {
     log(selectedGame.toString());
     Widget game = SizedBox();
-    print("just before going in ${groupData.players}");
+    print("reached isSelectedGame");
     switch (selectedGame) {
       case AppConstants.snakeLadder:
         game = SnakeLadder(

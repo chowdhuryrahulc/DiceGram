@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/main.dart';
 import 'package:dicegram/models/group_data.dart';
 import 'package:dicegram/ui/screens/group/group_chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +61,9 @@ class _addPlayersListState extends State<addPlayersList> {
                                     .value
                                     .toString()
                                     .replaceAll(' ', '')) {
-                              if (peopleList.contains(name)) {
-                              } else {
-                                peopleList.add(name);
+                                       peopleList = ifDoesntContainsAddAndReturnListOfUserModel(
+                                    peopleList, name);
                               }
-                            }
                           } catch (e) {
                             print('Error in addPlayersList');
                           }

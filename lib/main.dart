@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:country_code_picker/country_localizations.dart';
 import 'package:dicegram/StreamBuilderPage.dart';
 import 'package:dicegram/gameIdProblem.dart';
@@ -8,6 +10,7 @@ import 'package:dicegram/utils/Color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'models/user_model.dart';
 import 'providers/group_provider.dart';
 
 Future<void> main() async {
@@ -134,4 +137,19 @@ class MyApp extends StatelessWidget {
                   home: StreamBuilderPage());
             }));
   }
+}
+
+ifDoesntContainsAddAndReturnListOfUserModel(
+    List<UserModel> peopleList, UserModel name) {
+  bool isPresent = false;
+  for (var k = 0; k < peopleList.length; k++) {
+    if (name.username == peopleList[k].username) {
+      isPresent = true;
+    }
+  }
+  if (isPresent == false) {
+    peopleList.add(name);
+    log("Length: ${peopleList.length}");
+  }
+  return peopleList;
 }

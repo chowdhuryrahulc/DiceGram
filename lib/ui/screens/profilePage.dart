@@ -4,6 +4,7 @@ import 'package:dicegram/main.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -35,42 +36,42 @@ class _ProfilePageState extends State<ProfilePage> {
                     left: 0,
                     right: 0,
                     child: Container(
-                      height: 150,
+                      height: 150.h,
                       width: double.infinity,
                       decoration:
                           const BoxDecoration(color: ProfilePage.bagroundColor),
                     )),
                 Positioned(
-                  top: 50,
-                  left: 5,
+                  top: 50.h,
+                  left: 5.w,
                   child: IconButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back,
                       color: Colors.white,
-                      size: 18,
+                      size: 18.sp,
                     ),
                   ),
                 ),
-                const Positioned(
-                  top: 65,
-                  left: 55,
+                Positioned(
+                  top: 65.h,
+                  left: 55.w,
                   child: Text(
                     'Profile',
                     style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
                 ),
                 Positioned(
-                    top: 125,
-                    left: 115,
+                    top: 125.h,
+                    left: 115.w,
                     child: SizedBox(
-                        height: 100,
-                        width: 110,
+                        height: 100.h,
+                        width: 110.w,
                         child: Image.network(
                           userModel?.imageUrl ?? '',
                           errorBuilder: (context, error, stackTrace) {
@@ -78,8 +79,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ))),
                 Positioned(
-                    top: 205,
-                    right: 135,
+                    top: 205.h,
+                    right: 135.w,
                     child: GestureDetector(
                         onTap: () async {
                           // This opens the showDialog.
@@ -89,22 +90,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 160,
+                  top: 160.h,
                   child: Column(
                     children: [
-                      const SizedBox(
-                        height: 80,
+                      SizedBox(
+                        height: 80.h,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             userModel?.username ?? 'UserName',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20.sp),
                           ),
-                          const SizedBox(
-                            width: 5,
+                          SizedBox(
+                            width: 5.w,
                           ),
                           GestureDetector(
                             onTap: () => readprovider.handleEditButton(
@@ -115,14 +116,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           )
                         ],
                       ),
-                      const SizedBox(
-                        height: 8,
+                      SizedBox(
+                        height: 8.h,
                       ),
                       Text(
                         '${userModel?.number}',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontWeight: FontWeight.normal,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: ProfilePage.subtextcolor),
                       ),
                     ],

@@ -113,7 +113,6 @@ class _OTPScreenState extends State<OtpScreen> {
                   _otp = v;
                 },
                 onChanged: (value) {
-                  log(value);
                 },
               ),
             ),
@@ -125,7 +124,6 @@ class _OTPScreenState extends State<OtpScreen> {
                             verificationId: _verificationCode!, smsCode: _otp!))
                         .then((value) async {
                       if (value.user != null) {
-                        //! updated
                         Map<String, dynamic> userData = {};
                         userData[KeyConstants.ID] = value.user!.uid;
                         userData[KeyConstants.LAST_SEEN] =
@@ -137,7 +135,6 @@ class _OTPScreenState extends State<OtpScreen> {
                         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
                         userData[KeyConstants.USER_NAME] = widget._username;
                         userData[KeyConstants.ISENGAGED] = false;
-//todo Send only name in case of update.
                         checkPhoneNumberinFirebaseCollectionandReturnBool(
                             phoneNumber: value.user!.phoneNumber!,
                             username: widget._username,

@@ -1,11 +1,13 @@
 // ignore_for_file: deprecated_member_use, prefer_const_constructors, prefer_typing_uninitialized_variables, avoid_print, curly_braces_in_flow_control_structures
 
-import 'dart:math';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/TikTakToe/TikTakToe/TikTakToeDatabase.dart';
 import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/game_service.dart';
 import 'package:dicegram/helpers/user_service.dart';
+import 'package:dicegram/main.dart';
 import 'package:dicegram/new_snake_ladder/snakeLadderDatabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,7 +42,6 @@ class _TikTakToeState extends State<TikTakToe> {
   String? player1Name;
   String? player2Name;
 
-  // String activePlayer = firstName!;
   TikTakToeDatabase tikTakToeDatabase = TikTakToeDatabase();
 
   Stream? getTikTakToeDataStream;
@@ -52,8 +53,6 @@ class _TikTakToeState extends State<TikTakToe> {
   }
 
   doInit() {
-    // String activePlayer = firstName!;
-
     List<GameButton> gameButtons = [
       GameButton(id: 1),
       GameButton(id: 2),
@@ -97,13 +96,10 @@ class _TikTakToeState extends State<TikTakToe> {
 
     String activePlayer =
         await tikTakToeDatabase.getActivePlayerData(widget.gameId);
-    print('activePlayer');
-    print(activePlayer);
     setState(() {
       if (widget.players[0] == UserServices.userId) {
         print('User is First');
         if (activePlayer == UserServices.userId) {
-          print('Player is Active');
           Map<String, dynamic> updateButtonDataMap = {
             'id': id,
             'text': "X",
@@ -116,18 +112,10 @@ class _TikTakToeState extends State<TikTakToe> {
           Map<String, String> playersListMap = {
             'activePlayer': widget.players[1],
           };
-          print('widget.players[1]');
-          print(widget.players[1]);
-          print('widget.gameId');
-          print(widget.gameId);
-
           tikTakToeDatabase.updateActivePlayerInFirestore(
               playersListMap, widget.gameId);
 
-          checkWinner().then((value) {
-            print('WINNERS');
-            print(value);
-          });
+          // checkWinner();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Not Your Turn'), duration: duration));
@@ -153,14 +141,10 @@ class _TikTakToeState extends State<TikTakToe> {
 
           // activePlayer = Provider.of<recieverNameProvider>(context, listen: false)
           //     .recieverName;
-          //todo Uncomment this Later
           tikTakToeDatabase.updateActivePlayerInFirestore(
               playersListMap, widget.gameId);
 
-          checkWinner().then((value) {
-            print('WINNERS');
-            print(value);
-          });
+          // checkWinner();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Not Your Turn'), duration: duration));
@@ -202,6 +186,10 @@ class _TikTakToeState extends State<TikTakToe> {
               stream: tikTakToeDatabase.getButtonData(widget.gameId),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
+                  WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                    log('Once');
+                    checkWinner(snapshot);
+                  });
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -209,7 +197,7 @@ class _TikTakToeState extends State<TikTakToe> {
                       Expanded(
                         child: Center(
                           child: Container(
-                            height: 300.h,
+                            height: 300.w,
                             width: 300.w,
                             color: Colors.yellow,
                             child: GridView.builder(
@@ -266,7 +254,7 @@ class _TikTakToeState extends State<TikTakToe> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 15.h),
+                        padding: EdgeInsets.zero,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
@@ -394,18 +382,17 @@ class _TikTakToeState extends State<TikTakToe> {
     return g;
   }
 
-// Simple
-  Future<int> checkWinner() async {
+  checkWinner(AsyncSnapshot snapshot) {
     var winner = -1;
-    var id1 = await getPlayerListData(1);
-    var id2 = await getPlayerListData(2);
-    var id3 = await getPlayerListData(3);
-    var id4 = await getPlayerListData(4);
-    var id5 = await getPlayerListData(5);
-    var id6 = await getPlayerListData(6);
-    var id7 = await getPlayerListData(7);
-    var id8 = await getPlayerListData(8);
-    var id9 = await getPlayerListData(9);
+    var id1 = snapshot.data.docs[0].data()['text'];
+    var id2 = snapshot.data.docs[1].data()['text'];
+    var id3 = snapshot.data.docs[2].data()['text'];
+    var id4 = snapshot.data.docs[3].data()['text'];
+    var id5 = snapshot.data.docs[4].data()['text'];
+    var id6 = snapshot.data.docs[5].data()['text'];
+    var id7 = snapshot.data.docs[6].data()['text'];
+    var id8 = snapshot.data.docs[7].data()['text'];
+    var id9 = snapshot.data.docs[8].data()['text'];
 
     if (id1 == 'O' && id2 == 'O' && id3 == 'O') {
       winner = 1;
@@ -473,6 +460,7 @@ class _TikTakToeState extends State<TikTakToe> {
             context: context,
             builder: (_) => CustomDialog("${player2Name} Won",
                     "Press the reset button to start again.", () {
+                  log('Dialog1');
                   doInit();
                   Navigator.pop(context);
                 }));
@@ -481,12 +469,12 @@ class _TikTakToeState extends State<TikTakToe> {
             context: context,
             builder: (_) => CustomDialog("${player1Name} Won",
                     "Press the reset button to start again.", () {
+                  log('Dialog2');
                   doInit();
                   Navigator.pop(context);
                 }));
       }
     }
-    return winner;
   }
 
   void resetGame() {

@@ -55,7 +55,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
   initFunc() async {
     int position1 = 1;
     int position2 = 1;
-    print("players ${widget.players}");
+    print("Inside SnakeLadder");
     try {
       Map<String, dynamic> positionAndActivePlayerMap = {
         widget.players[0]: position1,
@@ -65,7 +65,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
       snakeLadderDatabase().sendSnakeLadderPositionData(
           widget.gameId, positionAndActivePlayerMap);
     } catch (e) {
-      log.log('Harammmm');
       print(e);
     }
   }
@@ -109,11 +108,24 @@ class _SnakeLadderState extends State<SnakeLadder> {
           if (widget.players[1] == UserServices.userId) {
             otherPlayerUserId = widget.players[0];
           }
+          if (otherPersonEngagedOfNotSnapshot.connectionState ==
+              ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
           return StreamBuilder(
               stream: snakeLadderDatabase()
                   .getSnakeLadderPositionData(widget.gameId),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
+                  //todo checkwhowon()
+                  log.log(
+                      'Scores: ${snapshot.data[widget.players[0]]} ${snapshot.data[widget.players[1]]}');
+                  WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                    checkwhoWon(
+                        snapshot.data[widget.players[0]], widget.players[0]);
+                    checkwhoWon(
+                        snapshot.data[widget.players[1]], widget.players[1]);
+                  });
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,7 +133,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
                       Expanded(
                         child: Center(
                           child: SizedBox(
-                            height: 300.h,
+                            height: 300.w,
                             width: 300.w,
                             child: AnimationLimiter(
                               child: Stack(children: [
@@ -257,7 +269,6 @@ class _SnakeLadderState extends State<SnakeLadder> {
                                 onPressed: () {
                                   try {
                                     initFunc();
-                                    //todo Added in SingleChat
                                     if (widget.inSingleChat == true) {
                                       setIsPlaying(
                                           chatDocId: widget.chatId,
@@ -394,7 +405,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
       print('User is First');
       if (snapshot.data['activePlayer'] == UserServices.userId) {
         if (snapshot.data[widget.players[1]] == 100) {
-          checkwhoWon(snapshot.data[widget.players[1]], widget.players[1]);
+          // checkwhoWon(snapshot.data[widget.players[1]], widget.players[1]);
         }
         int position1 = snapshot.data[widget.players[0]] + number;
         position1 =
@@ -408,7 +419,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
         };
         snakeLadderDatabase().updateSnakeLadderPositionData(
             widget.gameId, positionAndActivePlayerMap);
-        checkwhoWon(position1, widget.players[0]);
+        // checkwhoWon(position1, widget.players[0]);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Not Your Turn'), duration: duration));
@@ -418,7 +429,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
       print('User is Second');
       if (snapshot.data['activePlayer'] == UserServices.userId) {
         if (snapshot.data[widget.players[0]] == 100) {
-          checkwhoWon(snapshot.data[widget.players[0]], widget.players[1]);
+          // checkwhoWon(snapshot.data[widget.players[0]], widget.players[1]);
         }
         int position2 = snapshot.data[widget.players[1]] + number;
         position2 =
@@ -433,7 +444,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
         };
         snakeLadderDatabase().updateSnakeLadderPositionData(
             widget.gameId, positionAndActivePlayerMap);
-        checkwhoWon(position2, widget.players[1]);
+        // checkwhoWon(position2, widget.players[1]);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Not Your Turn'), duration: duration));
@@ -442,6 +453,7 @@ class _SnakeLadderState extends State<SnakeLadder> {
   }
 
   checkwhoWon(int position, String nameOfWinner) async {
+    log.log('Position: ${position} PlayerName: ${nameOfWinner}');
     if (position == 100) {
       await snakeLadderDatabase()
           .searchUserNamefromIdAndShowWinner(nameOfWinner)
@@ -456,10 +468,10 @@ class _SnakeLadderState extends State<SnakeLadder> {
   Widget Dice(
       AsyncSnapshot snapshot, AsyncSnapshot otherPersonEngagedOfNotSnapshot) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.sp),
       child: InkWell(
         onTap: () {
-          print("onpressed users data ${widget.players}");
+          print("onpressed users data");
           rollDice(snapshot, otherPersonEngagedOfNotSnapshot);
         },
         child: DiceItem(

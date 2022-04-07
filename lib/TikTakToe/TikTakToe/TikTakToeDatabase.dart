@@ -4,29 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TikTakToeDatabase {
   getTikTakToeData(String chatRoomId) async {
-    //TODO COPY OF GETCONVERSATIONMESSAGE
-    // Gives stream of database data
     return FirebaseFirestore.instance
         .collection("GameRoom")
         .doc(chatRoomId)
         .collection("tikTakToeDynamic")
-        // .orderBy("time", descending: false)
         .snapshots();
   }
 
-//TODO messageMap needs to change to the TikTakToe game
   sendTikTakToeData(String chatRoomId, messageMap) {
-    //TODO COPY OF addCONVERSATIONMESSAGE
     FirebaseFirestore.instance
         .collection("GameRoom")
         .doc(chatRoomId)
         .collection("tikTakToe")
-        //todo add or update
         .add(messageMap)
         .catchError((e) {});
   }
 
-//TODO PLAYERLIST DATA
+//TODO PLAYERLIST  DATA
   Future<String> getPlayerListData(String chatRoomId, int id) async {
     print('INSIDE PLAYERS');
     String zeroKata;
@@ -34,7 +28,6 @@ class TikTakToeDatabase {
         .collection("GameRoom")
         .doc(chatRoomId)
         .collection("buttonListData")
-        // int id.toString()
         .doc(id.toString())
         .get();
     zeroKata = x.data()!["text"];
@@ -48,7 +41,7 @@ class TikTakToeDatabase {
         .collection("buttonListData")
         .add(messageMap);
   }
-
+//! in StremBuilder above tiktaktoe
   Stream<QuerySnapshot<Map<String, dynamic>>> getButtonData(String chatRoomId) {
     return FirebaseFirestore.instance
         .collection("GameRoom")
