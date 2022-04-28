@@ -50,10 +50,10 @@ class GroupChatRow extends StatelessWidget {
         }
 
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
                 width: MediaQuery.of(context).size.width.w * 0.16,
@@ -75,8 +75,8 @@ class GroupChatRow extends StatelessWidget {
                 width: MediaQuery.of(context).size.width.w * 0.04,
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.width.w * 0.16,
-                width: MediaQuery.of(context).size.width.w * 0.5,
+                // height: MediaQuery.of(context).size.width.w * 0.16,
+                // width: MediaQuery.of(context).size.width.w * 0.5,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,10 +93,11 @@ class GroupChatRow extends StatelessWidget {
                   ],
                 ),
               ),
+              Expanded(child: SizedBox()),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.symmetric(vertical: 8.w),
                 child: SizedBox(
-                  width: (MediaQuery.of(context).size.width).w * 0.2,
+                  width: MediaQuery.of(context).size.width.w * 0.2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
