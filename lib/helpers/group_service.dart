@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
@@ -47,7 +48,7 @@ class GroupService {
       required String groupId,
       String msgType = 'text'}) async {
     Map<String, dynamic> data = {};
-
+    log(groupId);
     if (UserServices.userId.isNotEmpty) {
       //
       UserModel user = await UserServices().getUserById(UserServices.userId);

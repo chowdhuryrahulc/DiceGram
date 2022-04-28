@@ -1,24 +1,19 @@
+import 'dart:developer';
+
 import 'package:country_code_picker/country_localizations.dart';
-import 'package:dicegram/ContactsBox.dart';
 import 'package:dicegram/StreamBuilderPage.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/providers/profile_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:dicegram/utils/Color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
+import 'models/user_model.dart';
 import 'providers/group_provider.dart';
 
-late Box contactsBox;
 Future<void> main() async {
-  await Hive.initFlutter();
-  // contactsBox = await Hive.openBox('contactsBox');
-  // Hive.registerAdapter(ContactsBoxAdapter());
-  // // Put in DB. In ListViewBuilder
-  // contactsBox.put('contactsBox', ContactsBox(number: 1, contactsName: 'KKK'));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -27,20 +22,35 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          ChangeNotifierProvider<circularProgressIndicatorController>(
+              create: (context) => circularProgressIndicatorController()),
+          ChangeNotifierProvider<updateGroup>(
+              create: (context) => updateGroup()),
           ChangeNotifierProvider<ProfileProvider>(
               create: (context) => ProfileProvider()),
           ChangeNotifierProvider<GroupProvider>(
               create: (context) => GroupProvider()),
         ],
-        child: Sizer(builder: (context, orientation, deviceType) {
-          return ScreenUtilInit(
+        child: ScreenUtilInit(
+//             Height: 745.0
+// [log] Width: 360.0
+// [log] GameName: tikTackToe
+            designSize: Size(360, 745),
+            minTextAdapt: true,
+            splitScreenMode: true,
             builder: () {
               return MaterialApp(
+                  builder: (context, widget) {
+                    ScreenUtil.setContext(context);
+                    return MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaleFactor: 1.0),
+                        child: widget!);
+                  },
                   supportedLocales: const [
                     Locale("af"),
                     Locale("am"),
@@ -125,8 +135,21 @@ class MyApp extends StatelessWidget {
                       primarySwatch: Colors1.primaryApp,
                       primaryColor: Colors1.primaryApp),
                   home: StreamBuilderPage());
-            },
-          );
-        }));
+            }));
   }
+}
+
+ifDoesntContainsAddAndReturnListOfUserModel(
+    List<UserModel> peopleList, UserModel name) {
+  bool isPresent = false;
+  for (var k = 0; k < peopleList.length; k++) {
+    if (name.username == peopleList[k].username) {
+      isPresent = true;
+    }
+  }
+  if (isPresent == false) {
+    peopleList.add(name);
+    log("Length: ${peopleList.length}");
+  }
+  return peopleList;
 }

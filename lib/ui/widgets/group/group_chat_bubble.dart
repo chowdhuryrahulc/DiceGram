@@ -1,6 +1,7 @@
 import 'package:dicegram/utils/Color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GroupChatBubble extends StatelessWidget {
   final String message;
@@ -18,9 +19,9 @@ class GroupChatBubble extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.sp),
       child: SizedBox(
-        width: width * 0.7,
+        width: width * 0.7.w,
         child: Column(
           crossAxisAlignment:
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -30,14 +31,14 @@ class GroupChatBubble extends StatelessWidget {
                     color: isMe ? Colors1.primary : Colors.black12,
                     borderRadius: isMe
                         ? BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(10))
+                            topLeft: Radius.circular(10.sp),
+                            topRight: Radius.circular(10.sp),
+                            bottomLeft: Radius.circular(10.sp))
                         : BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10))),
-                padding: EdgeInsets.all(8),
+                            topLeft: Radius.circular(10.sp),
+                            topRight: Radius.circular(10.sp),
+                            bottomRight: Radius.circular(10.sp))),
+                padding: EdgeInsets.all(8.sp),
                 child: Column(
                     crossAxisAlignment: isMe
                         ? CrossAxisAlignment.end
@@ -48,14 +49,14 @@ class GroupChatBubble extends StatelessWidget {
                           : Text(messageSenderName ?? '',
                               style: TextStyle(
                                   color: Colors.cyan,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   fontWeight: FontWeight.bold)),
                       Text(message,
                           style: TextStyle(
                               color: isMe ? Colors.white : Colors.black54,
                               fontSize: 12)),
                     ])),
-            Text(time, style: TextStyle(color: Colors.black54, fontSize: 10))
+            Text(time, style: TextStyle(color: Colors.black54, fontSize: 10.sp))
           ],
         ),
       ),

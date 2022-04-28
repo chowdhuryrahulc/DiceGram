@@ -113,7 +113,6 @@ class _OTPScreenState extends State<OtpScreen> {
                   _otp = v;
                 },
                 onChanged: (value) {
-                  log(value);
                 },
               ),
             ),
@@ -125,7 +124,6 @@ class _OTPScreenState extends State<OtpScreen> {
                             verificationId: _verificationCode!, smsCode: _otp!))
                         .then((value) async {
                       if (value.user != null) {
-                        //! updated
                         Map<String, dynamic> userData = {};
                         userData[KeyConstants.ID] = value.user!.uid;
                         userData[KeyConstants.LAST_SEEN] =
@@ -137,34 +135,11 @@ class _OTPScreenState extends State<OtpScreen> {
                         userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
                         userData[KeyConstants.USER_NAME] = widget._username;
                         userData[KeyConstants.ISENGAGED] = false;
-
-                        // Saves the Users in users profile.
-                        // Logic: if the phoneNumber is present in the database, then update credentials.
-                        // otherwise create in users.
-                        // log('Gooooo');
-                        print('USERDATAAAAA');
-                        print(userData['isEngaged']);
                         checkPhoneNumberinFirebaseCollectionandReturnBool(
                             phoneNumber: value.user!.phoneNumber!,
+                            username: widget._username,
                             values: userData,
                             context: context);
-                        // checkPhoneNumberinFirebaseCollectionandReturnBool(
-                        //     value.user!.phoneNumber!, userData, context);
-
-// await checkPhoneNumberinFirebaseCollectionandReturnBool(phoneNumber, values, context)
-                        // bool status = await UserServices().createUser(userData);
-                        // if (status) {
-                        //   Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //           builder: (context) => const Dashboard()));
-                        // } else {
-                        //   log('Cant save user data');
-                        //   const snackBar = SnackBar(
-                        //     content: Text('Cant save user data!'),
-                        //   );
-                        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        // }
                       } else {
                         FocusScope.of(context).unfocus();
                         _scaffoldkey.currentState?.showSnackBar(
@@ -231,9 +206,11 @@ class _OTPScreenState extends State<OtpScreen> {
           userData[KeyConstants.ONLINE] = false;
           userData[KeyConstants.NUMBER] = value.user!.phoneNumber;
           userData[KeyConstants.USER_NAME] = widget._username;
+          userData[KeyConstants.ISENGAGED] = false;
 
           checkPhoneNumberinFirebaseCollectionandReturnBool(
               phoneNumber: value.user!.phoneNumber!,
+              username: widget._username,
               values: userData,
               context: context);
 

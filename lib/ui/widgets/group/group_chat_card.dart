@@ -7,7 +7,6 @@ import 'package:dicegram/ui/widgets/group/group_chat_row.dart';
 import 'package:flutter/material.dart';
 
 class GroupChatCard extends StatelessWidget {
-
   final String groupId;
   const GroupChatCard({
     required this.groupId,
@@ -15,7 +14,6 @@ class GroupChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     String username;
     String imageUrl;
     bool isOnline;
@@ -36,7 +34,6 @@ class GroupChatCard extends StatelessWidget {
         imageUrl = groupData?[KeyConstants.IMAGE_URL];
 
         return GroupChatRow(
-            width: width,
             imageUrl: imageUrl,
             isOnline: isOnline,
             username: username,

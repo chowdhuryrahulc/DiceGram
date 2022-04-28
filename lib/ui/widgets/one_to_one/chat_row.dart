@@ -4,11 +4,12 @@ import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/ui/widgets/one_to_one/unread_message_count.dart';
 import 'package:dicegram/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatRow extends StatelessWidget {
   const ChatRow({
     Key? key,
-    required this.width,
+    // required this.width,
     required this.imageUrl,
     required this.isOnline,
     required this.username,
@@ -16,7 +17,7 @@ class ChatRow extends StatelessWidget {
     required this.chatId,
   }) : super(key: key);
 
-  final double width;
+  // final double width;
   final String imageUrl;
   final bool isOnline;
   final String username;
@@ -31,16 +32,13 @@ class ChatRow extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: UserServices().getLastMessage(chatId, userId),
       builder: (context, snapshot) {
-        print('imageUrl');
-        print(imageUrl);
         var totalMessage = snapshot.data?.docs.length;
         if (totalMessage == null) {
-          return const Text('No msg found');
+          return const Text('');
         }
-
         var lastMsgData = (totalMessage > 0) ? snapshot.data?.docs[0] : null;
         if (lastMsgData == null) {
-          lastMessage = 'No Messages';
+          lastMessage = '';
           lastMessageTime = '';
         } else {
           lastMessage = lastMsgData[KeyConstants.MESSAGE];
@@ -51,84 +49,86 @@ class ChatRow extends StatelessWidget {
             lastMessageTime = '';
           }
         }
-
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: width * 0.16,
-                height: width * 0.16,
-                child: Stack(fit: StackFit.expand, children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.fill,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.network(
-                            'https://picsum.photos/250?image=9');
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Icon(
-                      Icons.circle,
-                      size: 15,
-                      color: isOnline ? Colors.green : Colors.red,
-                    ),
-                  )
-                ]),
-              ),
-              SizedBox(
-                width: width * 0.04,
-              ),
-              SizedBox(
-                height: width * 0.16,
-                width: width * 0.5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        return totalMessage > 0
+            ? Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      username,
-                      maxLines: 1,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width.w * 0.16,
+                      height: MediaQuery.of(context).size.width.w * 0.16,
+                      child: Stack(fit: StackFit.expand, children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.fill,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.network(
+                                  'https://picsum.photos/250?image=9');
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Icon(
+                            Icons.circle,
+                            size: 15,
+                            color: isOnline ? Colors.green : Colors.red,
+                          ),
+                        )
+                      ]),
                     ),
-                    Text(
-                      lastMessage,
-                      maxLines: 1,
-                      style:
-                          const TextStyle(fontSize: 13, color: Colors.black54),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width.w * 0.04,
+                    ),
+                    SizedBox(
+                      // height: MediaQuery.of(context).size.width.w * 0.16,
+                      // width: MediaQuery.of(context).size.width.w * 0.5,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            username,
+                            maxLines: 1,
+                          ),
+                          Text(
+                            lastMessage,
+                            maxLines: 1,
+                            style: TextStyle(
+                                fontSize: 13.sp, color: Colors.black54),
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(child: SizedBox()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.w),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width.w * 0.2,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              lastMessageTime.toString(),
+                              style: const TextStyle(color: Colors.black45),
+                            ),
+                            SizedBox(
+                              height: 6.h,
+                            ),
+                            UnreadMessageCount(userId: userId, chatId: chatId),
+                          ],
+                        ),
+                      ),
                     )
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: width * 0.2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        lastMessageTime.toString(),
-                        style: const TextStyle(color: Colors.black45),
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      UnreadMessageCount(userId: userId, chatId: chatId),
-                    ],
-                  ),
-                ),
               )
-            ],
-          ),
-        );
+            : SizedBox();
       },
     );
   }

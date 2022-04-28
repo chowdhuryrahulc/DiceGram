@@ -3,34 +3,35 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/TikTakToe/TikTakToe/TikTakToeDatabase.dart';
 import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
 import 'package:dicegram/ui/screens/chatroom.dart';
 import 'package:dicegram/ui/screens/newGroupAddParticipants.dart';
-import 'package:dicegram/ui/screens/contacts.dart';
+import 'package:dicegram/ui/screens/InvitePage.dart';
 import 'package:dicegram/ui/screens/group/create_group_screen.dart';
-import 'package:dicegram/ui/screens/group/group_list.dart';
+import 'package:dicegram/ui/screens/group/dashboardGroups.dart';
 import 'package:dicegram/ui/widgets/nav_drawer.dart';
 import 'package:dicegram/utils/app_constants.dart';
 import 'package:dicegram/utils/dimensions.dart';
 import 'package:dicegram/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
-import 'chat_list2.dart';
+import 'dashboardChats.dart';
 
 var status;
 
 checkPhoneNumberinFirebaseCollectionandReturnBool(
     {required String phoneNumber,
+    required String username,
     required Map<String, dynamic> values,
     required BuildContext context}) async {
-  print('OOOOOOOOOOOOOOOOOOOOOOOOOO');
-  print(values['isEngaged']); //! Showing null
-  print(values['username']);
   bool isPresent = false;
   var x = await FirebaseFirestore.instance
       .collection(KeyConstants.USERS)
@@ -39,7 +40,7 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
   if (x.size > 0) {
     isPresent = true;
 
-    UserServices().updateUserData(values).then((val) {
+    UserServices().updateUserData({'username': username}).then((val) {
       Navigator.pushAndRemoveUntil<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
@@ -116,36 +117,22 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    String? h = context.watch<updateGroup>().newName;
     String userName = 'User Name';
+    // TikTakToeDatabase().getPlayerListData("pBrlxJldR1257i8CXb1w", 3);
     String? profileImage;
-    streamToGetSnapshotOfChatListUserData('RjuyX2EYmazbJWRM1jsT');
-    // showDialogIfOtherPersonsEngagedIsFalse();
-    // setIsEngagedToTrue();
-    // knowIfOtherPersonHasLoggedOut();
     return WillPopScope(
       onWillPop: () async {
         SystemNavigator.pop();
         return true;
       },
       child: FutureBuilder<UserModel>(
-        // userID is uid from Firebase.
         future: UserServices().getUserById(UserServices.userId),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
-          // returnUserNameFromUserId([
-          //   '8ffhjaxUjgd2ZmYtcFjVaqZuaix1',
-          //   'H8vz29qDDbZzcGjW7MBLPMp34wm1',
-          //   'LUwHiFM0rHYgWIQcx4401ytTF673'
-          // ]);
-          // addUserInGroup('99nhZPjcB7ey9Zw8nCH3', ['a', 'b', 'c']);
-          // deleteUserFromGroup(
-          //     "99nhZPjcB7ey9Zw8nCH3", "XXZFT8jZXTa8VlxmtYw8EblEUpI3");
-          // we are getting this data from:
-          // users=> imageURL
-          // Setting this data in NavDrawer=> ProfilePage
-          profileImage = snapshot.data?.image;
+          profileImage = snapshot.data?.imageUrl;
           return Scaffold(
             drawer: NavDrawer(),
             appBar: AppBar(
@@ -154,11 +141,10 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                 return InkWell(
                   onTap: () => Scaffold.of(context).openDrawer(),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.r),
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         child: profileImage != null
-                            // Image not picking up.
                             ? Image.network(
                                 profileImage!,
                                 errorBuilder: (context, error, stackTrace) {
@@ -172,17 +158,13 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
               }),
               title: Text(
                 userName,
-                style: const TextStyle(
-                    fontSize: 16,
+                style: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
               actions: [
-                InkWell(
-                    onTap: () {
-                      // showDialogIfOtherPersonsEngagedIsFalse();
-                    },
-                    child: const Icon(Icons.search)),
+                InkWell(onTap: () {}, child: const Icon(Icons.search)),
                 // PopupMenuButton(
                 //   icon: const Icon(Icons.more_vert),
                 //   onSelected: (value) {
@@ -215,8 +197,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                 //   ],
                 // ),
 
-                const SizedBox(
-                  width: 8,
+                SizedBox(
+                  width: 8.w,
                 )
               ],
             ),
@@ -261,23 +243,21 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                 body: const TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    ChatList2(),
-                    GroupList(),
+                    DashboardChats(),
+                    DashboardGroups(),
                   ],
                 ),
                 floatingActionButton: FloatingActionButton(
                   shape: ContinuousRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   onPressed: () {
-                    if (status == PermissionStatus.granted
-                        // status.isGranted
-                        ) {
+                    if (status == PermissionStatus.granted) {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => isChatSelected
-                                  ? ContactsScreen() // Create one to one chat.
-                                  : ContactsScreen2())); // Create group
+                                  ? InvitePage()
+                                  : NewGroupAddParticipants())); // Create group
                     } else {
                       var snackBar = SnackBar(
                           content: Text('Contacts Permission Required'));

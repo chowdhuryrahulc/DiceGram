@@ -30,8 +30,6 @@ class UserServices {
 
   Future<bool> updateUserData(Map<String, dynamic> values) async {
     bool status = false;
-    print('InUserServices2');
-    print(values['isEngaged']);
 
     await FirebaseUtils.getUsersColRef()
         .doc(UserServices.userId)
@@ -67,6 +65,7 @@ class UserServices {
             createdAt: Timestamp.now(),
             groupName: '',
             imageUrl: '',
+            isPlaying: false,
             isGroup: false,
             userIds: userIds)
         .toMap());

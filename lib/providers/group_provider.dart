@@ -52,7 +52,6 @@ class GroupProvider extends ChangeNotifier {
 
   void createGroup(List<UserModel> users, BuildContext context) {
     List<String> userIds = [];
-    // print('asdfg');
     users.forEach((element) {
       userIds.add(element.id);
     });
@@ -77,6 +76,11 @@ class GroupProvider extends ChangeNotifier {
           groupId: value.id,
           msgType: KeyConstants.GROUPCREATED);
 
+//todo uploadPic
+      if (imageprofile != null) {
+        uploadPic(imageprofile!, value.id);
+      }
+
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => GroupChatScreen(
                 //! might break?
@@ -93,15 +97,9 @@ class GroupProvider extends ChangeNotifier {
                   isGroup: true,
                 ),
                 chatId: value.id,
-                groupName: groupName,
               )));
     }).onError((error, stackTrace) {});
   }
-
-  /////////////////////////////!
-  /// final FirebaseStorage _storage = FirebaseStorage.instance;
-
-//
 
   void handleURLButtonPress(
     BuildContext context,
@@ -157,7 +155,7 @@ class GroupProvider extends ChangeNotifier {
     );
     if (croppedImage != null) {
       imageprofile = croppedImage;
-      uploadPic(imageprofile!);
+      print("Image Profile ${imageprofile}");
       notifyListeners();
 
       Navigator.of(context).pop();
@@ -167,22 +165,25 @@ class GroupProvider extends ChangeNotifier {
   }
   //!firebase upload
 
-  Future<String> uploadPic(File imagefi) async {
-    final reference = _storage.ref().child("images/");
+//todo match this with profileProvider uploadpic.
+  Future<String> uploadPic(File imagefi, String groupDocomentId) async {
+    final destination = groupDocomentId;
+    final reference = FirebaseStorage.instance.ref(destination);
     final UploadTask uploadTask = reference.putFile(imagefi);
-    final TaskSnapshot location = uploadTask.snapshot;
+    final TaskSnapshot location = await uploadTask.whenComplete(() {});
     final String url = await location.ref.getDownloadURL();
     _imageUrl = url;
     notifyListeners();
-    uploadToCLoudstorege(url);
+    uploadToCLoudstorege(url, groupDocomentId);
     return url;
   }
 
 //
-  Future uploadToCLoudstorege(String url) async {
-    await _firestoreCloud
-        .collection(collectionname)
-        .doc(docname)
-        .set({"Imageurl": url});
+  Future uploadToCLoudstorege(String url, String groupDocomentId) async {
+    //todo save in the imageUrl.
+    FirebaseFirestore.instance
+        .collection('Group List')
+        .doc(groupDocomentId)
+        .update({'imageUrl': url});
   }
 }

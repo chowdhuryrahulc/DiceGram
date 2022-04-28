@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/group_data.dart';
@@ -29,8 +31,14 @@ class _deletePlayersListState extends State<deletePlayersList> {
                   child: ListView.builder(
                       itemCount: snapshot.data?.docs.length,
                       itemBuilder: (context, index) {
+                        // users is all firebase users.
+                        // groupData doesnt have list of names. thats why we print here users.username
+// otherwise we could have used just printed userdata and no need of "contains"
                         UserModel users =
                             UserModel.fromSnapshot(snapshot.data?.docs[index]);
+                        //todo Problem: groupdata not updating.
+                        log('GroupId.users ${widget.groupData.users}');
+                        log('User,id ${users.username}');
                         if (widget.groupData.users.contains(users.id) &&
                             users.id != UserServices.userId) {
                           print(users.username.toString());
@@ -44,7 +52,7 @@ class _deletePlayersListState extends State<deletePlayersList> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(50),
                                     child: Image.network(
-                                      users.image.toString(),
+                                      users.imageUrl.toString(),
                                       fit: BoxFit.cover,
                                       errorBuilder:
                                           (context, error, stackTrace) {

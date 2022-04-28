@@ -11,17 +11,13 @@ class GameService {
       required String game,
       required String groupId //=> put in groupList.doc
       }) async {
-    // print('userIds');
     // print(userIds); // [SZZzDRzMdEf2TlnoFdaY3s8W43f1] or [z0a5E7N4P3d5NXAyHVexXbZn9xB2, SZZzDRzMdEf2TlnoFdaY3s8W43f1]
-    // print('game');
     // print(game); // snakeLadder
-    // print('groupId');
     // print(groupId); // JUsrs6mPF0G05PMYcBaz
     // print(UserServices.userId); // SZZzDRzMdEf2TlnoFdaY3s8W43f1
     if (userIds.contains(UserServices.userId)) {
     } else {
-      userIds.add(UserServices
-          .userId);
+      userIds.add(UserServices.userId);
     }
     //! Saves in Games. Why we use games folder?
     DocumentReference docRef =

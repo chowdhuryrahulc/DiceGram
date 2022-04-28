@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/group_service.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/models/group_data.dart';
@@ -10,15 +11,16 @@ import 'package:dicegram/ui/widgets/group/group_chat_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class GroupList extends StatefulWidget {
-  const GroupList({Key? key}) : super(key: key);
+class DashboardGroups extends StatefulWidget {
+  const DashboardGroups({Key? key}) : super(key: key);
 
   @override
-  State<GroupList> createState() => _GroupListState();
+  State<DashboardGroups> createState() => _DashboardGroupsState();
 }
 
-class _GroupListState extends State<GroupList> {
+class _DashboardGroupsState extends State<DashboardGroups> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -32,24 +34,9 @@ class _GroupListState extends State<GroupList> {
               itemCount: snapshot.data?.docs.length,
               itemBuilder: (context, index) {
                 var groupChatDocomentId = snapshot.data?.docs[index].id;
-                // DocomentName: GroupList().doc() //! Why do we need this?
-                // chatId:
-                // FK17naJe5FwiQkBwWxyI
-                // JUsrs6mPF0G05PMYcBaz
-                // rh1ZmgO5GDPWOQaHdrNZ
                 String? groupName =
                     snapshot.data?.docs[index][KeyConstants.GROUP_NAME];
-                print("snapshot.data?.docs[index]");
-                print(snapshot.data?.docs[index]['users']);
-                print('done');
-                // groupName:
-                // ATGroup
-                // Next
-                // tushar
-                //! GameId: goes into GameRoom as docomentId
-                // T772fX3kNiqBvv5O5zlY
-                // EOF7uThT5csRGVMw8Lwa
-                // null
+                // GameId: goes into GameRoom as docomentId
                 GroupData groupData =
                     GroupData.fromSnapshot(snapshot.data?.docs[index]);
                 return InkWell(
@@ -59,7 +46,6 @@ class _GroupListState extends State<GroupList> {
                               adminId: snapshot.data?.docs[index]['adminId'],
                               groupData: groupData, //=> gameId
                               chatId: groupChatDocomentId ?? "",
-                              groupName: groupName.toString(),
                             )));
                   },
                   child: GroupChatCard(
