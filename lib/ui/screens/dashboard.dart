@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/gameIdProblem.dart';
 import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/user_model.dart';
@@ -21,23 +22,24 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:flutter_contacts/flutter_contacts.dart';
 import 'chat_list2.dart';
 
-deleteAllDublicateUsers() {}
+var status;
 
 checkPhoneNumberinFirebaseCollectionandReturnBool(
-    {required String phoneNumber,required Map<String, dynamic> values, required BuildContext context}) async {
-  log('i am in checkPhoneNumberinFirebaseCollectionandReturnBool');
+    {required String phoneNumber,
+    required Map<String, dynamic> values,
+    required BuildContext context}) async {
+  print('OOOOOOOOOOOOOOOOOOOOOOOOOO');
+  print(values['isEngaged']); //! Showing null
+  print(values['username']);
   bool isPresent = false;
   var x = await FirebaseFirestore.instance
       .collection(KeyConstants.USERS)
       .where('number', isEqualTo: phoneNumber)
       .get();
-  print('xxxxxxxxxxxxxxxxxxxxxxx');
-  print(x.size);
   if (x.size > 0) {
     isPresent = true;
 
     UserServices().updateUserData(values).then((val) {
-      log('Updated');
       Navigator.pushAndRemoveUntil<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
@@ -48,7 +50,6 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
     });
   } else {
     UserServices().createUser(values).then((val) {
-      log('Created, Not Updated');
       Navigator.pushAndRemoveUntil<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
@@ -58,7 +59,6 @@ checkPhoneNumberinFirebaseCollectionandReturnBool(
       );
     });
   }
-  // return isPresent;
 }
 
 class Dashboard extends StatefulWidget {
@@ -91,7 +91,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     }
   }
 
-  var status;
+//! permission error
   permissionContacts() async {
     status = await Permission.contacts.request();
     print(status);
@@ -108,9 +108,9 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    deleteAllDublicateUsers();
     permissionContacts();
     WidgetsBinding.instance?.addObserver(this);
+    fetchAllFirebaseContats();
     setOnline(true);
   }
 
@@ -118,20 +118,30 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     String userName = 'User Name';
     String? profileImage;
-
+    streamToGetSnapshotOfChatListUserData('RjuyX2EYmazbJWRM1jsT');
+    // showDialogIfOtherPersonsEngagedIsFalse();
+    // setIsEngagedToTrue();
+    // knowIfOtherPersonHasLoggedOut();
     return WillPopScope(
       onWillPop: () async {
         SystemNavigator.pop();
-        // put something that closes the app. or
         return true;
       },
       child: FutureBuilder<UserModel>(
         // userID is uid from Firebase.
         future: UserServices().getUserById(UserServices.userId),
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data?.username != null) {
             userName = snapshot.data!.username;
           }
+          // returnUserNameFromUserId([
+          //   '8ffhjaxUjgd2ZmYtcFjVaqZuaix1',
+          //   'H8vz29qDDbZzcGjW7MBLPMp34wm1',
+          //   'LUwHiFM0rHYgWIQcx4401ytTF673'
+          // ]);
+          // addUserInGroup('99nhZPjcB7ey9Zw8nCH3', ['a', 'b', 'c']);
+          // deleteUserFromGroup(
+          //     "99nhZPjcB7ey9Zw8nCH3", "XXZFT8jZXTa8VlxmtYw8EblEUpI3");
           // we are getting this data from:
           // users=> imageURL
           // Setting this data in NavDrawer=> ProfilePage
@@ -148,6 +158,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: profileImage != null
+                            // Image not picking up.
                             ? Image.network(
                                 profileImage!,
                                 errorBuilder: (context, error, stackTrace) {
@@ -167,7 +178,11 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                     color: Colors.white),
               ),
               actions: [
-                const Icon(Icons.search),
+                InkWell(
+                    onTap: () {
+                      // showDialogIfOtherPersonsEngagedIsFalse();
+                    },
+                    child: const Icon(Icons.search)),
                 // PopupMenuButton(
                 //   icon: const Icon(Icons.more_vert),
                 //   onSelected: (value) {
@@ -261,7 +276,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                               builder: (context) => isChatSelected
-                                  ? ContactListScreen() // Create one to one chat.
+                                  ? ContactsScreen() // Create one to one chat.
                                   : ContactsScreen2())); // Create group
                     } else {
                       var snackBar = SnackBar(

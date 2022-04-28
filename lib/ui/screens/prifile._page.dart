@@ -20,23 +20,22 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
-    final ProfileProvider watchprovider = context.watch<ProfileProvider>();
-    final ProfileProvider readprovider = context.read<ProfileProvider>();
+    ProfileProvider watchprovider = context.watch<ProfileProvider>();
+    ProfileProvider readprovider = context.read<ProfileProvider>();
 
-    func() {
-      setState(() {});
+    void func() {
+      setState(() {
+        print('objecttttttttttt');
+      });
     }
 
-    ;
     UserModel? userModel;
-    return StreamBuilder<UserModel>(
-        stream: watchprovider.getCurrentUserModel().asStream(),
+    return FutureBuilder<UserModel>(
+        future: watchprovider.getCurrentUserModel(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           userModel = snapshot.data;
           print('userModel?.image');
           print(userModel?.image);
-          // context.read<profilePicProvider>().updateProfilePic(userModel?.image);
-          // profilePicProvider()
           return Scaffold(
             body: Stack(
               children: [
@@ -84,7 +83,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Image.network(
                           userModel?.image ?? '',
                           errorBuilder: (context, error, stackTrace) {
-                            print('Extra ${userModel?.image.toString()}');
                             return Image.asset('assets/images/person.png');
                           },
                         ))),
@@ -95,9 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         onTap: () async {
                           // This opens the showDialog.
                           watchprovider.showDialogToFetchProfilePic(
-                              context, func());
-                          //! need SetState
-                          // setState(() {});
+                              context, func);
                         },
                         child: Image.asset('assets/images/camera.png'))),
                 Positioned(

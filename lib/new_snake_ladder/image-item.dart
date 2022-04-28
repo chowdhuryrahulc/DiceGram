@@ -1,13 +1,8 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
+import 'package:dicegram/new_snake_ladder/snakes_ladders.dart';
 import 'package:flutter/material.dart';
-import 'package:dicegram/snake_ladder/consts/snakes_ladders.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// class ImageItem extends StatelessWidget {
-//   const ImageItem({Key? key}) : super(key: key);
-
-// @override
 Widget ImageItem(context) {
   return Stack(
     children: [

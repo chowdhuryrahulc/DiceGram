@@ -1,6 +1,8 @@
-// ignore_for_file: prefer_is_empty, prefer_const_constructors
+// ignore_for_file: prefer_is_empty, prefer_const_constructors, avoid_print, camel_case_types, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dicegram/TikTakToe/TikTakToe/TikTakToe.dart';
+import 'package:dicegram/gameIdProblem.dart';
 // import 'package:dicegram/TikTakToe/tiktakHome.dart';
 // import 'package:dicegram/chess/chessmain.dart';
 import 'package:dicegram/helpers/game_service.dart';
@@ -9,7 +11,8 @@ import 'package:dicegram/helpers/key_constants.dart';
 import 'package:dicegram/helpers/user_service.dart';
 import 'package:dicegram/models/group_data.dart';
 import 'package:dicegram/models/user_model.dart';
-import 'package:dicegram/snake_ladder/view/snake_ladder.dart';
+import 'package:dicegram/new_snake_ladder/snake_ladder.dart';
+import 'package:dicegram/providers/group_provider.dart';
 import 'package:dicegram/ui/screens/dashboard.dart';
 import 'package:dicegram/ui/widgets/group/group_chat_bubble.dart';
 import 'package:dicegram/utils/Color.dart';
@@ -17,34 +20,44 @@ import 'package:dicegram/utils/app_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../gamemain.dart';
+import 'Widgets/addPlayerList.dart';
+import 'Widgets/deletePlayerList.dart';
 
 List<String> selectedUsersList = [];
+List<String> deletedUsersList = [];
+List<String> newAddedUsersList = [];
 
 class GroupChatScreen extends StatefulWidget {
   const GroupChatScreen({
     Key? key,
+    // required this.users,
+    required this.adminId,
     required this.chatId,
     required this.groupName,
     required this.groupData,
   }) : super(key: key);
+  // final List<String> users;
+  final String adminId;
   final String chatId;
   final String groupName;
-  final GroupData groupData;
+  final GroupData groupData; //=> gameId
 
   @override
   State<GroupChatScreen> createState() => _GroupChatScreenState();
 }
 
 class _GroupChatScreenState extends State<GroupChatScreen> {
-  //! Here we get the uid.
+  // Here we get the uid.
   String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   bool isShowBox = false;
   bool isGameInitiated = false;
-  late GroupData _groupData;
+  late GroupData _groupData; // Comming from last screen.
   int selectedGame = -1;
+  Future<List<String>>? listOfUsername;
 
   @override
   void initState() {
@@ -55,11 +68,33 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     super.initState();
   }
 
+  updatePlayerId() async {
+    await searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+        .then((value) {
+      print("value");
+      print(value);
+      isShowBox = !isShowBox;
+      // if (value == null) {
+      //   CircularProgressIndicator();
+      // }
+      // Might cause problems?
+
+      if (value != null) {
+        _groupData.gameId = value;
+        isGameInitiated = true;
+      } else {
+        CircularProgressIndicator();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    TextEditingController newGroupController = TextEditingController();
     TextEditingController textEditingController = TextEditingController();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    final _formKey = GlobalKey<FormState>();
     return WillPopScope(
       onWillPop: () {
         return Navigator.pushReplacement(context,
@@ -75,6 +110,136 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               color: Colors.white, //change your color here
             ),
             title: Text(widget.groupName),
+            actions: [
+              widget.adminId == UserServices.userId
+                  ? PopupMenuButton(
+                      itemBuilder: (popupContext) => [
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      showDialog(
+                                          context: popupContext,
+                                          builder: (popupContext) {
+                                            return SizedBox(
+                                              height: 100,
+                                              child: updateGroupNameDialogBox(
+                                                  _formKey,
+                                                  newGroupController,
+                                                  context,
+                                                  popupContext),
+                                            );
+                                          });
+                                    },
+                                    child: Text('Update GroupName'))),
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      showDialog(
+                                        context: popupContext,
+                                        builder: (context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            elevation: 16,
+                                            child: Column(
+                                              children: [
+                                                const Text('Select Players'),
+                                                addPlayersList(
+                                                    groupData: _groupData),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          newAddedUsersList
+                                                              .clear;
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: const Text(
+                                                            'Cancel')),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          addUsersInGroup(
+                                                              widget.chatId,
+                                                              newAddedUsersList);
+                                                          newAddedUsersList
+                                                              .clear();
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text('Next')),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Add players'))),
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: popupContext,
+                                        builder: (context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            elevation: 16,
+                                            child: SizedBox(
+                                              height: 500,
+                                              child: Column(
+                                                children: [
+                                                  const Text('Select Players'),
+                                                  deletePlayersList(
+                                                      groupData: _groupData),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            selectedUsersList
+                                                                .clear;
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: const Text(
+                                                              'Cancel')),
+                                                      ElevatedButton(
+                                                          onPressed: () {
+                                                            deleteUserFromGroup(
+                                                                widget.chatId,
+                                                                deletedUsersList);
+                                                            deletedUsersList
+                                                                .clear();
+                                                            Navigator.pop(
+                                                                context);
+                                                            setState(() {});
+                                                          },
+                                                          child: Text('Next')),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Remove Players')))
+                          ])
+                  : SizedBox()
+            ],
           ),
           body: SingleChildScrollView(
             child: SizedBox(
@@ -148,14 +313,24 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             prefixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    isShowBox = !isShowBox;
+                                    updatePlayerId();
+                                    //todo problem with future
+                                    // searchIfPlayerIsPresentInAnyGroupAndFetchDocomentIdofThatGroup()
+                                    //     .then((value) {
+                                    //   String? gameId = value;
+                                    // });
+                                    // isShowBox = !isShowBox;
                                   });
                                   if (isShowBox == true) {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   } else {
-                                    FocusManager.instance.primaryFocus
-                                        ?.nextFocus();
+                                    try {
+                                      FocusManager.instance.primaryFocus
+                                          ?.nextFocus();
+                                    } catch (e) {
+                                      print(e);
+                                    }
                                   }
                                 },
                                 icon: Image.asset("assets/images/game.png")),
@@ -183,17 +358,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     ),
                   ),
                   isShowBox
-                      ? Container(
+                      ? SizedBox(
                           height: 55.h,
                           width: double.infinity,
                           child: isGameInitiated
-                              // Where is this comming from?
-                              // it is comming from group_list.dart.
-                              //     GroupData groupData =
-                              // GroupData.fromSnapshot(snapshot.data?.docs[index]);
-                              // isGameInnitiated depends on groupData.gameId!=''
-
-                              //! Source of problem
                               ? getSelectedGame(
                                   // selectedGame
                                   0)
@@ -202,6 +370,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                     ElevatedButton(
                                       onPressed: () {
                                         selectedGame = AppConstants.snakeLadder;
+                                        setState(() {});
                                         onGameSelected(
                                             AppConstants.snakeLadder);
                                       },
@@ -214,13 +383,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                     //   },
                                     //   child: Text('Chess'),
                                     // ),
-                                    // ElevatedButton(
-                                    //   onPressed: () {
-                                    //     selectedGame = AppConstants.tikTackToe;
-                                    //     onGameSelected(AppConstants.tikTackToe);
-                                    //   },
-                                    //   child: Text('Tik-Tack Toe'),
-                                    // ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        selectedGame = AppConstants.tikTackToe;
+                                        setState(() {});
+                                        onGameSelected(AppConstants.tikTackToe);
+                                      },
+                                      child: Text('Tik-Tack Toe'),
+                                    ),
                                   ]),
                                 ))
                       : const SizedBox()
@@ -231,17 +401,52 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
+  updateGroupNameDialogBox(
+      GlobalKey<FormState> _formKey,
+      TextEditingController newGroupController,
+      BuildContext context,
+      BuildContext popupContext) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 16,
+      title: Text('Enter New Group Name'),
+      actions: [
+        ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                Navigator.pop(context);
+                updateGroupName(widget.chatId, newGroupController.text);
+                Navigator.pop(popupContext);
+                setState(() {});
+              }
+            },
+            child: Text('Submit'))
+      ],
+      content: Form(
+          key: _formKey,
+          child: TextFormField(
+              validator: (value) =>
+                  value!.isNotEmpty ? null : 'GroupName Should Not Be Empty',
+              controller: newGroupController,
+              decoration: InputDecoration())),
+    );
+  }
+
   void onGameSelected(int selectedGame) {
     String? keyConstraints;
+    int minimumPlayers = 0;
     switch (selectedGame) {
       case 0:
         keyConstraints = KeyConstants.SNAKE_LADDER;
+        minimumPlayers = 2;
         break;
       case 1:
         keyConstraints = KeyConstants.CHESS;
+        minimumPlayers = 2;
         break;
       case 2:
         keyConstraints = KeyConstants.TikTakToe;
+        minimumPlayers = 2;
         break;
       default:
     }
@@ -259,35 +464,42 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               children: [
                 const Text('Select Players'),
                 //! Where users is selected. Only 2 users for TikTakToe
-                playersList(users: _groupData.users),
+                playersList(
+                    users: _groupData.users, minimumPlayers: minimumPlayers),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
                         onPressed: () {
+                          selectedUsersList.clear;
                           Navigator.pop(context);
                         },
                         child: const Text('Cancel')),
                     ElevatedButton(
                         onPressed: () async {
+                          // selectedUsersList.forEach((element) {
+                          //   print(element);
+                          // });
+                          //*******************************************************************************/
+                          // if (selectedUsersList.length - 1 == minimumPlayers) {
                           Navigator.pop(context);
                           //! Changes gameId, players, and users in Firebase.
                           // Why are we usingplayers?
                           String gameId = await GameService().createGameRoom(
                               groupId: widget.chatId,
                               userIds: selectedUsersList,
-                              // Key constraints.tiktaktoe.
                               game: keyConstraints!);
-                          // GameId: aV538hHnsz830uFVkczV
-                          print('Game ID ${gameId}'); // Working im TikTakToe
-                          _groupData.gameId = gameId; // goes in SnakeLadder
-                          _groupData.players =
-                              selectedUsersList; // goes in SnakeLadder
-                          // DOING NOTHING: to go to SnakeLadder
-                          // _groupData.gameName = KeyConstants.SNAKE_LADDER;
+                          _groupData.gameId = gameId;
+                          _groupData.players = selectedUsersList;
                           setState(() {
                             isGameInitiated = true;
                           });
+                          // } else {
+                          //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          //       content:
+                          //           Text('Game needs $minimumPlayers players'),
+                          //       duration: Duration(milliseconds: 500)));
+                          // }
                         },
                         child: Text('Next')),
                   ],
@@ -300,10 +512,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
-  Widget getSelectedGame(int selectedGame) {
-    print(selectedGame);
+  Widget getSelectedGame(int selectedGame, {String? gameId}) {
     Widget game = SizedBox();
-
     switch (selectedGame) {
       case AppConstants.snakeLadder:
         game = SnakeLadder(
@@ -312,23 +522,36 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               isGameInitiated = false;
             });
           },
-          gameId: _groupData.gameId,
+          gameId: _groupData.gameId, //=> GameRoom => doc()
           players: _groupData.players,
-          chatId: widget.chatId,
+          // send userNameList
+          playersName: [],
+          chatId: widget.chatId, isGameInitiated: isGameInitiated,
         );
         break;
       case AppConstants.tikTackToe:
-        // game = HomePage();
-        SnakeLadder(
+        game = TikTakToe(
+          gameId: _groupData.gameId,
+          players: _groupData.players,
+          playersName: [],
+          chatId: widget.chatId,
           onEnd: () {
             setState(() {
               isGameInitiated = false;
             });
           },
-          gameId: _groupData.gameId,
-          players: _groupData.players,
-          chatId: widget.chatId,
         );
+        // SnakeLadder(
+        //   onEnd: () {
+        //     setState(() {
+        //       isGameInitiated = false;
+        //     });
+        //   },
+        //   gameId: _groupData.gameId,
+        //   players: _groupData.players,
+        //   playersName: [],
+        //   chatId: widget.chatId,
+        // );
         break;
       case AppConstants.chess:
         game = GameBoardStateLess({"name": 'Chess'}, widget.chatId, this.userId,
@@ -351,7 +574,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 }
 
 class playersList extends StatefulWidget {
-  const playersList({Key? key, required this.users}) : super(key: key);
+  const playersList(
+      {Key? key, required this.users, required int minimumPlayers})
+      : super(key: key);
   final List<String> users;
 
   @override
@@ -361,7 +586,6 @@ class playersList extends StatefulWidget {
 class _playersListState extends State<playersList> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return StreamBuilder<QuerySnapshot>(
         stream: UserServices().getFirebaseUsers(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -375,10 +599,13 @@ class _playersListState extends State<playersList> {
                 child: ListView.builder(
                     itemCount: snapshot.data?.docs.length,
                     itemBuilder: (context, index) {
+                      // print('asdfgfdsdfghjhgfdsdfghjklkjhgfdsdfghjklkjhgf');
+                      // print(snapshot.data?.docs[0]['isEngaged']);
                       UserModel users =
                           UserModel.fromSnapshot(snapshot.data?.docs[index]);
                       if (widget.users.contains(users.id) &&
-                          UserServices.userId != users.id) {
+                          UserServices.userId != users.id &&
+                          snapshot.data?.docs[index]['isEngaged'] == false) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -402,13 +629,13 @@ class _playersListState extends State<playersList> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              //! Player name, to be send to next screen
+                              // Player name, to be send to next screen
                               Expanded(
                                   child: Text(
                                 users.username.toString(),
                                 maxLines: 1,
                               )),
-                              //! CheckBox
+                              // CheckBox
                               SizedBox(
                                 width: 20,
                                 child: Checkbox(
@@ -417,7 +644,11 @@ class _playersListState extends State<playersList> {
                                     if (value == true) {
                                       setState(() {
                                         //! The list where the users who will play are added.
-                                        selectedUsersList.add(users.id);
+                                        if (selectedUsersList
+                                            .contains(users.id)) {
+                                        } else {
+                                          selectedUsersList.add(users.id);
+                                        }
                                       });
                                     } else {
                                       setState(() {

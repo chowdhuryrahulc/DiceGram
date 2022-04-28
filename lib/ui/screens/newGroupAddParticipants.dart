@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_is_empty, curly_braces_in_flow_control_structures, avoid_function_literals_in_foreach_calls, deprecated_member_use
+// ignore_for_file: prefer_is_empty, curly_braces_in_flow_control_structures, avoid_function_literals_in_foreach_calls, deprecated_member_use, prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'chatroom.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ContactsScreen2 extends StatefulWidget {
   @override
@@ -86,16 +87,15 @@ class _ContactsScreenState extends State<ContactsScreen2> {
         child: FutureBuilder<List<Contact>>(
             future: ContactsService.getContacts(withThumbnails: false),
             builder: (context, AsyncSnapshot snapshot) {
-               if (snapshot.data == null) {
-                      return const Text('No Contact Found');
-                    }
-                    List<Contact> contactList = snapshot.data!;
+              if (snapshot.data == null) {
+                return const Text('No Contact Found');
+              }
+              List<Contact> contactList = snapshot.data!;
 
               return FutureBuilder<List<UserModel>>(
-                 future: UserServices()
-                            .getFirebaseUsersFromContacts(contactList),
-                         builder: (BuildContext context,
-                      AsyncSnapshot snapshot) {
+                  future:
+                      UserServices().getFirebaseUsersFromContacts(contactList),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
                     usersList = [];
                     if (snapshot.hasError) {
                       return Text(snapshot.error.toString());
@@ -107,11 +107,11 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                           child: ListView.builder(
                               itemCount: snapshot.data?.length,
                               itemBuilder: (context, index) {
-                                //! Might cause error. If caused, go back to when it was renamed Conyacts2.dart 
+                                //! Might cause error. If caused, go back to when it was renamed Conyacts2.dart
                                 // UserModel users = UserModel.fromSnapshot(
                                 //     snapshot.data?[index]
                                 //     );
-                                UserModel  users = snapshot.data![index];
+                                UserModel users = snapshot.data![index];
 
                                 print(users.id);
                                 usersList.add(users);
@@ -175,8 +175,11 @@ class _ContactsScreenState extends State<ContactsScreen2> {
                               }),
                         );
                       }
+                    } else {
+                      return Center(
+                          child: SpinKitPouringHourGlass(color: Colors.red));
                     }
-                    return Text(snapshot.data?.length.toString() ?? '');
+                    // return Text(snapshot.data?.length.toString() ?? '');
                   });
             }),
       ),

@@ -9,7 +9,7 @@ class GroupData {
   bool isGroup = true; //? Whats the use?
   List<String> players = [];
   String gameName = ''; // eg: snakeLadder.
-  String gameId = '';
+  String gameId = ''; //=> GameRoom => doc()
   List<String> users = [];
 
   GroupData(

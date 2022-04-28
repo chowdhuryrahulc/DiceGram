@@ -34,6 +34,9 @@ class _ChatList2State extends State<ChatList2> {
                         FirebaseAuth.instance.currentUser!.uid)
                     ? snapshot.data?.docs[index]['users'][1]
                     : snapshot.data?.docs[index]['users'][0];
+                //! do something so that if one msg is not there, it should not show.
+                print('OMGG');
+                print(snapshot.data?.docs[index]);
 
                 return ChatCard1(
                   userId: senderId.toString(),
